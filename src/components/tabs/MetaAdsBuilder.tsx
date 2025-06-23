@@ -961,40 +961,6 @@ const MetaAdsBuilder: React.FC = () => {
         )}
       </Accordion>
 
-      {/* Meta-specific Information */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Dynamic Placeholders */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">
-            Dynamic Placeholders
-          </h3>
-          <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
-            <div><code>{"{{campaign.name}}"}</code> - Campaign name</div>
-            <div><code>{"{{campaign.id}}"}</code> - Campaign ID</div>
-            <div><code>{"{{ad.name}}"}</code> - Ad name</div>
-            <div><code>{"{{ad.id}}"}</code> - Ad ID</div>
-            <div><code>{"{{adset.name}}"}</code> - Ad set name</div>
-            <div><code>{"{{adset.id}}"}</code> - Ad set ID</div>
-            <div><code>{"{{placement}}"}</code> - Placement location</div>
-            <div><code>{"{{site_source_name}}"}</code> - Source platform</div>
-          </div>
-        </div>
-
-        {/* Site Source Values */}
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-3">
-            Site Source Values
-          </h3>
-          <div className="space-y-2 text-sm text-green-800 dark:text-green-200">
-            <div><code>fb</code> - Facebook</div>
-            <div><code>ig</code> - Instagram</div>
-            <div><code>msg</code> - Messenger</div>
-            <div><code>an</code> - Audience Network</div>
-            <div><code>wa</code> - WhatsApp</div>
-          </div>
-        </div>
-      </div>
-
       {/* Help Section */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
         <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">
