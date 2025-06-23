@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { Copy, Check, Search, X, Save, Download, Upload, Play, RefreshCw, Zap, Filter, Settings, Target, Globe, Info, AlertTriangle, Trash2, Eye, EyeOff, Plus } from 'lucide-react';
+import { Copy, Check, Search, X, Save, Download, Upload, Play, RefreshCw, Zap, Filter, Settings, Target, Globe, Info, AlertTriangle, Trash2, Eye, EyeOff } from 'lucide-react';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import Dropdown from '../common/Dropdown';
