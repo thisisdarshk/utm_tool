@@ -12,17 +12,19 @@ const MetaAdsBuilder: React.FC = () => {
   const [utmSource, setUtmSource] = useState('');
   const [utmMedium, setUtmMedium] = useState('');
   const [utmCampaign, setUtmCampaign] = useState('');
-  const [utmTerm, setUtmTerm] = useState('');
   const [utmContent, setUtmContent] = useState('');
   
-  // Individual optional parameter toggles
-  const [includeUtmTerm, setIncludeUtmTerm] = useState(false);
+  // Individual optional parameter toggles - REMOVED UTM_TERM
   const [includeUtmContent, setIncludeUtmContent] = useState(false);
   
+  // Meta-specific parameters
+  const [selectedParams, setSelectedParams] = useState<Record<string, boolean>>({});
   const [customParams, setCustomParams] = useState<Array<{key: string, value: string}>>([]);
   const [generatedUrl, setGeneratedUrl] = useState('');
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [savedTemplates, setSavedTemplates] = useState<Record<string, any>>({});
   const [templateName, setTemplateName] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
@@ -189,16 +191,141 @@ const MetaAdsBuilder: React.FC = () => {
     }
   ], []);
 
-  // Handle individual optional parameter toggles with default value restoration
-  const handleUtmTermToggle = useCallback((enabled: boolean) => {
-    setIncludeUtmTerm(enabled);
+  // NEW: Meta-specific pre-built parameters similar to Google Ads/Microsoft Ads
+  const metaParams = useMemo(() => [
+    // Campaign Level Parameters
+    { 
+      id: 'campaign_id', 
+      value: '{{campaign.id}}', 
+      label: 'Campaign ID', 
+      category: 'campaign', 
+      description: 'Unique campaign identifier from Meta',
+      availability: 'All Meta campaigns',
+      example: '2384738473847384'
+    },
+    { 
+      id: 'campaign_name', 
+      value: '{{campaign.name}}', 
+      label: 'Campaign Name', 
+      category: 'campaign', 
+      description: 'Campaign name from Meta',
+      availability: 'All Meta campaigns',
+      example: 'Shoes_Sale_2025'
+    },
     
-    // If enabling and field is empty, restore default
-    if (enabled && !utmTerm.trim()) {
-      setUtmTerm('{{audience.name}}');
+    // Ad Set Level Parameters
+    { 
+      id: 'adset_id', 
+      value: '{{adset.id}}', 
+      label: 'Ad Set ID', 
+      category: 'adset', 
+      description: 'Unique ad set identifier from Meta',
+      availability: 'All Meta campaigns',
+      example: '23849834834834'
+    },
+    { 
+      id: 'adset_name', 
+      value: '{{adset.name}}', 
+      label: 'Ad Set Name', 
+      category: 'adset', 
+      description: 'Ad set name from Meta - useful for targeting analysis',
+      availability: 'All Meta campaigns',
+      example: 'LAL_3%_US_14D'
+    },
+    { 
+      id: 'targeting', 
+      value: '{{adset.name}}', 
+      label: 'Targeting (Ad Set Name)', 
+      category: 'adset', 
+      description: 'Ad set name used for targeting analysis',
+      availability: 'All Meta campaigns',
+      example: 'LAL_3%_US_14D'
+    },
+    
+    // Ad Level Parameters
+    { 
+      id: 'ad_id', 
+      value: '{{ad.id}}', 
+      label: 'Ad ID', 
+      category: 'ad', 
+      description: 'Unique ad identifier from Meta',
+      availability: 'All Meta campaigns',
+      example: '23849857348573'
+    },
+    { 
+      id: 'ad_name', 
+      value: '{{ad.name}}', 
+      label: 'Ad Name', 
+      category: 'ad', 
+      description: 'Ad name from Meta - useful for creative analysis',
+      availability: 'All Meta campaigns',
+      example: 'Ad_Video_A_Spring'
+    },
+    
+    // Placement & Platform Parameters
+    { 
+      id: 'placement', 
+      value: '{{placement}}', 
+      label: 'Placement', 
+      category: 'placement', 
+      description: 'Specific placement where ad was shown',
+      availability: 'All Meta campaigns',
+      example: 'facebook_feed, instagram_story'
+    },
+    { 
+      id: 'publisher_platform', 
+      value: '{{publisher_platform}}', 
+      label: 'Publisher Platform', 
+      category: 'placement', 
+      description: 'Meta platform where ad was displayed',
+      availability: 'All Meta campaigns',
+      example: 'facebook, instagram'
+    },
+    
+    // Device & Format Parameters
+    { 
+      id: 'device_type', 
+      value: '{{device_type}}', 
+      label: 'Device Type', 
+      category: 'device', 
+      description: 'Device type where ad was clicked',
+      availability: 'All Meta campaigns',
+      example: 'mobile, desktop'
+    },
+    { 
+      id: 'ad_format', 
+      value: '{{ad.format}}', 
+      label: 'Ad Format', 
+      category: 'creative', 
+      description: 'Format of the ad creative',
+      availability: 'All Meta campaigns',
+      example: 'carousel, video'
+    },
+    
+    // E-commerce Parameters (Optional)
+    { 
+      id: 'product_id', 
+      value: '{{product.id}}', 
+      label: 'Product ID', 
+      category: 'ecommerce', 
+      description: 'Product catalog item ID for Dynamic Product Ads',
+      availability: 'Dynamic Product Ads only',
+      example: '123456'
     }
-  }, [utmTerm]);
+  ], []);
 
+  // Filter parameters based on search and category
+  const filteredParams = useMemo(() => {
+    return metaParams.filter(param => {
+      const matchesSearch = param.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           param.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           param.availability.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === 'all' || param.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [metaParams, searchTerm, selectedCategory]);
+
+  // Handle individual optional parameter toggles with default value restoration
   const handleUtmContentToggle = useCallback((enabled: boolean) => {
     setIncludeUtmContent(enabled);
     
@@ -225,8 +352,17 @@ const MetaAdsBuilder: React.FC = () => {
       if (utmCampaign) params.append('utm_campaign', utmCampaign);
       
       // Add optional UTM parameters only if individually enabled
-      if (includeUtmTerm && utmTerm) params.append('utm_term', utmTerm);
       if (includeUtmContent && utmContent) params.append('utm_content', utmContent);
+
+      // Add selected Meta parameters
+      Object.entries(selectedParams).forEach(([paramId, isSelected]) => {
+        if (isSelected) {
+          const param = metaParams.find(p => p.id === paramId);
+          if (param) {
+            params.append(paramId, param.value);
+          }
+        }
+      });
 
       // Add custom parameters
       customParams.forEach(param => {
@@ -240,7 +376,7 @@ const MetaAdsBuilder: React.FC = () => {
     } catch (error) {
       setGeneratedUrl('Invalid URL format');
     }
-  }, [websiteUrl, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, includeUtmTerm, includeUtmContent, customParams]);
+  }, [websiteUrl, utmSource, utmMedium, utmCampaign, utmContent, includeUtmContent, selectedParams, customParams, metaParams]);
 
   // Auto-generate when parameters change
   React.useEffect(() => {
@@ -293,9 +429,9 @@ const MetaAdsBuilder: React.FC = () => {
     }
     
     const template = {
-      websiteUrl, utmSource, utmMedium, utmCampaign, utmTerm, utmContent,
-      includeUtmTerm, includeUtmContent, // Save individual toggles
-      customParams, timestamp: Date.now()
+      websiteUrl, utmSource, utmMedium, utmCampaign, utmContent,
+      includeUtmContent, // Save individual toggles
+      selectedParams, customParams, timestamp: Date.now()
     };
     
     const newTemplates = { ...savedTemplates, [templateName]: template };
@@ -304,7 +440,7 @@ const MetaAdsBuilder: React.FC = () => {
     
     success(`Template "${templateName}" saved successfully!`);
     setTemplateName('');
-  }, [templateName, websiteUrl, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, includeUtmTerm, includeUtmContent, customParams, savedTemplates, success, error]);
+  }, [templateName, websiteUrl, utmSource, utmMedium, utmCampaign, utmContent, includeUtmContent, selectedParams, customParams, savedTemplates, success, error]);
 
   const loadTemplate = useCallback(() => {
     if (!selectedTemplate || !savedTemplates[selectedTemplate]) {
@@ -317,13 +453,12 @@ const MetaAdsBuilder: React.FC = () => {
     setUtmSource(template.utmSource);
     setUtmMedium(template.utmMedium);
     setUtmCampaign(template.utmCampaign);
-    setUtmTerm(template.utmTerm);
     setUtmContent(template.utmContent);
     
     // Load individual toggles (with fallback for old templates)
-    setIncludeUtmTerm(template.includeUtmTerm ?? false);
     setIncludeUtmContent(template.includeUtmContent ?? false);
     
+    setSelectedParams(template.selectedParams || {});
     setCustomParams(template.customParams || []);
     
     // Set loaded template name for preview
@@ -361,10 +496,9 @@ const MetaAdsBuilder: React.FC = () => {
     setUtmSource('');
     setUtmMedium('');
     setUtmCampaign('');
-    setUtmTerm('');
     setUtmContent('');
-    setIncludeUtmTerm(false);
     setIncludeUtmContent(false);
+    setSelectedParams({});
     setCustomParams([]);
     setLoadedTemplateName('');
     success('Form reset successfully!');
@@ -381,6 +515,34 @@ const MetaAdsBuilder: React.FC = () => {
       }
     }
   }, []);
+
+  // Categories for filtering
+  const categories = [
+    { value: 'all', label: 'All Parameters' },
+    { value: 'campaign', label: 'Campaign Level' },
+    { value: 'adset', label: 'Ad Set Level' },
+    { value: 'ad', label: 'Ad Level' },
+    { value: 'placement', label: 'Placement & Platform' },
+    { value: 'device', label: 'Device & Format' },
+    { value: 'creative', label: 'Creative' },
+    { value: 'ecommerce', label: 'E-commerce' }
+  ];
+
+  // Get category badge color
+  const getCategoryBadge = (category: string) => {
+    const badges = {
+      campaign: { variant: 'info' as const, label: 'Campaign' },
+      adset: { variant: 'success' as const, label: 'Ad Set' },
+      ad: { variant: 'warning' as const, label: 'Ad' },
+      placement: { variant: 'default' as const, label: 'Placement' },
+      device: { variant: 'info' as const, label: 'Device' },
+      creative: { variant: 'success' as const, label: 'Creative' },
+      ecommerce: { variant: 'warning' as const, label: 'E-commerce' }
+    };
+    
+    const badge = badges[category as keyof typeof badges];
+    return badge ? <Badge variant={badge.variant} size="sm">{badge.label}</Badge> : null;
+  };
 
   return (
     <div className="space-y-8">
@@ -517,37 +679,13 @@ const MetaAdsBuilder: React.FC = () => {
           </div>
         </div>
 
-        {/* STREAMLINED: OPTIONAL UTM PARAMETERS - INLINE DESIGN */}
+        {/* STREAMLINED: OPTIONAL UTM PARAMETERS - INLINE DESIGN - REMOVED UTM_TERM */}
         <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
           <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">
             Optional UTM Parameters
           </h4>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* UTM Term - INLINE CHECKBOX DESIGN */}
-            <div className="relative">
-              <div className="flex items-center gap-2 mb-2">
-                <input
-                  type="checkbox"
-                  id="include-utm-term"
-                  checked={includeUtmTerm}
-                  onChange={(e) => handleUtmTermToggle(e.target.checked)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <label htmlFor="include-utm-term" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                  Campaign Term (utm_term)
-                </label>
-              </div>
-              <Input
-                value={utmTerm}
-                onChange={(e) => setUtmTerm(e.target.value)}
-                placeholder="e.g., {{audience.name}} or specific_audience"
-                disabled={!includeUtmTerm}
-                helperText="Identify paid keywords or audience targeting"
-                className={!includeUtmTerm ? 'opacity-50' : ''}
-              />
-            </div>
-
+          <div className="grid grid-cols-1 gap-4">
             {/* UTM Content - INLINE CHECKBOX DESIGN */}
             <div className="relative">
               <div className="flex items-center gap-2 mb-2">
@@ -606,6 +744,85 @@ const MetaAdsBuilder: React.FC = () => {
           </code>
         </div>
       </div>
+
+      {/* Meta Parameters - NEW SECTION SIMILAR TO GOOGLE ADS/MICROSOFT ADS */}
+      <Accordion 
+        title="Meta Dynamic Parameters" 
+        icon={<Target className="w-5 h-5" />}
+        defaultOpen={false}
+      >
+        {/* Search and Filter */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="flex-1">
+            <Input
+              placeholder="Search parameters..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              icon={<Search className="w-4 h-4" />}
+            />
+          </div>
+          <div className="sm:w-64">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
+            >
+              {categories.map(cat => (
+                <option key={cat.value} value={cat.value}>{cat.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Parameters Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredParams.map(param => (
+            <div key={param.id} className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+              <input
+                type="checkbox"
+                id={param.id}
+                checked={selectedParams[param.id] || false}
+                onChange={(e) => {
+                  setSelectedParams(prev => ({
+                    ...prev,
+                    [param.id]: e.target.checked
+                  }));
+                }}
+                className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <label htmlFor={param.id} className="block text-sm font-medium text-gray-900 dark:text-gray-100 cursor-pointer">
+                    {param.label}
+                  </label>
+                  {getCategoryBadge(param.category)}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                  {param.description}
+                </p>
+                <div className="space-y-1">
+                  <code className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded block">
+                    {param.value}
+                  </code>
+                  <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                    {param.availability}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    Example: {param.example}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {filteredParams.length === 0 && (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            <Search className="w-12 h-12 mx-auto mb-3 opacity-50" />
+            <p>No parameters found matching your search criteria</p>
+          </div>
+        )}
+      </Accordion>
 
       {/* Custom Parameters */}
       <Accordion 
