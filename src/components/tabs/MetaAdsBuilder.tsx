@@ -8,20 +8,30 @@ import Badge from '../common/Badge';
 import { useToast } from '../../hooks/useToast';
 
 const MetaAdsBuilder: React.FC = () => {
-  const [websiteUrl, setWebsiteUrl] = useState('');
-  const [utmSource, setUtmSource] = useState('');
-  const [utmMedium, setUtmMedium] = useState('');
-  const [utmCampaign, setUtmCampaign] = useState('');
-  const [utmContent, setUtmContent] = useState('');
+  // Removed websiteUrl state since it's not needed
+  const [utmSource, setUtmSource] = useState('{{site_source_name}}');
+  const [utmMedium, setUtmMedium] = useState('paid_social');
+  const [utmCampaign, setUtmCampaign] = useState('{{campaign.name}}');
+  const [utmContent, setUtmContent] = useState('{{ad.name}}');
   
   // Individual optional parameter toggles - REMOVED UTM_TERM
-  const [includeUtmContent, setIncludeUtmContent] = useState(false);
+  const [includeUtmContent, setIncludeUtmContent] = useState(true); // Default to true for Meta ads
   
-  // Meta-specific parameters
-  const [selectedParams, setSelectedParams] = useState<Record<string, boolean>>({});
+  // Meta-specific parameters - Pre-select the standard ones by default
+  const [selectedParams, setSelectedParams] = useState<Record<string, boolean>>({
+    placement: true,
+    publisher_platform: true,
+    campaign_id: true,
+    ad_id: true,
+    adset_id: true,
+    device_type: true,
+    targeting: true,
+    adset_name: true
+  });
+  
   const [customParams, setCustomParams] = useState<Array<{key: string, value: string}>>([]);
-  const [generatedUrl, setGeneratedUrl] = useState('');
-  const [copiedUrl, setCopiedUrl] = useState(false);
+  const [generatedString, setGeneratedString] = useState('');
+  const [copiedString, setCopiedString] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -78,6 +88,12 @@ const MetaAdsBuilder: React.FC = () => {
   const mediumOptions = useMemo(() => [
     // Standard Mediums - Most common for Meta ads
     { 
+      value: 'paid_social', 
+      label: 'paid_social', 
+      category: 'Standard Mediums',
+      description: 'Paid social media traffic - Recommended for Meta ads'
+    },
+    { 
       value: 'paid', 
       label: 'paid', 
       category: 'Standard Mediums',
@@ -94,12 +110,6 @@ const MetaAdsBuilder: React.FC = () => {
       label: 'social', 
       category: 'Standard Mediums',
       description: 'Social media traffic - Organic social classification'
-    },
-    { 
-      value: 'paidsocial', 
-      label: 'paidsocial', 
-      category: 'Standard Mediums',
-      description: 'Paid social media traffic - Clear paid social classification'
     },
     
     // Dynamic Mediums - Meta's automatic population
@@ -335,74 +345,64 @@ const MetaAdsBuilder: React.FC = () => {
     }
   }, [utmContent]);
 
-  // Generate URL
-  const generateUrl = useCallback(() => {
-    if (!websiteUrl) {
-      setGeneratedUrl('');
-      return;
-    }
+  // Generate parameter string (no URL needed)
+  const generateParameterString = useCallback(() => {
+    const params = [];
+    
+    // Add UTM parameters - REQUIRED FIELDS ALWAYS INCLUDED
+    if (utmSource) params.push(`utm_source=${utmSource}`);
+    if (utmMedium) params.push(`utm_medium=${utmMedium}`);
+    if (utmCampaign) params.push(`utm_campaign=${utmCampaign}`);
+    
+    // Add optional UTM parameters only if individually enabled
+    if (includeUtmContent && utmContent) params.push(`utm_content=${utmContent}`);
 
-    try {
-      const url = new URL(websiteUrl);
-      const params = new URLSearchParams();
-
-      // Add UTM parameters - REQUIRED FIELDS ALWAYS INCLUDED
-      if (utmSource) params.append('utm_source', utmSource);
-      if (utmMedium) params.append('utm_medium', utmMedium);
-      if (utmCampaign) params.append('utm_campaign', utmCampaign);
-      
-      // Add optional UTM parameters only if individually enabled
-      if (includeUtmContent && utmContent) params.append('utm_content', utmContent);
-
-      // Add selected Meta parameters
-      Object.entries(selectedParams).forEach(([paramId, isSelected]) => {
-        if (isSelected) {
-          const param = metaParams.find(p => p.id === paramId);
-          if (param) {
-            params.append(paramId, param.value);
-          }
+    // Add selected Meta parameters
+    Object.entries(selectedParams).forEach(([paramId, isSelected]) => {
+      if (isSelected) {
+        const param = metaParams.find(p => p.id === paramId);
+        if (param) {
+          params.push(`${paramId}=${param.value}`);
         }
-      });
+      }
+    });
 
-      // Add custom parameters
-      customParams.forEach(param => {
-        if (param.key && param.value) {
-          params.append(param.key, param.value);
-        }
-      });
+    // Add custom parameters
+    customParams.forEach(param => {
+      if (param.key && param.value) {
+        params.push(`${param.key}=${param.value}`);
+      }
+    });
 
-      const finalUrl = params.toString() ? `${url.origin}${url.pathname}?${params.toString()}` : websiteUrl;
-      setGeneratedUrl(finalUrl);
-    } catch (error) {
-      setGeneratedUrl('Invalid URL format');
-    }
-  }, [websiteUrl, utmSource, utmMedium, utmCampaign, utmContent, includeUtmContent, selectedParams, customParams, metaParams]);
+    const finalString = params.join('&');
+    setGeneratedString(finalString);
+  }, [utmSource, utmMedium, utmCampaign, utmContent, includeUtmContent, selectedParams, customParams, metaParams]);
 
   // Auto-generate when parameters change
   React.useEffect(() => {
-    generateUrl();
-  }, [generateUrl]);
+    generateParameterString();
+  }, [generateParameterString]);
 
   // Copy to clipboard
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(generatedUrl);
-      setCopiedUrl(true);
-      setTimeout(() => setCopiedUrl(false), 2000);
-      success('URL copied to clipboard!');
+      await navigator.clipboard.writeText(generatedString);
+      setCopiedString(true);
+      setTimeout(() => setCopiedString(false), 2000);
+      success('Parameter string copied to clipboard!');
     } catch (err) {
-      error('Failed to copy URL');
+      error('Failed to copy parameter string');
       console.error('Failed to copy:', err);
     }
   };
 
-  // Copy current generated URL (for loaded template preview)
+  // Copy current generated string (for loaded template preview)
   const copyCurrentTemplate = async () => {
     try {
-      await navigator.clipboard.writeText(generatedUrl);
-      success('Current template URL copied to clipboard!');
+      await navigator.clipboard.writeText(generatedString);
+      success('Current parameter string copied to clipboard!');
     } catch (err) {
-      error('Failed to copy template URL');
+      error('Failed to copy parameter string');
     }
   };
 
@@ -429,7 +429,7 @@ const MetaAdsBuilder: React.FC = () => {
     }
     
     const template = {
-      websiteUrl, utmSource, utmMedium, utmCampaign, utmContent,
+      utmSource, utmMedium, utmCampaign, utmContent,
       includeUtmContent, // Save individual toggles
       selectedParams, customParams, timestamp: Date.now()
     };
@@ -440,7 +440,7 @@ const MetaAdsBuilder: React.FC = () => {
     
     success(`Template "${templateName}" saved successfully!`);
     setTemplateName('');
-  }, [templateName, websiteUrl, utmSource, utmMedium, utmCampaign, utmContent, includeUtmContent, selectedParams, customParams, savedTemplates, success, error]);
+  }, [templateName, utmSource, utmMedium, utmCampaign, utmContent, includeUtmContent, selectedParams, customParams, savedTemplates, success, error]);
 
   const loadTemplate = useCallback(() => {
     if (!selectedTemplate || !savedTemplates[selectedTemplate]) {
@@ -449,14 +449,13 @@ const MetaAdsBuilder: React.FC = () => {
     }
     
     const template = savedTemplates[selectedTemplate];
-    setWebsiteUrl(template.websiteUrl);
     setUtmSource(template.utmSource);
     setUtmMedium(template.utmMedium);
     setUtmCampaign(template.utmCampaign);
     setUtmContent(template.utmContent);
     
     // Load individual toggles (with fallback for old templates)
-    setIncludeUtmContent(template.includeUtmContent ?? false);
+    setIncludeUtmContent(template.includeUtmContent ?? true);
     
     setSelectedParams(template.selectedParams || {});
     setCustomParams(template.customParams || []);
@@ -492,13 +491,21 @@ const MetaAdsBuilder: React.FC = () => {
 
   // Reset all fields
   const resetFields = useCallback(() => {
-    setWebsiteUrl('');
-    setUtmSource('');
-    setUtmMedium('');
-    setUtmCampaign('');
-    setUtmContent('');
-    setIncludeUtmContent(false);
-    setSelectedParams({});
+    setUtmSource('{{site_source_name}}');
+    setUtmMedium('paid_social');
+    setUtmCampaign('{{campaign.name}}');
+    setUtmContent('{{ad.name}}');
+    setIncludeUtmContent(true);
+    setSelectedParams({
+      placement: true,
+      publisher_platform: true,
+      campaign_id: true,
+      ad_id: true,
+      adset_id: true,
+      device_type: true,
+      targeting: true,
+      adset_name: true
+    });
     setCustomParams([]);
     setLoadedTemplateName('');
     success('Form reset successfully!');
@@ -552,10 +559,10 @@ const MetaAdsBuilder: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2 flex items-center gap-2">
               <Play className="w-5 h-5" />
-              Meta Ads Tracking Tutorial
+              Meta Ads Parameter Builder
             </h3>
             <p className="text-blue-700 dark:text-blue-300 text-sm">
-              Learn how to set up dynamic UTM parameters for Facebook and Instagram ads
+              Generate URL parameter strings for Meta's "URL Parameters" field - no website URL needed
             </p>
           </div>
           <Button
@@ -573,7 +580,7 @@ const MetaAdsBuilder: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
             <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-semibold">Meta Ads Tracking Tutorial</h3>
+              <h3 className="text-lg font-semibold">Meta Ads Parameter Tutorial</h3>
               <Button onClick={() => setShowVideoModal(false)} variant="ghost" icon={X} size="sm" />
             </div>
             <div className="p-6">
@@ -581,10 +588,10 @@ const MetaAdsBuilder: React.FC = () => {
                 <div className="text-center">
                   <Play className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-600 dark:text-gray-400 text-lg font-medium">
-                    Meta Ads Tutorial Placeholder
+                    Meta Ads Parameter Tutorial Placeholder
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-                    Replace with your Meta Ads tracking tutorial video
+                    Replace with your Meta Ads parameter tutorial video
                   </p>
                 </div>
               </div>
@@ -592,23 +599,6 @@ const MetaAdsBuilder: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Website URL */}
-      <Accordion 
-        title="Website URL" 
-        icon={<Globe className="w-5 h-5" />}
-        badge={<Badge variant="info" size="sm">Required</Badge>}
-        defaultOpen={true}
-      >
-        <Input
-          label="Website URL"
-          placeholder="https://www.yourwebsite.com"
-          value={websiteUrl}
-          onChange={(e) => setWebsiteUrl(e.target.value)}
-          required
-          tooltip="Your full landing page URL"
-        />
-      </Accordion>
 
       {/* UTM Parameters - REMOVED ACCORDION WRAPPER */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
@@ -649,7 +639,7 @@ const MetaAdsBuilder: React.FC = () => {
               options={mediumOptions}
               value={utmMedium}
               onChange={setUtmMedium}
-              placeholder="e.g., paid or {{placement}}"
+              placeholder="e.g., paid_social or {{placement}}"
               searchable
               clearable
               allowCustom
@@ -657,7 +647,7 @@ const MetaAdsBuilder: React.FC = () => {
               className="w-full"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Meta may set this to 'paid'
+              Recommended: paid_social for Meta ads
             </p>
           </div>
 
@@ -720,28 +710,41 @@ const MetaAdsBuilder: React.FC = () => {
         </div>
       </div>
 
-      {/* Generated URL - MOVED HERE ABOVE THE FOLD */}
+      {/* Generated Parameter String - MOVED HERE ABOVE THE FOLD */}
       <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl p-6 border-2 border-blue-200 dark:border-blue-800 shadow-lg">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-blue-900 dark:text-blue-100 flex items-center gap-2">
             <Zap className="w-6 h-6" />
-            Generated Meta Ads URL
+            Generated Meta Ads Parameter String
           </h2>
           <Button
             onClick={copyToClipboard}
-            disabled={!generatedUrl || generatedUrl === 'Invalid URL format'}
-            icon={copiedUrl ? Check : Copy}
-            variant={copiedUrl ? 'success' : 'primary'}
+            disabled={!generatedString}
+            icon={copiedString ? Check : Copy}
+            variant={copiedString ? 'success' : 'primary'}
             size="lg"
           >
-            {copiedUrl ? 'Copied!' : 'Copy URL'}
+            {copiedString ? 'Copied!' : 'Copy Parameters'}
           </Button>
         </div>
         
         <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-700 shadow-inner">
           <code className="text-sm break-all text-gray-800 dark:text-gray-200 font-mono leading-relaxed">
-            {generatedUrl || 'Enter website URL and parameters to generate URL...'}
+            {generatedString || 'Configure parameters to generate string...'}
           </code>
+        </div>
+        
+        <div className="mt-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+          <div className="flex items-start gap-2">
+            <Settings className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-blue-800 dark:text-blue-200">Usage Instructions</p>
+              <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                Copy this parameter string and paste it into Meta's "URL Parameters" field in your ad campaign setup. 
+                It will be automatically appended to your destination URLs.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -749,7 +752,7 @@ const MetaAdsBuilder: React.FC = () => {
       <Accordion 
         title="Meta Dynamic Parameters" 
         icon={<Target className="w-5 h-5" />}
-        defaultOpen={false}
+        defaultOpen={true}
       >
         {/* Search and Filter */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -851,7 +854,7 @@ const MetaAdsBuilder: React.FC = () => {
                 <div className="flex-1">
                   <Input
                     label="Parameter Key"
-                    placeholder="e.g., ad_id"
+                    placeholder="e.g., custom_param"
                     value={param.key}
                     onChange={(e) => updateCustomParam(index, 'key', e.target.value)}
                   />
@@ -859,7 +862,7 @@ const MetaAdsBuilder: React.FC = () => {
                 <div className="flex-1">
                   <Input
                     label="Parameter Value"
-                    placeholder="e.g., {{ad.id}}"
+                    placeholder="e.g., {{custom.value}}"
                     value={param.value}
                     onChange={(e) => updateCustomParam(index, 'value', e.target.value)}
                   />
@@ -930,7 +933,7 @@ const MetaAdsBuilder: React.FC = () => {
         </div>
 
         {/* LOADED TEMPLATE PREVIEW */}
-        {loadedTemplateName && generatedUrl && (
+        {loadedTemplateName && generatedString && (
           <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100">
@@ -943,16 +946,16 @@ const MetaAdsBuilder: React.FC = () => {
                 icon={Copy}
                 className="text-blue-600 hover:text-blue-700"
               >
-                Copy URL
+                Copy String
               </Button>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-200 dark:border-blue-700">
               <code className="text-sm break-all text-gray-800 dark:text-gray-200 font-mono leading-relaxed">
-                {generatedUrl}
+                {generatedString}
               </code>
             </div>
             <p className="text-xs text-blue-700 dark:text-blue-300 mt-2">
-              ✅ Template loaded successfully! This shows the current generated URL based on the loaded parameters.
+              ✅ Template loaded successfully! This shows the current generated parameter string.
             </p>
           </div>
         )}
