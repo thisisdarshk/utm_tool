@@ -85,30 +85,6 @@ const Header: React.FC = () => {
       </div>
       
       <div className="flex items-center gap-3">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleExport}
-          icon={Download}
-          tooltip="Export configuration"
-          className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-        >
-          Export
-        </Button>
-        
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleImport}
-          icon={Upload}
-          tooltip="Import configuration"
-          className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-        >
-          Import
-        </Button>
-        
-        <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-2" />
-        
         <ThemeToggle />
       </div>
     </header>
