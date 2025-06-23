@@ -1,5 +1,4 @@
 import React from 'react';
-import ThemeToggle from '../common/ThemeToggle';
 
 const Header: React.FC = () => {
   return (
@@ -30,10 +29,6 @@ const Header: React.FC = () => {
             Professional marketing campaign tracking tool
           </p>
         </div>
-      </div>
-      
-      <div className="flex items-center gap-3">
-        <ThemeToggle />
       </div>
     </header>
   );
