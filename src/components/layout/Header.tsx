@@ -1,59 +1,7 @@
 import React from 'react';
-import { Settings, Download, Upload, Save, Clock, Play } from 'lucide-react';
 import ThemeToggle from '../common/ThemeToggle';
-import Button from '../common/Button';
-import { useUtm } from '../../contexts/UtmContext';
-import { useToast } from '../../hooks/useToast';
 
 const Header: React.FC = () => {
-  const { exportData, importData } = useUtm();
-  const { success, error } = useToast();
-
-  const handleExport = () => {
-    try {
-      const data = exportData();
-      const blob = new Blob([data], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `utm-builder-export-${new Date().toISOString().split('T')[0]}.json`;
-      link.click();
-      URL.revokeObjectURL(url);
-      success('Configuration exported successfully!');
-    } catch (err) {
-      error('Failed to export configuration');
-      console.error('Export error:', err);
-    }
-  };
-
-  const handleImport = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          try {
-            const data = e.target?.result as string;
-            const importSuccess = importData(data);
-            if (importSuccess) {
-              success('Configuration imported successfully!');
-            } else {
-              error('Failed to import configuration - invalid format');
-            }
-          } catch (err) {
-            error('Failed to import configuration');
-            console.error('Import error:', err);
-          }
-        };
-        reader.readAsText(file);
-      }
-    };
-    input.click();
-  };
-
   return (
     <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 py-8 border-b border-gray-200/60 dark:border-gray-700/60">
       <div className="flex items-center gap-4">
