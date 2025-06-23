@@ -17,17 +17,8 @@ const MetaAdsBuilder: React.FC = () => {
   // Individual optional parameter toggles - REMOVED UTM_TERM
   const [includeUtmContent, setIncludeUtmContent] = useState(true); // Default to true for Meta ads
   
-  // Meta-specific parameters - Pre-select the standard ones by default
-  const [selectedParams, setSelectedParams] = useState<Record<string, boolean>>({
-    placement: true,
-    publisher_platform: true,
-    campaign_id: true,
-    ad_id: true,
-    adset_id: true,
-    device_type: true,
-    targeting: true,
-    adset_name: true
-  });
+  // Meta-specific parameters - REMOVED PRE-SELECTED PARAMETERS
+  const [selectedParams, setSelectedParams] = useState<Record<string, boolean>>({});
   
   const [customParams, setCustomParams] = useState<Array<{key: string, value: string}>>([]);
   const [generatedString, setGeneratedString] = useState('');
@@ -496,16 +487,7 @@ const MetaAdsBuilder: React.FC = () => {
     setUtmCampaign('{{campaign.name}}');
     setUtmContent('{{ad.name}}');
     setIncludeUtmContent(true);
-    setSelectedParams({
-      placement: true,
-      publisher_platform: true,
-      campaign_id: true,
-      ad_id: true,
-      adset_id: true,
-      device_type: true,
-      targeting: true,
-      adset_name: true
-    });
+    setSelectedParams({}); // RESET TO EMPTY OBJECT
     setCustomParams([]);
     setLoadedTemplateName('');
     success('Form reset successfully!');
