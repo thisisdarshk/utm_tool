@@ -8,7 +8,6 @@ import Badge from '../common/Badge';
 import Card from '../common/Card';
 import ParameterValidator from '../features/ParameterValidator';
 import UrlPreview from '../features/UrlPreview';
-import QuickActions from '../features/QuickActions';
 import { useToast } from '../../hooks/useToast';
 import { predictGA4Channel } from '../../utils/validation';
 import { SOURCE_CATEGORIES, getSourceCategory } from '../../data/sourceCategories';
@@ -871,27 +870,6 @@ const GA4Builder: React.FC = () => {
         )}
       </Accordion>
 
-      {/* Quick Actions */}
-      <QuickActions
-        generatedUrl={generatedUrl}
-        onReset={resetFields}
-        onSave={saveTemplate}
-        onExport={() => {
-          const data = {
-            baseUrl, utmSource, utmMedium, utmCampaign, utmTerm, utmContent,
-            includeUtmTerm, includeUtmContent, selectedParams, customParams,
-            spaceEncoding, timestamp: Date.now()
-          };
-          const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'ga4-utm-config.json';
-          a.click();
-          URL.revokeObjectURL(url);
-          success('Configuration exported successfully!');
-        }}
-      />
 
       {/* Help Section */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
