@@ -419,12 +419,14 @@ const GA4Builder: React.FC = () => {
       )}
 
       {/* Base URL & UTM Parameters */}
-      <Accordion 
-        title="Base URL & UTM Parameters" 
-        icon={<Globe className="w-5 h-5" />}
-        badge={<Badge variant="info" size="sm">Required</Badge>}
-        defaultOpen={true}
-      >
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Globe className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Base URL & UTM Parameters
+          </h3>
+          <Badge variant="info" size="sm">Required</Badge>
+        </div>
         <div className="space-y-6">
           {/* Base URL */}
           <Input
@@ -543,7 +545,7 @@ const GA4Builder: React.FC = () => {
             </div>
           </div>
         </div>
-      </Accordion>
+      </div>
 
       {/* Generated URL Preview */}
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-6 border-2 border-blue-200 dark:border-blue-800 shadow-lg">

@@ -532,12 +532,14 @@ const GoogleAdsBuilder: React.FC = () => {
       )}
 
       {/* Base URL & UTM Parameters - STREAMLINED DESIGN */}
-      <Accordion 
-        title="Base URL & UTM Parameters" 
-        icon={<Globe className="w-5 h-5" />}
-        badge={<Badge variant="info" size="sm">Required</Badge>}
-        defaultOpen={true}
-      >
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Globe className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Base URL & UTM Parameters
+          </h3>
+          <Badge variant="info" size="sm">Required</Badge>
+        </div>
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Base URL (Dynamic)
@@ -634,7 +636,7 @@ const GoogleAdsBuilder: React.FC = () => {
             </div>
           </div>
         </div>
-      </Accordion>
+      </div>
 
       {/* Generated Template - MOVED HERE ABOVE THE FOLD */}
       <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border-2 border-green-200 dark:border-green-800 shadow-lg">
