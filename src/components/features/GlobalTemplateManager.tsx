@@ -33,19 +33,19 @@ const MetaLogo = ({ size = 16 }: { size?: number }) => (
 );
 
 const TikTokLogo = ({ size = 16 }: { size?: number }) => (
-  <img src="/tiktok-logo-2-3.svg" alt="TikTok" width={size} height={size} />
+  <img src="/tiktok-logo-2-3.svg" alt="TikTok" width={size} height={size} className="object-contain" />
 );
 
 const RedditLogo = ({ size = 16 }: { size?: number }) => (
-  <img src="/reddit-4.svg" alt="Reddit" width={size} height={size} />
+  <img src="/reddit-4.svg" alt="Reddit" width={size} height={size} className="object-contain" />
 );
 
 const PinterestLogo = ({ size = 16 }: { size?: number }) => (
-  <img src="/pinterest-2-1.svg" alt="Pinterest" width={size} height={size} />
+  <img src="/pinterest-2-1.svg" alt="Pinterest" width={size} height={size} className="object-contain" />
 );
 
 const SnapchatLogo = ({ size = 16 }: { size?: number }) => (
-  <img src="/snapchat-1.svg" alt="Snapchat" width={size} height={size} />
+  <img src="/snapchat-1.svg" alt="Snapchat" width={size} height={size} className="object-contain" />
 );
 
 const GA4Logo = ({ size = 16 }: { size?: number }) => (
@@ -56,7 +56,7 @@ const GA4Logo = ({ size = 16 }: { size?: number }) => (
 );
 
 const MetaAdsLogo = ({ size = 16 }: { size?: number }) => (
-  <img src="/facebook-2020-2-1.svg" alt="Meta" width={size} height={size} />
+  <img src="/facebook-2020-2-1.svg" alt="Meta" width={size} height={size} className="object-contain" />
 );
 
 interface GlobalTemplate {

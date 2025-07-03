@@ -29,19 +29,19 @@ const MetaLogo = ({ size = 20 }: { size?: number }) => (
 );
 
 const TikTokLogo = ({ size = 20 }: { size?: number }) => (
-  <img src="/tiktok-logo-2-3.svg" alt="TikTok" width={size} height={size} />
+  <img src="/tiktok-logo-2-3.svg" alt="TikTok" width={size} height={size} className="object-contain" />
 );
 
 const RedditLogo = ({ size = 20 }: { size?: number }) => (
-  <img src="/reddit-4.svg" alt="Reddit" width={size} height={size} />
+  <img src="/reddit-4.svg" alt="Reddit" width={size} height={size} className="object-contain" />
 );
 
 const PinterestLogo = ({ size = 20 }: { size?: number }) => (
-  <img src="/pinterest-2-1.svg" alt="Pinterest" width={size} height={size} />
+  <img src="/pinterest-2-1.svg" alt="Pinterest" width={size} height={size} className="object-contain" />
 );
 
 const SnapchatLogo = ({ size = 20 }: { size?: number }) => (
-  <img src="/snapchat-1.svg" alt="Snapchat" width={size} height={size} />
+  <img src="/snapchat-1.svg" alt="Snapchat" width={size} height={size} className="object-contain" />
 );
 
 const GA4Logo = ({ size = 20 }: { size?: number }) => (
