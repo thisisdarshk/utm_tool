@@ -8,15 +8,16 @@ import Badge from '../common/Badge';
 import { useToast } from '../../hooks/useToast';
 
 const RedditBuilder: React.FC = () => {
+  // Reddit-Recommended UTM Mapping
   const [utmSource, setUtmSource] = useState('reddit');
-  const [utmMedium, setUtmMedium] = useState('paid_social');
-  const [utmCampaign, setUtmCampaign] = useState('{{campaign_name}}');
-  const [utmContent, setUtmContent] = useState('{{ad_name}}');
+  const [utmMedium, setUtmMedium] = useState('{{ADVERTISER_ID}}');
+  const [utmCampaign, setUtmCampaign] = useState('{{CAMPAIGN_ID}}-{{ADGROUP_NAME}}');
+  const [utmContent, setUtmContent] = useState('{{AD_ID}}-{{AD_NAME}}');
   
   // Individual optional parameter toggles
   const [includeUtmContent, setIncludeUtmContent] = useState(true);
   
-  // Reddit-specific parameters
+  // Reddit-specific parameters (optional additional tracking)
   const [selectedParams, setSelectedParams] = useState<Record<string, boolean>>({});
   
   const [customParams, setCustomParams] = useState<Array<{key: string, value: string}>>([]);
@@ -31,223 +32,140 @@ const RedditBuilder: React.FC = () => {
   const [loadedTemplateName, setLoadedTemplateName] = useState('');
   const { success, error } = useToast();
 
-  // Reddit-specific source options
+  // Reddit-specific source options (following Reddit recommendations)
   const sourceOptions = useMemo(() => [
     { 
       value: 'reddit', 
       label: 'reddit', 
-      category: 'Static Sources',
-      description: 'Reddit platform traffic - Use for static source tracking'
-    },
-    { 
-      value: '{{campaign_name}}', 
-      label: '{{campaign_name}}', 
-      category: 'Dynamic Sources',
-      description: 'Dynamic campaign name - Automatically populated by Reddit'
+      category: 'Reddit Recommended',
+      description: 'Reddit platform traffic - Official Reddit recommendation'
     }
   ], []);
 
-  // Reddit-specific medium options
+  // Reddit-specific medium options (following Reddit recommendations)
   const mediumOptions = useMemo(() => [
+    { 
+      value: '{{ADVERTISER_ID}}', 
+      label: '{{ADVERTISER_ID}}', 
+      category: 'Reddit Recommended',
+      description: 'Represents the advertiser (ad account) - Official Reddit recommendation'
+    },
     { 
       value: 'paid_social', 
       label: 'paid_social', 
-      category: 'Standard Mediums',
-      description: 'Paid social media traffic - Recommended for Reddit ads'
+      category: 'Alternative Mediums',
+      description: 'Paid social media traffic - Alternative option'
     },
     { 
       value: 'paid', 
       label: 'paid', 
-      category: 'Standard Mediums',
-      description: 'General paid traffic - Common for Reddit ads'
+      category: 'Alternative Mediums',
+      description: 'General paid traffic - Alternative option'
     },
     { 
       value: 'cpc', 
       label: 'cpc', 
-      category: 'Standard Mediums',
-      description: 'Cost per click campaigns - Traditional PPC tracking'
-    },
-    { 
-      value: 'social', 
-      label: 'social', 
-      category: 'Standard Mediums',
-      description: 'Social media traffic - Organic social classification'
+      category: 'Alternative Mediums',
+      description: 'Cost per click campaigns - Alternative option'
     }
   ], []);
 
-  // Reddit-specific campaign options
+  // Reddit-specific campaign options (following Reddit recommendations)
   const campaignOptions = useMemo(() => [
     { 
-      value: '{{campaign_name}}', 
-      label: '{{campaign_name}}', 
-      category: 'Campaign Info',
-      description: 'Dynamic campaign name from Reddit - Automatically populated'
+      value: '{{CAMPAIGN_ID}}-{{ADGROUP_NAME}}', 
+      label: '{{CAMPAIGN_ID}}-{{ADGROUP_NAME}}', 
+      category: 'Reddit Recommended',
+      description: 'Combines campaign ID with ad group name - Official Reddit recommendation'
     },
     { 
-      value: '{{campaign_id}}', 
-      label: '{{campaign_id}}', 
-      category: 'Campaign Info',
-      description: 'Dynamic campaign ID from Reddit - Unique identifier'
+      value: '{{CAMPAIGN_ID}}', 
+      label: '{{CAMPAIGN_ID}}', 
+      category: 'Alternative Options',
+      description: 'Campaign ID only - Alternative option'
+    },
+    { 
+      value: '{{ADGROUP_NAME}}', 
+      label: '{{ADGROUP_NAME}}', 
+      category: 'Alternative Options',
+      description: 'Ad group name only - Alternative option'
     }
   ], []);
     
-  // Reddit-specific content options
+  // Reddit-specific content options (following Reddit recommendations)
   const contentOptions = useMemo(() => [
     { 
-      value: '{{ad_name}}', 
-      label: '{{ad_name}}', 
-      category: 'Ad Level',
-      description: 'Dynamic ad name from Reddit - Individual ad identifier'
+      value: '{{AD_ID}}-{{AD_NAME}}', 
+      label: '{{AD_ID}}-{{AD_NAME}}', 
+      category: 'Reddit Recommended',
+      description: 'Combines ad ID with ad name to track creatives - Official Reddit recommendation'
     },
     { 
-      value: '{{ad_id}}', 
-      label: '{{ad_id}}', 
-      category: 'Ad Level',
-      description: 'Dynamic ad ID from Reddit - Unique ad identifier'
+      value: '{{AD_ID}}', 
+      label: '{{AD_ID}}', 
+      category: 'Alternative Options',
+      description: 'Ad ID only - Alternative option'
     },
     { 
-      value: '{{adgroup_name}}', 
-      label: '{{adgroup_name}}', 
-      category: 'Ad Group Level',
-      description: 'Dynamic ad group name from Reddit - Ad group identifier'
-    },
-    { 
-      value: '{{adgroup_id}}', 
-      label: '{{adgroup_id}}', 
-      category: 'Ad Group Level',
-      description: 'Dynamic ad group ID from Reddit - Unique ad group identifier'
-    },
-    { 
-      value: 'promoted_post', 
-      label: 'promoted_post', 
-      category: 'Creative Variants',
-      description: 'Promoted post - Use for promoted post tracking'
-    },
-    { 
-      value: 'banner_ad', 
-      label: 'banner_ad', 
-      category: 'Creative Variants',
-      description: 'Banner advertisement - Use for banner ad tracking'
-    },
-    { 
-      value: 'video_ad', 
-      label: 'video_ad', 
-      category: 'Creative Variants',
-      description: 'Video advertisement - Use for video ad tracking'
+      value: '{{AD_NAME}}', 
+      label: '{{AD_NAME}}', 
+      category: 'Alternative Options',
+      description: 'Ad name only - Alternative option'
     }
   ], []);
 
-  // Reddit-specific parameters
+  // Reddit optional additional tracking parameters (as mentioned in your context)
   const redditParams = useMemo(() => [
-    // Campaign Level Parameters
+    // Optional Additional Tracking Parameters for deeper analysis
     { 
-      id: 'campaign_id', 
-      value: '{{campaign_id}}', 
-      label: 'Campaign ID', 
-      category: 'campaign', 
-      description: 'Unique campaign identifier from Reddit',
+      id: 'creative_id', 
+      value: '{{CREATIVE_ID}}', 
+      label: 'Creative ID', 
+      category: 'optional', 
+      description: 'Creative ID for deeper analysis in BigQuery or custom dashboards',
       availability: 'All Reddit campaigns',
-      example: 't3_1234567890'
+      example: 't3_1234567890',
+      note: 'Not officially mapped to UTMs by Reddit'
+    },
+    { 
+      id: 'post_id', 
+      value: '{{POST_ID}}', 
+      label: 'Post ID', 
+      category: 'optional', 
+      description: 'Post ID for deeper analysis in BigQuery or custom dashboards',
+      availability: 'All Reddit campaigns',
+      example: 't3_0987654321',
+      note: 'Not officially mapped to UTMs by Reddit'
+    },
+    { 
+      id: 'adgroup_id', 
+      value: '{{ADGROUP_ID}}', 
+      label: 'Ad Group ID', 
+      category: 'optional', 
+      description: 'Ad group ID for deeper analysis in BigQuery or custom dashboards',
+      availability: 'All Reddit campaigns',
+      example: 't5_1122334455',
+      note: 'Not officially mapped to UTMs by Reddit'
     },
     { 
       id: 'campaign_name', 
-      value: '{{campaign_name}}', 
+      value: '{{CAMPAIGN_NAME}}', 
       label: 'Campaign Name', 
-      category: 'campaign', 
-      description: 'Campaign name from Reddit',
+      category: 'optional', 
+      description: 'Campaign name for deeper analysis in BigQuery or custom dashboards',
       availability: 'All Reddit campaigns',
-      example: 'Holiday_Promotion_2025'
-    },
-    
-    // Ad Group Level Parameters
-    { 
-      id: 'adgroup_id', 
-      value: '{{adgroup_id}}', 
-      label: 'Ad Group ID', 
-      category: 'adgroup', 
-      description: 'Unique ad group identifier from Reddit',
-      availability: 'All Reddit campaigns',
-      example: 't5_9876543210'
-    },
-    { 
-      id: 'adgroup_name', 
-      value: '{{adgroup_name}}', 
-      label: 'Ad Group Name', 
-      category: 'adgroup', 
-      description: 'Ad group name from Reddit - useful for targeting analysis',
-      availability: 'All Reddit campaigns',
-      example: 'Tech_Enthusiasts_25-45'
-    },
-    
-    // Ad Level Parameters
-    { 
-      id: 'ad_id', 
-      value: '{{ad_id}}', 
-      label: 'Ad ID', 
-      category: 'ad', 
-      description: 'Unique ad identifier from Reddit',
-      availability: 'All Reddit campaigns',
-      example: 't3_1122334455'
+      example: 'Holiday_Promotion_2025',
+      note: 'Not officially mapped to UTMs by Reddit'
     },
     { 
       id: 'ad_name', 
-      value: '{{ad_name}}', 
+      value: '{{AD_NAME}}', 
       label: 'Ad Name', 
-      category: 'ad', 
-      description: 'Ad name from Reddit - useful for creative analysis',
+      category: 'optional', 
+      description: 'Ad name for deeper analysis in BigQuery or custom dashboards',
       availability: 'All Reddit campaigns',
-      example: 'Promoted_Post_Tech_News'
-    },
-    
-    // Subreddit & Targeting Parameters
-    { 
-      id: 'subreddit', 
-      value: '{{subreddit}}', 
-      label: 'Subreddit', 
-      category: 'targeting', 
-      description: 'Subreddit where ad was displayed',
-      availability: 'All Reddit campaigns',
-      example: 'technology, gaming, news'
-    },
-    { 
-      id: 'audience_type', 
-      value: '{{audience_type}}', 
-      label: 'Audience Type', 
-      category: 'targeting', 
-      description: 'Type of audience targeting used',
-      availability: 'All Reddit campaigns',
-      example: 'interest, lookalike, custom'
-    },
-    
-    // Device & Platform Parameters
-    { 
-      id: 'device_type', 
-      value: '{{device_type}}', 
-      label: 'Device Type', 
-      category: 'device', 
-      description: 'Device type where ad was clicked',
-      availability: 'All Reddit campaigns',
-      example: 'mobile, desktop'
-    },
-    { 
-      id: 'platform', 
-      value: '{{platform}}', 
-      label: 'Platform', 
-      category: 'device', 
-      description: 'Reddit platform where ad was displayed',
-      availability: 'All Reddit campaigns',
-      example: 'reddit_app, reddit_web'
-    },
-    
-    // Performance Parameters
-    { 
-      id: 'bid_strategy', 
-      value: '{{bid_strategy}}', 
-      label: 'Bid Strategy', 
-      category: 'performance', 
-      description: 'Bidding strategy used for the campaign',
-      availability: 'All Reddit campaigns',
-      example: 'cpc, cpm, cpa'
+      example: 'Promoted_Post_Tech_News',
+      note: 'Not officially mapped to UTMs by Reddit'
     }
   ], []);
 
@@ -268,7 +186,7 @@ const RedditBuilder: React.FC = () => {
     
     // If enabling and field is empty, restore default
     if (enabled && !utmContent.trim()) {
-      setUtmContent('{{ad_name}}');
+      setUtmContent('{{AD_ID}}-{{AD_NAME}}');
     }
   }, [utmContent]);
 
@@ -419,9 +337,9 @@ const RedditBuilder: React.FC = () => {
   // Reset all fields
   const resetFields = useCallback(() => {
     setUtmSource('reddit');
-    setUtmMedium('paid_social');
-    setUtmCampaign('{{campaign_name}}');
-    setUtmContent('{{ad_name}}');
+    setUtmMedium('{{ADVERTISER_ID}}');
+    setUtmCampaign('{{CAMPAIGN_ID}}-{{ADGROUP_NAME}}');
+    setUtmContent('{{AD_ID}}-{{AD_NAME}}');
     setIncludeUtmContent(true);
     setSelectedParams({});
     setCustomParams([]);
@@ -444,23 +362,13 @@ const RedditBuilder: React.FC = () => {
   // Categories for filtering
   const categories = [
     { value: 'all', label: 'All Parameters' },
-    { value: 'campaign', label: 'Campaign Level' },
-    { value: 'adgroup', label: 'Ad Group Level' },
-    { value: 'ad', label: 'Ad Level' },
-    { value: 'targeting', label: 'Targeting & Subreddits' },
-    { value: 'device', label: 'Device & Platform' },
-    { value: 'performance', label: 'Performance' }
+    { value: 'optional', label: 'Optional Additional Tracking' }
   ];
 
   // Get category badge color
   const getCategoryBadge = (category: string) => {
     const badges = {
-      campaign: { variant: 'info' as const, label: 'Campaign' },
-      adgroup: { variant: 'success' as const, label: 'Ad Group' },
-      ad: { variant: 'warning' as const, label: 'Ad' },
-      targeting: { variant: 'default' as const, label: 'Targeting' },
-      device: { variant: 'info' as const, label: 'Device' },
-      performance: { variant: 'warning' as const, label: 'Performance' }
+      optional: { variant: 'warning' as const, label: 'Optional' }
     };
     
     const badge = badges[category as keyof typeof badges];
@@ -478,7 +386,7 @@ const RedditBuilder: React.FC = () => {
               Reddit Ads Parameter Builder
             </h3>
             <p className="text-orange-700 dark:text-orange-300 text-sm">
-              Generate URL parameter strings for Reddit's advertising platform
+              Generate URL parameter strings using Reddit's recommended UTM mapping
             </p>
           </div>
           <Button
@@ -516,17 +424,31 @@ const RedditBuilder: React.FC = () => {
         </div>
       )}
 
-      {/* UTM Parameters */}
+      {/* Reddit-Recommended UTM Parameters */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center gap-3 mb-6">
           <Target className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            UTM Parameters
+            Reddit-Recommended UTM Parameters
           </h3>
+          <Badge variant="success" size="sm">Official Mapping</Badge>
+        </div>
+
+        {/* Reddit Recommendation Notice */}
+        <div className="mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+          <div className="flex items-start gap-2">
+            <Settings className="w-5 h-5 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-orange-800 dark:text-orange-200">Reddit's Official UTM Mapping</p>
+              <p className="text-sm text-orange-700 dark:text-orange-300 mt-1">
+                This configuration follows Reddit's recommended UTM parameter mapping for optimal campaign tracking and analysis.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* REQUIRED UTM PARAMETERS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Campaign Source (utm_source) *
@@ -535,7 +457,7 @@ const RedditBuilder: React.FC = () => {
               options={sourceOptions}
               value={utmSource}
               onChange={setUtmSource}
-              placeholder="e.g., reddit"
+              placeholder="reddit"
               searchable
               clearable
               allowCustom
@@ -543,7 +465,7 @@ const RedditBuilder: React.FC = () => {
               className="w-full"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Reddit traffic source identifier
+              <strong>Purpose:</strong> Identifies Reddit as the traffic source
             </p>
           </div>
 
@@ -555,7 +477,7 @@ const RedditBuilder: React.FC = () => {
               options={mediumOptions}
               value={utmMedium}
               onChange={setUtmMedium}
-              placeholder="e.g., paid_social"
+              placeholder="{{ADVERTISER_ID}}"
               searchable
               clearable
               allowCustom
@@ -563,10 +485,12 @@ const RedditBuilder: React.FC = () => {
               className="w-full"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Recommended: paid_social for Reddit ads
+              <strong>Purpose:</strong> Represents the advertiser (ad account)
             </p>
           </div>
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Campaign Name (utm_campaign) *
@@ -575,53 +499,47 @@ const RedditBuilder: React.FC = () => {
               options={campaignOptions}
               value={utmCampaign}
               onChange={setUtmCampaign}
-              placeholder="e.g., tech_promotion or {{campaign_name}}"
+              placeholder="{{CAMPAIGN_ID}}-{{ADGROUP_NAME}}"
               searchable
               clearable
               allowCustom
               groupByCategory
               className="w-full"
             />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <strong>Purpose:</strong> Combines campaign ID with ad group name
+            </p>
           </div>
-        </div>
 
-        {/* OPTIONAL UTM PARAMETERS */}
-        <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-          <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            Optional UTM Parameters
-          </h4>
-          
-          <div className="grid grid-cols-1 gap-4">
-            {/* UTM Content */}
-            <div className="relative">
-              <div className="flex items-center gap-2 mb-2">
-                <input
-                  type="checkbox"
-                  id="include-utm-content"
-                  checked={includeUtmContent}
-                  onChange={(e) => handleUtmContentToggle(e.target.checked)}
-                  className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
-                />
-                <label htmlFor="include-utm-content" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                  Campaign Content (utm_content)
-                </label>
-              </div>
-              <Dropdown
-                options={contentOptions}
-                value={utmContent}
-                onChange={setUtmContent}
-                placeholder="e.g., promoted_post or {{ad_name}}"
-                searchable
-                clearable
-                allowCustom
-                groupByCategory
-                disabled={!includeUtmContent}
-                className={`w-full ${!includeUtmContent ? 'opacity-50' : ''}`}
+          {/* UTM Content - Optional but recommended */}
+          <div className="relative">
+            <div className="flex items-center gap-2 mb-2">
+              <input
+                type="checkbox"
+                id="include-utm-content"
+                checked={includeUtmContent}
+                onChange={(e) => handleUtmContentToggle(e.target.checked)}
+                className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
               />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Differentiate ads within the same campaign
-              </p>
+              <label htmlFor="include-utm-content" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                Campaign Content (utm_content)
+              </label>
             </div>
+            <Dropdown
+              options={contentOptions}
+              value={utmContent}
+              onChange={setUtmContent}
+              placeholder="{{AD_ID}}-{{AD_NAME}}"
+              searchable
+              clearable
+              allowCustom
+              groupByCategory
+              disabled={!includeUtmContent}
+              className={`w-full ${!includeUtmContent ? 'opacity-50' : ''}`}
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <strong>Purpose:</strong> Combines ad ID with ad name to track creatives
+            </p>
           </div>
         </div>
       </div>
@@ -650,26 +568,38 @@ const RedditBuilder: React.FC = () => {
           </code>
         </div>
         
+        {/* Example URL Section */}
         <div className="mt-4 p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
           <div className="flex items-start gap-2">
-            <Settings className="w-5 h-5 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+            <Globe className="w-5 h-5 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-orange-800 dark:text-orange-200">Usage Instructions</p>
-              <p className="text-sm text-orange-700 dark:text-orange-300 mt-1">
-                Copy this parameter string and paste it into Reddit's URL parameters field in your ad campaign setup. 
-                It will be automatically appended to your destination URLs.
-              </p>
+              <p className="text-sm font-medium text-orange-800 dark:text-orange-200">Example URL using Reddit's recommended values:</p>
+              <code className="text-xs text-orange-700 dark:text-orange-300 mt-1 block bg-orange-200 dark:bg-orange-800/30 p-2 rounded">
+                https://example.com/product123?utm_source=reddit&utm_medium={'{{ADVERTISER_ID}}'}&utm_campaign={'{{CAMPAIGN_ID}}'}-{'{{ADGROUP_NAME}}'}&utm_content={'{{AD_ID}}'}-{'{{AD_NAME}}'}
+              </code>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Reddit Dynamic Parameters */}
+      {/* Optional Additional Tracking Parameters */}
       <Accordion 
-        title="Reddit Dynamic Parameters" 
+        title="Optional Additional Tracking Parameters" 
         icon={<Target className="w-5 h-5" />}
-        defaultOpen={true}
+        defaultOpen={false}
       >
+        <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+          <div className="flex items-start gap-2">
+            <Settings className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">For Deeper Analysis</p>
+              <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                Although Reddit doesn't officially map these to UTMs, you can optionally include the following for deeper analysis (e.g., in BigQuery or custom dashboards).
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Search and Filter */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex-1">
@@ -696,7 +626,7 @@ const RedditBuilder: React.FC = () => {
         {/* Parameters Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredParams.map(param => (
-            <div key={param.id} className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+            <div key={param.id} className="flex items-start space-x-3 p-4 border border-yellow-200 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors">
               <input
                 type="checkbox"
                 id={param.id}
@@ -728,6 +658,9 @@ const RedditBuilder: React.FC = () => {
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">
                     Example: {param.example}
+                  </div>
+                  <div className="text-xs text-yellow-600 dark:text-yellow-400 italic">
+                    Note: {param.note}
                   </div>
                 </div>
               </div>
@@ -778,7 +711,7 @@ const RedditBuilder: React.FC = () => {
                 <div className="flex-1">
                   <Input
                     label="Parameter Value"
-                    placeholder="e.g., {{custom.value}}"
+                    placeholder="e.g., {{CUSTOM_VALUE}}"
                     value={param.value}
                     onChange={(e) => updateCustomParam(index, 'value', e.target.value)}
                   />
@@ -898,6 +831,17 @@ const RedditBuilder: React.FC = () => {
             <a href="https://advertising.reddithelp.com/en/categories/campaign-management/conversion-tracking" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
               <span>⚙️</span> Conversion Tracking Setup
             </a>
+          </div>
+        </div>
+
+        {/* Reddit UTM Mapping Reference */}
+        <div className="mt-6 p-4 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+          <h4 className="text-sm font-semibold text-orange-900 dark:text-orange-100 mb-3">Reddit's Official UTM Parameter Mapping</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-orange-800 dark:text-orange-200">
+            <div><strong>utm_source:</strong> <code className="bg-orange-200 dark:bg-orange-800/30 px-1 rounded">reddit</code> - Identifies Reddit as traffic source</div>
+            <div><strong>utm_medium:</strong> <code className="bg-orange-200 dark:bg-orange-800/30 px-1 rounded">{'{{ADVERTISER_ID}}'}</code> - Represents the advertiser (ad account)</div>
+            <div><strong>utm_campaign:</strong> <code className="bg-orange-200 dark:bg-orange-800/30 px-1 rounded">{'{{CAMPAIGN_ID}}'}-{'{{ADGROUP_NAME}}'}</code> - Combines campaign ID with ad group name</div>
+            <div><strong>utm_content:</strong> <code className="bg-orange-200 dark:bg-orange-800/30 px-1 rounded">{'{{AD_ID}}'}-{'{{AD_NAME}}'}</code> - Combines ad ID with ad name to track creatives</div>
           </div>
         </div>
       </div>
