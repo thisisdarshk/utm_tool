@@ -620,7 +620,7 @@ const SnapchatBuilder: React.FC = () => {
               className="w-full"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Uses Snapchat's {{campaign.name}} macro
+              Uses Snapchat's {'{{campaign.name}}'} macro
             </p>
           </div>
         </div>
@@ -948,20 +948,20 @@ const SnapchatBuilder: React.FC = () => {
         <div className="mt-6 p-4 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
           <h4 className="text-sm font-semibold text-yellow-900 dark:text-yellow-100 mb-3">Snapchat's 14 Official Dynamic URL Macros</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-yellow-800 dark:text-yellow-200">
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{campaign.id}}</code> - Campaign ID</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{campaign.name}}</code> - Campaign Name</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{adSet.id}}</code> - Ad Set ID</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{adSet.name}}</code> - Ad Set Name</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{ad.id}}</code> - Ad ID</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{ad.name}}</code> - Ad Name</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{creative.id}}</code> - Creative ID</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{creative.name}}</code> - Creative Name</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{site_source_name}}</code> - Source Placement</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{device_os}}</code> - Device OS</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{device_type}}</code> - Device Type</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{country}}</code> - User Country</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{language}}</code> - Device Language</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{city}}</code> - User City</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{campaign.id}}'}</code> - Campaign ID</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{campaign.name}}'}</code> - Campaign Name</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{adSet.id}}'}</code> - Ad Set ID</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{adSet.name}}'}</code> - Ad Set Name</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{ad.id}}'}</code> - Ad ID</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{ad.name}}'}</code> - Ad Name</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{creative.id}}'}</code> - Creative ID</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{creative.name}}'}</code> - Creative Name</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{site_source_name}}'}</code> - Source Placement</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{device_os}}'}</code> - Device OS</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{device_type}}'}</code> - Device Type</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{country}}'}</code> - User Country</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{language}}'}</code> - Device Language</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{city}}'}</code> - User City</div>
           </div>
         </div>
       </div>
