@@ -543,6 +543,51 @@ const GA4Builder: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Space Encoding Options */}
+          <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
+            <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              Space Encoding
+            </h4>
+            <div className="flex gap-4">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="spaceEncoding"
+                  value="percent"
+                  checked={spaceEncoding === 'percent'}
+                  onChange={(e) => setSpaceEncoding(e.target.value as 'percent')}
+                  className="mr-2"
+                />
+                Percent (%20)
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="spaceEncoding"
+                  value="plus"
+                  checked={spaceEncoding === 'plus'}
+                  onChange={(e) => setSpaceEncoding(e.target.value as 'plus')}
+                  className="mr-2"
+                />
+                Plus (+)
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="spaceEncoding"
+                  value="underscore"
+                  checked={spaceEncoding === 'underscore'}
+                  onChange={(e) => setSpaceEncoding(e.target.value as 'underscore')}
+                  className="mr-2"
+                />
+                Underscore (_)
+              </label>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+              Choose how spaces in parameter values should be encoded in the generated URL
+            </p>
+          </div>
         </div>
       </div>
 
@@ -737,56 +782,6 @@ const GA4Builder: React.FC = () => {
             ))}
           </div>
         )}
-      </Accordion>
-
-      {/* URL Options */}
-      <Accordion 
-        title="URL Options" 
-        icon={<Settings className="w-5 h-5" />}
-        defaultOpen={false}
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Space Encoding
-            </label>
-            <div className="flex gap-4">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="spaceEncoding"
-                  value="percent"
-                  checked={spaceEncoding === 'percent'}
-                  onChange={(e) => setSpaceEncoding(e.target.value as 'percent')}
-                  className="mr-2"
-                />
-                Percent (%20)
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="spaceEncoding"
-                  value="plus"
-                  checked={spaceEncoding === 'plus'}
-                  onChange={(e) => setSpaceEncoding(e.target.value as 'plus')}
-                  className="mr-2"
-                />
-                Plus (+)
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="spaceEncoding"
-                  value="underscore"
-                  checked={spaceEncoding === 'underscore'}
-                  onChange={(e) => setSpaceEncoding(e.target.value as 'underscore')}
-                  className="mr-2"
-                />
-                Underscore (_)
-              </label>
-            </div>
-          </div>
-        </div>
       </Accordion>
 
       {/* Template Management */}
