@@ -1125,7 +1125,7 @@ const PinterestBuilder: React.FC = () => {
             <div><strong>Base URL:</strong>
               <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{unescapedlpurl}'}</code>
               or
-              <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{lpurl}'}</code>
+              <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{lpurl}'}</code></div>
             <div><strong>utm_term:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{adgroupname}'}</code> - Identifies ad group</div>
             <div><strong>utm_content:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{adid}'}</code> - Pin or creative ID</div>
             <div><strong>device:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{device}'}</code> - c, m, t (Computer, Mobile, Tablet)</div>
