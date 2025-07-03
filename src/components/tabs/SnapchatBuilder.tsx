@@ -10,8 +10,8 @@ import { useToast } from '../../hooks/useToast';
 const SnapchatBuilder: React.FC = () => {
   const [utmSource, setUtmSource] = useState('snapchat');
   const [utmMedium, setUtmMedium] = useState('paid_social');
-  const [utmCampaign, setUtmCampaign] = useState('{{campaign_name}}');
-  const [utmContent, setUtmContent] = useState('{{ad_name}}');
+  const [utmCampaign, setUtmCampaign] = useState('{{campaign.name}}');
+  const [utmContent, setUtmContent] = useState('{{ad.name}}');
   
   // Individual optional parameter toggles
   const [includeUtmContent, setIncludeUtmContent] = useState(true);
@@ -40,10 +40,10 @@ const SnapchatBuilder: React.FC = () => {
       description: 'Snapchat platform traffic - Use for static source tracking'
     },
     { 
-      value: '{{campaign_name}}', 
-      label: '{{campaign_name}}', 
+      value: '{{site_source_name}}', 
+      label: '{{site_source_name}}', 
       category: 'Dynamic Sources',
-      description: 'Dynamic campaign name - Automatically populated by Snapchat'
+      description: 'Source placement (e.g., publisher/app name) - Official Snapchat macro'
     }
   ], []);
 
@@ -75,205 +75,214 @@ const SnapchatBuilder: React.FC = () => {
     }
   ], []);
 
-  // Snapchat-specific campaign options
+  // Snapchat-specific campaign options (using official macros)
   const campaignOptions = useMemo(() => [
     { 
-      value: '{{campaign_name}}', 
-      label: '{{campaign_name}}', 
+      value: '{{campaign.name}}', 
+      label: '{{campaign.name}}', 
       category: 'Campaign Info',
-      description: 'Dynamic campaign name from Snapchat - Automatically populated'
+      description: 'Campaign name - Official Snapchat macro'
     },
     { 
-      value: '{{campaign_id}}', 
-      label: '{{campaign_id}}', 
+      value: '{{campaign.id}}', 
+      label: '{{campaign.id}}', 
       category: 'Campaign Info',
-      description: 'Dynamic campaign ID from Snapchat - Unique identifier'
+      description: 'Unique identifier for the campaign - Official Snapchat macro'
     }
   ], []);
     
-  // Snapchat-specific content options
+  // Snapchat-specific content options (using official macros)
   const contentOptions = useMemo(() => [
     { 
-      value: '{{ad_name}}', 
-      label: '{{ad_name}}', 
+      value: '{{ad.name}}', 
+      label: '{{ad.name}}', 
       category: 'Ad Level',
-      description: 'Dynamic ad name from Snapchat - Individual ad identifier'
+      description: 'Name of the ad or creative - Official Snapchat macro'
     },
     { 
-      value: '{{ad_id}}', 
-      label: '{{ad_id}}', 
+      value: '{{ad.id}}', 
+      label: '{{ad.id}}', 
       category: 'Ad Level',
-      description: 'Dynamic ad ID from Snapchat - Unique ad identifier'
+      description: 'Identifier for the individual ad - Official Snapchat macro'
     },
     { 
-      value: '{{ad_squad_name}}', 
-      label: '{{ad_squad_name}}', 
-      category: 'Ad Squad Level',
-      description: 'Dynamic ad squad name from Snapchat - Ad squad identifier'
+      value: '{{adSet.name}}', 
+      label: '{{adSet.name}}', 
+      category: 'Ad Set Level',
+      description: 'Name of the ad set - Official Snapchat macro'
     },
     { 
-      value: '{{ad_squad_id}}', 
-      label: '{{ad_squad_id}}', 
-      category: 'Ad Squad Level',
-      description: 'Dynamic ad squad ID from Snapchat - Unique ad squad identifier'
+      value: '{{adSet.id}}', 
+      label: '{{adSet.id}}', 
+      category: 'Ad Set Level',
+      description: 'Identifier for the ad set (ad group) - Official Snapchat macro'
     },
     { 
-      value: 'snap_ad', 
-      label: 'snap_ad', 
-      category: 'Creative Variants',
-      description: 'Snap ad - Use for standard Snap ad tracking'
+      value: '{{creative.name}}', 
+      label: '{{creative.name}}', 
+      category: 'Creative Level',
+      description: 'Name of the creative asset - Official Snapchat macro'
     },
     { 
-      value: 'story_ad', 
-      label: 'story_ad', 
-      category: 'Creative Variants',
-      description: 'Story ad - Use for Story ad tracking'
-    },
-    { 
-      value: 'collection_ad', 
-      label: 'collection_ad', 
-      category: 'Creative Variants',
-      description: 'Collection ad - Use for Collection ad tracking'
-    },
-    { 
-      value: 'ar_lens', 
-      label: 'ar_lens', 
-      category: 'Creative Variants',
-      description: 'AR Lens - Use for AR Lens tracking'
+      value: '{{creative.id}}', 
+      label: '{{creative.id}}', 
+      category: 'Creative Level',
+      description: 'ID of the creative asset - Official Snapchat macro'
     }
   ], []);
 
-  // Snapchat-specific parameters
+  // Snapchat's 14 Official Dynamic URL Macros (from your table)
   const snapchatParams = useMemo(() => [
-    // Campaign Level Parameters
+    // Campaign Level Parameters - Official Snapchat Macros
     { 
       id: 'campaign_id', 
-      value: '{{campaign_id}}', 
+      value: '{{campaign.id}}', 
       label: 'Campaign ID', 
       category: 'campaign', 
-      description: 'Unique campaign identifier from Snapchat',
+      description: 'Unique identifier for the campaign',
       availability: 'All Snapchat campaigns',
-      example: '12345678-1234-1234-1234-123456789012'
+      example: '12345678-1234-1234-1234-123456789012',
+      isOfficial: true
     },
     { 
       id: 'campaign_name', 
-      value: '{{campaign_name}}', 
+      value: '{{campaign.name}}', 
       label: 'Campaign Name', 
       category: 'campaign', 
-      description: 'Campaign name from Snapchat',
+      description: 'Campaign name',
       availability: 'All Snapchat campaigns',
-      example: 'Summer_Launch_2025'
+      example: 'Summer_Launch_2025',
+      isOfficial: true
     },
     
-    // Ad Squad Level Parameters
+    // Ad Set Level Parameters - Official Snapchat Macros
     { 
-      id: 'ad_squad_id', 
-      value: '{{ad_squad_id}}', 
-      label: 'Ad Squad ID', 
-      category: 'adsquad', 
-      description: 'Unique ad squad identifier from Snapchat',
+      id: 'adset_id', 
+      value: '{{adSet.id}}', 
+      label: 'Ad Set ID', 
+      category: 'adset', 
+      description: 'Identifier for the ad set (ad group)',
       availability: 'All Snapchat campaigns',
-      example: '87654321-4321-4321-4321-210987654321'
+      example: '87654321-4321-4321-4321-210987654321',
+      isOfficial: true
     },
     { 
-      id: 'ad_squad_name', 
-      value: '{{ad_squad_name}}', 
-      label: 'Ad Squad Name', 
-      category: 'adsquad', 
-      description: 'Ad squad name from Snapchat - useful for targeting analysis',
+      id: 'adset_name', 
+      value: '{{adSet.name}}', 
+      label: 'Ad Set Name', 
+      category: 'adset', 
+      description: 'Name of the ad set',
       availability: 'All Snapchat campaigns',
-      example: 'Gen_Z_Interests_18-24'
+      example: 'Gen_Z_Interests_18-24',
+      isOfficial: true
     },
     
-    // Ad Level Parameters
+    // Ad Level Parameters - Official Snapchat Macros
     { 
       id: 'ad_id', 
-      value: '{{ad_id}}', 
+      value: '{{ad.id}}', 
       label: 'Ad ID', 
       category: 'ad', 
-      description: 'Unique ad identifier from Snapchat',
+      description: 'Identifier for the individual ad',
       availability: 'All Snapchat campaigns',
-      example: '11223344-5566-7788-9900-112233445566'
+      example: '11223344-5566-7788-9900-112233445566',
+      isOfficial: true
     },
     { 
       id: 'ad_name', 
-      value: '{{ad_name}}', 
+      value: '{{ad.name}}', 
       label: 'Ad Name', 
       category: 'ad', 
-      description: 'Ad name from Snapchat - useful for creative analysis',
+      description: 'Name of the ad or creative',
       availability: 'All Snapchat campaigns',
-      example: 'Video_Creative_A_Summer'
+      example: 'Video_Creative_A_Summer',
+      isOfficial: true
     },
     
-    // Creative & Format Parameters
+    // Creative Level Parameters - Official Snapchat Macros
     { 
       id: 'creative_id', 
-      value: '{{creative_id}}', 
+      value: '{{creative.id}}', 
       label: 'Creative ID', 
       category: 'creative', 
-      description: 'Unique creative identifier from Snapchat',
+      description: 'ID of the creative asset',
       availability: 'All Snapchat campaigns',
-      example: '99887766-5544-3322-1100-998877665544'
+      example: '99887766-5544-3322-1100-998877665544',
+      isOfficial: true
     },
     { 
-      id: 'ad_format', 
-      value: '{{ad_format}}', 
-      label: 'Ad Format', 
+      id: 'creative_name', 
+      value: '{{creative.name}}', 
+      label: 'Creative Name', 
       category: 'creative', 
-      description: 'Format of the Snapchat ad',
+      description: 'Name of the creative asset',
       availability: 'All Snapchat campaigns',
-      example: 'snap_ad, story_ad, collection'
+      example: 'Summer_Video_Creative_A',
+      isOfficial: true
     },
     
-    // Targeting & Audience Parameters
+    // Placement & Source Parameters - Official Snapchat Macros
     { 
-      id: 'audience_type', 
-      value: '{{audience_type}}', 
-      label: 'Audience Type', 
-      category: 'targeting', 
-      description: 'Type of audience targeting used',
+      id: 'site_source_name', 
+      value: '{{site_source_name}}', 
+      label: 'Site Source Name', 
+      category: 'placement', 
+      description: 'Source placement (e.g., publisher/app name)',
       availability: 'All Snapchat campaigns',
-      example: 'lookalike, custom, interest'
-    },
-    { 
-      id: 'placement', 
-      value: '{{placement}}', 
-      label: 'Placement', 
-      category: 'targeting', 
-      description: 'Snapchat placement where ad was shown',
-      availability: 'All Snapchat campaigns',
-      example: 'snap_feed, discover, story'
+      example: 'snapchat_app, discover_feed',
+      isOfficial: true
     },
     
-    // Device & Platform Parameters
+    // Device & Location Parameters - Official Snapchat Macros
+    { 
+      id: 'device_os', 
+      value: '{{device_os}}', 
+      label: 'Device OS', 
+      category: 'device', 
+      description: 'Device operating system (e.g., iOS, Android)',
+      availability: 'All Snapchat campaigns',
+      example: 'iOS, Android',
+      isOfficial: true
+    },
     { 
       id: 'device_type', 
       value: '{{device_type}}', 
       label: 'Device Type', 
       category: 'device', 
-      description: 'Device type where ad was clicked',
+      description: 'Type of device (e.g., iPhone, Android)',
       availability: 'All Snapchat campaigns',
-      example: 'mobile, tablet'
+      example: 'iPhone, Samsung Galaxy',
+      isOfficial: true
     },
     { 
-      id: 'os_type', 
-      value: '{{os_type}}', 
-      label: 'OS Type', 
-      category: 'device', 
-      description: 'Operating system of the device',
+      id: 'country', 
+      value: '{{country}}', 
+      label: 'Country', 
+      category: 'location', 
+      description: 'User\'s country based on IP',
       availability: 'All Snapchat campaigns',
-      example: 'ios, android'
+      example: 'US, CA, GB',
+      isOfficial: true
     },
-    
-    // Performance Parameters
     { 
-      id: 'bid_strategy', 
-      value: '{{bid_strategy}}', 
-      label: 'Bid Strategy', 
-      category: 'performance', 
-      description: 'Bidding strategy used for the campaign',
+      id: 'language', 
+      value: '{{language}}', 
+      label: 'Language', 
+      category: 'location', 
+      description: 'Device language',
       availability: 'All Snapchat campaigns',
-      example: 'auto_bid, target_cost, lowest_cost'
+      example: 'en, es, fr',
+      isOfficial: true
+    },
+    { 
+      id: 'city', 
+      value: '{{city}}', 
+      label: 'City', 
+      category: 'location', 
+      description: 'User\'s city based on IP',
+      availability: 'All Snapchat campaigns',
+      example: 'New York, Los Angeles, London',
+      isOfficial: true
     }
   ], []);
 
@@ -294,7 +303,7 @@ const SnapchatBuilder: React.FC = () => {
     
     // If enabling and field is empty, restore default
     if (enabled && !utmContent.trim()) {
-      setUtmContent('{{ad_name}}');
+      setUtmContent('{{ad.name}}');
     }
   }, [utmContent]);
 
@@ -446,8 +455,8 @@ const SnapchatBuilder: React.FC = () => {
   const resetFields = useCallback(() => {
     setUtmSource('snapchat');
     setUtmMedium('paid_social');
-    setUtmCampaign('{{campaign_name}}');
-    setUtmContent('{{ad_name}}');
+    setUtmCampaign('{{campaign.name}}');
+    setUtmContent('{{ad.name}}');
     setIncludeUtmContent(true);
     setSelectedParams({});
     setCustomParams([]);
@@ -471,24 +480,24 @@ const SnapchatBuilder: React.FC = () => {
   const categories = [
     { value: 'all', label: 'All Parameters' },
     { value: 'campaign', label: 'Campaign Level' },
-    { value: 'adsquad', label: 'Ad Squad Level' },
+    { value: 'adset', label: 'Ad Set Level' },
     { value: 'ad', label: 'Ad Level' },
-    { value: 'creative', label: 'Creative & Format' },
-    { value: 'targeting', label: 'Targeting & Placement' },
-    { value: 'device', label: 'Device & Platform' },
-    { value: 'performance', label: 'Performance' }
+    { value: 'creative', label: 'Creative Level' },
+    { value: 'placement', label: 'Placement & Source' },
+    { value: 'device', label: 'Device & OS' },
+    { value: 'location', label: 'Location & Language' }
   ];
 
   // Get category badge color
   const getCategoryBadge = (category: string) => {
     const badges = {
       campaign: { variant: 'info' as const, label: 'Campaign' },
-      adsquad: { variant: 'success' as const, label: 'Ad Squad' },
+      adset: { variant: 'success' as const, label: 'Ad Set' },
       ad: { variant: 'warning' as const, label: 'Ad' },
       creative: { variant: 'default' as const, label: 'Creative' },
-      targeting: { variant: 'info' as const, label: 'Targeting' },
+      placement: { variant: 'info' as const, label: 'Placement' },
       device: { variant: 'success' as const, label: 'Device' },
-      performance: { variant: 'warning' as const, label: 'Performance' }
+      location: { variant: 'warning' as const, label: 'Location' }
     };
     
     const badge = badges[category as keyof typeof badges];
@@ -506,7 +515,7 @@ const SnapchatBuilder: React.FC = () => {
               Snapchat Ads Parameter Builder
             </h3>
             <p className="text-yellow-700 dark:text-yellow-300 text-sm">
-              Generate URL parameter strings for Snapchat's advertising platform
+              Generate URL parameter strings using Snapchat's official 14 dynamic URL macros
             </p>
           </div>
           <Button
@@ -549,7 +558,7 @@ const SnapchatBuilder: React.FC = () => {
         <div className="flex items-center gap-3 mb-6">
           <Target className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            UTM Parameters
+            UTM Parameters (Using Snapchat Official Macros)
           </h3>
         </div>
 
@@ -603,20 +612,23 @@ const SnapchatBuilder: React.FC = () => {
               options={campaignOptions}
               value={utmCampaign}
               onChange={setUtmCampaign}
-              placeholder="e.g., summer_launch or {{campaign_name}}"
+              placeholder="e.g., {{campaign.name}}"
               searchable
               clearable
               allowCustom
               groupByCategory
               className="w-full"
             />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Uses Snapchat's {{campaign.name}} macro
+            </p>
           </div>
         </div>
 
         {/* OPTIONAL UTM PARAMETERS */}
         <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
           <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            Optional UTM Parameters
+            Optional UTM Parameters (Snapchat Official Macros)
           </h4>
           
           <div className="grid grid-cols-1 gap-4">
@@ -638,7 +650,7 @@ const SnapchatBuilder: React.FC = () => {
                 options={contentOptions}
                 value={utmContent}
                 onChange={setUtmContent}
-                placeholder="e.g., snap_ad or {{ad_name}}"
+                placeholder="e.g., {{ad.name}}"
                 searchable
                 clearable
                 allowCustom
@@ -647,7 +659,7 @@ const SnapchatBuilder: React.FC = () => {
                 className={`w-full ${!includeUtmContent ? 'opacity-50' : ''}`}
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Differentiate ads within the same campaign
+                Uses Snapchat's official macros for content differentiation
               </p>
             </div>
           </div>
@@ -682,19 +694,19 @@ const SnapchatBuilder: React.FC = () => {
           <div className="flex items-start gap-2">
             <Settings className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Usage Instructions</p>
+              <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Snapchat Official Macros</p>
               <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
-                Copy this parameter string and paste it into Snapchat's URL parameters field in your ad campaign setup. 
-                It will be automatically appended to your destination URLs.
+                This string uses Snapchat's official 14 dynamic URL macros. Copy and paste into Snapchat's URL parameters field 
+                in your ad campaign setup. Snapchat will automatically replace the macros with actual values.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Snapchat Dynamic Parameters */}
+      {/* Snapchat Official Dynamic URL Macros */}
       <Accordion 
-        title="Snapchat Dynamic Parameters" 
+        title="Snapchat Official Dynamic URL Macros" 
         icon={<Target className="w-5 h-5" />}
         defaultOpen={true}
       >
@@ -724,7 +736,7 @@ const SnapchatBuilder: React.FC = () => {
         {/* Parameters Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredParams.map(param => (
-            <div key={param.id} className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+            <div key={param.id} className={`flex items-start space-x-3 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${param.isOfficial ? 'border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20' : 'border-gray-200 dark:border-gray-600'}`}>
               <input
                 type="checkbox"
                 id={param.id}
@@ -743,6 +755,9 @@ const SnapchatBuilder: React.FC = () => {
                     {param.label}
                   </label>
                   {getCategoryBadge(param.category)}
+                  {param.isOfficial && (
+                    <Badge variant="success" size="sm">Official Macro</Badge>
+                  )}
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                   {param.description}
@@ -926,6 +941,27 @@ const SnapchatBuilder: React.FC = () => {
             <a href="https://businesshelp.snapchat.com/s/article/ads-manager" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
               <span>⚙️</span> Ads Manager Setup
             </a>
+          </div>
+        </div>
+        
+        {/* Snapchat Official Macros Reference */}
+        <div className="mt-6 p-4 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+          <h4 className="text-sm font-semibold text-yellow-900 dark:text-yellow-100 mb-3">Snapchat's 14 Official Dynamic URL Macros</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-yellow-800 dark:text-yellow-200">
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{campaign.id}}</code> - Campaign ID</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{campaign.name}}</code> - Campaign Name</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{adSet.id}}</code> - Ad Set ID</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{adSet.name}}</code> - Ad Set Name</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{ad.id}}</code> - Ad ID</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{ad.name}}</code> - Ad Name</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{creative.id}}</code> - Creative ID</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{creative.name}}</code> - Creative Name</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{site_source_name}}</code> - Source Placement</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{device_os}}</code> - Device OS</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{device_type}}</code> - Device Type</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{country}}</code> - User Country</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{language}}</code> - Device Language</div>
+            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{{city}}</code> - User City</div>
           </div>
         </div>
       </div>
