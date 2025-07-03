@@ -10,13 +10,17 @@ import { useToast } from '../../hooks/useToast';
 const TikTokBuilder: React.FC = () => {
   const [utmSource, setUtmSource] = useState('tiktok');
   const [utmMedium, setUtmMedium] = useState('paid_social');
-  const [utmCampaign, setUtmCampaign] = useState('{{campaign_name}}');
-  const [utmContent, setUtmContent] = useState('{{creative_name}}');
+  const [utmCampaign, setUtmCampaign] = useState('__CAMPAIGN_NAME__');
+  const [utmId, setUtmId] = useState('__CAMPAIGN_ID__');
+  const [utmTerm, setUtmTerm] = useState('__CID_NAME__');
+  const [utmContent, setUtmContent] = useState('__AID_NAME__');
   
   // Individual optional parameter toggles
+  const [includeUtmId, setIncludeUtmId] = useState(true);
+  const [includeUtmTerm, setIncludeUtmTerm] = useState(true);
   const [includeUtmContent, setIncludeUtmContent] = useState(true);
   
-  // TikTok-specific parameters
+  // TikTok-specific parameters (using official macros)
   const [selectedParams, setSelectedParams] = useState<Record<string, boolean>>({});
   
   const [customParams, setCustomParams] = useState<Array<{key: string, value: string}>>([]);
@@ -40,8 +44,8 @@ const TikTokBuilder: React.FC = () => {
       description: 'TikTok platform traffic - Use for static source tracking'
     },
     { 
-      value: '{{campaign_name}}', 
-      label: '{{campaign_name}}', 
+      value: '__CAMPAIGN_NAME__', 
+      label: '__CAMPAIGN_NAME__', 
       category: 'Dynamic Sources',
       description: 'Dynamic campaign name - Automatically populated by TikTok'
     }
@@ -75,47 +79,55 @@ const TikTokBuilder: React.FC = () => {
     }
   ], []);
 
-  // TikTok-specific campaign options
+  // TikTok-specific campaign options (using official macros)
   const campaignOptions = useMemo(() => [
     { 
-      value: '{{campaign_name}}', 
-      label: '{{campaign_name}}', 
+      value: '__CAMPAIGN_NAME__', 
+      label: '__CAMPAIGN_NAME__', 
       category: 'Campaign Info',
-      description: 'Dynamic campaign name from TikTok - Automatically populated'
+      description: 'Dynamic campaign name from TikTok - Official macro'
     },
     { 
-      value: '{{campaign_id}}', 
-      label: '{{campaign_id}}', 
+      value: '__CAMPAIGN_ID__', 
+      label: '__CAMPAIGN_ID__', 
       category: 'Campaign Info',
-      description: 'Dynamic campaign ID from TikTok - Unique identifier'
+      description: 'Dynamic campaign ID from TikTok - Official macro'
+    }
+  ], []);
+
+  // TikTok-specific ID options (using official macros)
+  const idOptions = useMemo(() => [
+    { 
+      value: '__CAMPAIGN_ID__', 
+      label: '__CAMPAIGN_ID__', 
+      category: 'Campaign Level',
+      description: 'Campaign ID - Official TikTok macro'
+    }
+  ], []);
+
+  // TikTok-specific term options (using official macros)
+  const termOptions = useMemo(() => [
+    { 
+      value: '__CID_NAME__', 
+      label: '__CID_NAME__', 
+      category: 'Creative Level',
+      description: 'Creative name - Official TikTok macro'
     }
   ], []);
     
-  // TikTok-specific content options
+  // TikTok-specific content options (using official macros)
   const contentOptions = useMemo(() => [
     { 
-      value: '{{creative_name}}', 
-      label: '{{creative_name}}', 
+      value: '__AID_NAME__', 
+      label: '__AID_NAME__', 
+      category: 'Ad Level',
+      description: 'Ad name - Official TikTok macro'
+    },
+    { 
+      value: '__CID_NAME__', 
+      label: '__CID_NAME__', 
       category: 'Creative Level',
-      description: 'Dynamic creative name from TikTok - Individual creative identifier'
-    },
-    { 
-      value: '{{creative_id}}', 
-      label: '{{creative_id}}', 
-      category: 'Creative Level',
-      description: 'Dynamic creative ID from TikTok - Unique creative identifier'
-    },
-    { 
-      value: '{{adgroup_name}}', 
-      label: '{{adgroup_name}}', 
-      category: 'Ad Group Level',
-      description: 'Dynamic ad group name from TikTok - Ad group identifier'
-    },
-    { 
-      value: '{{adgroup_id}}', 
-      label: '{{adgroup_id}}', 
-      category: 'Ad Group Level',
-      description: 'Dynamic ad group ID from TikTok - Unique ad group identifier'
+      description: 'Creative name - Official TikTok macro'
     },
     { 
       value: 'video_ad', 
@@ -137,92 +149,71 @@ const TikTokBuilder: React.FC = () => {
     }
   ], []);
 
-  // TikTok-specific parameters
+  // TikTok official macro parameters (the 7 key macros you mentioned)
   const tiktokParams = useMemo(() => [
-    // Campaign Level Parameters
+    // Official TikTok Macros - The 7 key ones you specified
     { 
-      id: 'campaign_id', 
-      value: '{{campaign_id}}', 
-      label: 'Campaign ID', 
+      id: 'atAdId', 
+      value: '__CID__', 
+      label: 'Creative ID (atAdId)', 
+      category: 'official', 
+      description: 'Creative ID - Official TikTok macro (__CID__)',
+      availability: 'All TikTok campaigns',
+      example: '1234567890123456789',
+      isOfficial: true
+    },
+    { 
+      id: 'atAdSet', 
+      value: '__AID__', 
+      label: 'Ad Set ID (atAdSet)', 
+      category: 'official', 
+      description: 'Ad Set ID - Official TikTok macro (__AID__)',
+      availability: 'All TikTok campaigns',
+      example: '9876543210987654321',
+      isOfficial: true
+    },
+    { 
+      id: 'atPlacement', 
+      value: '__PLACEMENT__', 
+      label: 'Placement (atPlacement)', 
+      category: 'official', 
+      description: 'Placement - Official TikTok macro (__PLACEMENT__)',
+      availability: 'All TikTok campaigns',
+      example: 'tiktok_feed, pangle_network',
+      isOfficial: true
+    },
+    
+    // Additional TikTok Parameters for enhanced tracking
+    { 
+      id: 'campaign_objective', 
+      value: '__CAMPAIGN_OBJECTIVE__', 
+      label: 'Campaign Objective', 
       category: 'campaign', 
-      description: 'Unique campaign identifier from TikTok',
+      description: 'Campaign objective type',
       availability: 'All TikTok campaigns',
-      example: '1234567890123456789'
+      example: 'TRAFFIC, CONVERSIONS, APP_INSTALL'
     },
     { 
-      id: 'campaign_name', 
-      value: '{{campaign_name}}', 
-      label: 'Campaign Name', 
-      category: 'campaign', 
-      description: 'Campaign name from TikTok',
-      availability: 'All TikTok campaigns',
-      example: 'Holiday_Sale_2025'
-    },
-    
-    // Ad Group Level Parameters
-    { 
-      id: 'adgroup_id', 
-      value: '{{adgroup_id}}', 
-      label: 'Ad Group ID', 
-      category: 'adgroup', 
-      description: 'Unique ad group identifier from TikTok',
-      availability: 'All TikTok campaigns',
-      example: '9876543210987654321'
-    },
-    { 
-      id: 'adgroup_name', 
-      value: '{{adgroup_name}}', 
-      label: 'Ad Group Name', 
-      category: 'adgroup', 
-      description: 'Ad group name from TikTok - useful for targeting analysis',
-      availability: 'All TikTok campaigns',
-      example: 'Lookalike_US_18-35'
-    },
-    
-    // Creative Level Parameters
-    { 
-      id: 'creative_id', 
-      value: '{{creative_id}}', 
-      label: 'Creative ID', 
+      id: 'ad_format', 
+      value: '__AD_FORMAT__', 
+      label: 'Ad Format', 
       category: 'creative', 
-      description: 'Unique creative identifier from TikTok',
+      description: 'Format of the TikTok ad',
       availability: 'All TikTok campaigns',
-      example: '1122334455667788990'
+      example: 'single_video, spark_ad, collection'
     },
     { 
-      id: 'creative_name', 
-      value: '{{creative_name}}', 
-      label: 'Creative Name', 
-      category: 'creative', 
-      description: 'Creative name from TikTok - useful for creative analysis',
+      id: 'audience_type', 
+      value: '__AUDIENCE_TYPE__', 
+      label: 'Audience Type', 
+      category: 'targeting', 
+      description: 'Type of audience targeting used',
       availability: 'All TikTok campaigns',
-      example: 'Video_A_Holiday_Theme'
+      example: 'lookalike, custom, interest'
     },
-    
-    // Placement & Platform Parameters
-    { 
-      id: 'placement', 
-      value: '{{placement}}', 
-      label: 'Placement', 
-      category: 'placement', 
-      description: 'Specific placement where ad was shown',
-      availability: 'All TikTok campaigns',
-      example: 'tiktok_feed, pangle_network'
-    },
-    { 
-      id: 'publisher_platform', 
-      value: '{{publisher_platform}}', 
-      label: 'Publisher Platform', 
-      category: 'placement', 
-      description: 'TikTok platform where ad was displayed',
-      availability: 'All TikTok campaigns',
-      example: 'tiktok, pangle'
-    },
-    
-    // Device & Targeting Parameters
     { 
       id: 'device_type', 
-      value: '{{device_type}}', 
+      value: '__DEVICE_TYPE__', 
       label: 'Device Type', 
       category: 'device', 
       description: 'Device type where ad was clicked',
@@ -230,24 +221,13 @@ const TikTokBuilder: React.FC = () => {
       example: 'mobile, tablet'
     },
     { 
-      id: 'audience_type', 
-      value: '{{audience_type}}', 
-      label: 'Audience Type', 
-      category: 'targeting', 
-      description: 'Type of audience targeting used',
-      availability: 'All TikTok campaigns',
-      example: 'lookalike, custom, interest'
-    },
-    
-    // Performance Parameters
-    { 
-      id: 'bid_type', 
-      value: '{{bid_type}}', 
-      label: 'Bid Type', 
+      id: 'bid_strategy', 
+      value: '__BID_STRATEGY__', 
+      label: 'Bid Strategy', 
       category: 'performance', 
       description: 'Bidding strategy used for the campaign',
       availability: 'All TikTok campaigns',
-      example: 'cpc, cpm, cpa'
+      example: 'LOWEST_COST, COST_CAP, BID_CAP'
     }
   ], []);
 
@@ -263,12 +243,24 @@ const TikTokBuilder: React.FC = () => {
   }, [tiktokParams, searchTerm, selectedCategory]);
 
   // Handle individual optional parameter toggles with default value restoration
+  const handleUtmIdToggle = useCallback((enabled: boolean) => {
+    setIncludeUtmId(enabled);
+    if (enabled && !utmId.trim()) {
+      setUtmId('__CAMPAIGN_ID__');
+    }
+  }, [utmId]);
+
+  const handleUtmTermToggle = useCallback((enabled: boolean) => {
+    setIncludeUtmTerm(enabled);
+    if (enabled && !utmTerm.trim()) {
+      setUtmTerm('__CID_NAME__');
+    }
+  }, [utmTerm]);
+
   const handleUtmContentToggle = useCallback((enabled: boolean) => {
     setIncludeUtmContent(enabled);
-    
-    // If enabling and field is empty, restore default
     if (enabled && !utmContent.trim()) {
-      setUtmContent('{{creative_name}}');
+      setUtmContent('__AID_NAME__');
     }
   }, [utmContent]);
 
@@ -282,6 +274,8 @@ const TikTokBuilder: React.FC = () => {
     if (utmCampaign) params.push(`utm_campaign=${utmCampaign}`);
     
     // Add optional UTM parameters only if individually enabled
+    if (includeUtmId && utmId) params.push(`utm_id=${utmId}`);
+    if (includeUtmTerm && utmTerm) params.push(`utm_term=${utmTerm}`);
     if (includeUtmContent && utmContent) params.push(`utm_content=${utmContent}`);
 
     // Add selected TikTok parameters
@@ -303,7 +297,7 @@ const TikTokBuilder: React.FC = () => {
 
     const finalString = params.join('&');
     setGeneratedString(finalString);
-  }, [utmSource, utmMedium, utmCampaign, utmContent, includeUtmContent, selectedParams, customParams, tiktokParams]);
+  }, [utmSource, utmMedium, utmCampaign, utmId, utmTerm, utmContent, includeUtmId, includeUtmTerm, includeUtmContent, selectedParams, customParams, tiktokParams]);
 
   // Auto-generate when parameters change
   React.useEffect(() => {
@@ -356,8 +350,8 @@ const TikTokBuilder: React.FC = () => {
     }
     
     const template = {
-      utmSource, utmMedium, utmCampaign, utmContent,
-      includeUtmContent,
+      utmSource, utmMedium, utmCampaign, utmId, utmTerm, utmContent,
+      includeUtmId, includeUtmTerm, includeUtmContent,
       selectedParams, customParams, timestamp: Date.now()
     };
     
@@ -367,7 +361,7 @@ const TikTokBuilder: React.FC = () => {
     
     success(`Template "${templateName}" saved successfully!`);
     setTemplateName('');
-  }, [templateName, utmSource, utmMedium, utmCampaign, utmContent, includeUtmContent, selectedParams, customParams, savedTemplates, success, error]);
+  }, [templateName, utmSource, utmMedium, utmCampaign, utmId, utmTerm, utmContent, includeUtmId, includeUtmTerm, includeUtmContent, selectedParams, customParams, savedTemplates, success, error]);
 
   const loadTemplate = useCallback(() => {
     if (!selectedTemplate || !savedTemplates[selectedTemplate]) {
@@ -379,9 +373,13 @@ const TikTokBuilder: React.FC = () => {
     setUtmSource(template.utmSource);
     setUtmMedium(template.utmMedium);
     setUtmCampaign(template.utmCampaign);
+    setUtmId(template.utmId);
+    setUtmTerm(template.utmTerm);
     setUtmContent(template.utmContent);
     
     // Load individual toggles (with fallback for old templates)
+    setIncludeUtmId(template.includeUtmId ?? true);
+    setIncludeUtmTerm(template.includeUtmTerm ?? true);
     setIncludeUtmContent(template.includeUtmContent ?? true);
     
     setSelectedParams(template.selectedParams || {});
@@ -420,8 +418,12 @@ const TikTokBuilder: React.FC = () => {
   const resetFields = useCallback(() => {
     setUtmSource('tiktok');
     setUtmMedium('paid_social');
-    setUtmCampaign('{{campaign_name}}');
-    setUtmContent('{{creative_name}}');
+    setUtmCampaign('__CAMPAIGN_NAME__');
+    setUtmId('__CAMPAIGN_ID__');
+    setUtmTerm('__CID_NAME__');
+    setUtmContent('__AID_NAME__');
+    setIncludeUtmId(true);
+    setIncludeUtmTerm(true);
     setIncludeUtmContent(true);
     setSelectedParams({});
     setCustomParams([]);
@@ -444,24 +446,22 @@ const TikTokBuilder: React.FC = () => {
   // Categories for filtering
   const categories = [
     { value: 'all', label: 'All Parameters' },
+    { value: 'official', label: 'Official TikTok Macros' },
     { value: 'campaign', label: 'Campaign Level' },
-    { value: 'adgroup', label: 'Ad Group Level' },
     { value: 'creative', label: 'Creative Level' },
-    { value: 'placement', label: 'Placement & Platform' },
-    { value: 'device', label: 'Device & Targeting' },
     { value: 'targeting', label: 'Targeting' },
+    { value: 'device', label: 'Device & Platform' },
     { value: 'performance', label: 'Performance' }
   ];
 
   // Get category badge color
   const getCategoryBadge = (category: string) => {
     const badges = {
+      official: { variant: 'success' as const, label: 'Official' },
       campaign: { variant: 'info' as const, label: 'Campaign' },
-      adgroup: { variant: 'success' as const, label: 'Ad Group' },
       creative: { variant: 'warning' as const, label: 'Creative' },
-      placement: { variant: 'default' as const, label: 'Placement' },
+      targeting: { variant: 'default' as const, label: 'Targeting' },
       device: { variant: 'info' as const, label: 'Device' },
-      targeting: { variant: 'success' as const, label: 'Targeting' },
       performance: { variant: 'warning' as const, label: 'Performance' }
     };
     
@@ -480,7 +480,7 @@ const TikTokBuilder: React.FC = () => {
               TikTok Ads Parameter Builder
             </h3>
             <p className="text-pink-100 dark:text-pink-300 text-sm">
-              Generate URL parameter strings for TikTok's advertising platform
+              Generate URL parameter strings using TikTok's official 7 key macros
             </p>
           </div>
           <Button
@@ -523,7 +523,7 @@ const TikTokBuilder: React.FC = () => {
         <div className="flex items-center gap-3 mb-6">
           <Target className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            UTM Parameters
+            UTM Parameters (Using TikTok Official Macros)
           </h3>
         </div>
 
@@ -577,23 +577,88 @@ const TikTokBuilder: React.FC = () => {
               options={campaignOptions}
               value={utmCampaign}
               onChange={setUtmCampaign}
-              placeholder="e.g., holiday_sale or {{campaign_name}}"
+              placeholder="e.g., __CAMPAIGN_NAME__"
               searchable
               clearable
               allowCustom
               groupByCategory
               className="w-full"
             />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Uses TikTok's __CAMPAIGN_NAME__ macro
+            </p>
           </div>
         </div>
 
         {/* OPTIONAL UTM PARAMETERS */}
         <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
           <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            Optional UTM Parameters
+            Optional UTM Parameters (TikTok Official Macros)
           </h4>
           
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* UTM ID */}
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-2">
+                <input
+                  type="checkbox"
+                  id="include-utm-id"
+                  checked={includeUtmId}
+                  onChange={(e) => handleUtmIdToggle(e.target.checked)}
+                  className="rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+                />
+                <label htmlFor="include-utm-id" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                  Campaign ID (utm_id)
+                </label>
+              </div>
+              <Dropdown
+                options={idOptions}
+                value={utmId}
+                onChange={setUtmId}
+                placeholder="e.g., __CAMPAIGN_ID__"
+                searchable
+                clearable
+                allowCustom
+                groupByCategory
+                disabled={!includeUtmId}
+                className={`w-full ${!includeUtmId ? 'opacity-50' : ''}`}
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Uses TikTok's __CAMPAIGN_ID__ macro
+              </p>
+            </div>
+
+            {/* UTM Term */}
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-2">
+                <input
+                  type="checkbox"
+                  id="include-utm-term"
+                  checked={includeUtmTerm}
+                  onChange={(e) => handleUtmTermToggle(e.target.checked)}
+                  className="rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+                />
+                <label htmlFor="include-utm-term" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                  Campaign Term (utm_term)
+                </label>
+              </div>
+              <Dropdown
+                options={termOptions}
+                value={utmTerm}
+                onChange={setUtmTerm}
+                placeholder="e.g., __CID_NAME__"
+                searchable
+                clearable
+                allowCustom
+                groupByCategory
+                disabled={!includeUtmTerm}
+                className={`w-full ${!includeUtmTerm ? 'opacity-50' : ''}`}
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Uses TikTok's __CID_NAME__ macro
+              </p>
+            </div>
+
             {/* UTM Content */}
             <div className="relative">
               <div className="flex items-center gap-2 mb-2">
@@ -612,7 +677,7 @@ const TikTokBuilder: React.FC = () => {
                 options={contentOptions}
                 value={utmContent}
                 onChange={setUtmContent}
-                placeholder="e.g., video_ad or {{creative_name}}"
+                placeholder="e.g., __AID_NAME__"
                 searchable
                 clearable
                 allowCustom
@@ -621,7 +686,7 @@ const TikTokBuilder: React.FC = () => {
                 className={`w-full ${!includeUtmContent ? 'opacity-50' : ''}`}
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Differentiate creatives within the same campaign
+                Uses TikTok's __AID_NAME__ macro
               </p>
             </div>
           </div>
@@ -656,19 +721,19 @@ const TikTokBuilder: React.FC = () => {
           <div className="flex items-start gap-2">
             <Settings className="w-5 h-5 text-pink-600 dark:text-pink-400 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-pink-800 dark:text-pink-200">Usage Instructions</p>
+              <p className="text-sm font-medium text-pink-800 dark:text-pink-200">TikTok Official Macros</p>
               <p className="text-sm text-pink-700 dark:text-pink-300 mt-1">
-                Copy this parameter string and paste it into TikTok's URL parameters field in your ad campaign setup. 
-                It will be automatically appended to your destination URLs.
+                This string uses TikTok's official 7 key macros: __CAMPAIGN_NAME__, __CAMPAIGN_ID__, __AID_NAME__, __AID__, __CID_NAME__, __CID__, and __PLACEMENT__. 
+                Copy and paste into TikTok's URL parameters field.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* TikTok Dynamic Parameters */}
+      {/* TikTok Official Macro Parameters */}
       <Accordion 
-        title="TikTok Dynamic Parameters" 
+        title="TikTok Official Macro Parameters" 
         icon={<Target className="w-5 h-5" />}
         defaultOpen={true}
       >
@@ -698,7 +763,7 @@ const TikTokBuilder: React.FC = () => {
         {/* Parameters Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredParams.map(param => (
-            <div key={param.id} className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+            <div key={param.id} className={`flex items-start space-x-3 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${param.isOfficial ? 'border-pink-200 dark:border-pink-800 bg-pink-50 dark:bg-pink-900/20' : 'border-gray-200 dark:border-gray-600'}`}>
               <input
                 type="checkbox"
                 id={param.id}
@@ -717,6 +782,9 @@ const TikTokBuilder: React.FC = () => {
                     {param.label}
                   </label>
                   {getCategoryBadge(param.category)}
+                  {param.isOfficial && (
+                    <Badge variant="success" size="sm">Official Macro</Badge>
+                  )}
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                   {param.description}
@@ -780,7 +848,7 @@ const TikTokBuilder: React.FC = () => {
                 <div className="flex-1">
                   <Input
                     label="Parameter Value"
-                    placeholder="e.g., {{custom.value}}"
+                    placeholder="e.g., __CUSTOM_VALUE__"
                     value={param.value}
                     onChange={(e) => updateCustomParam(index, 'value', e.target.value)}
                   />
@@ -900,6 +968,20 @@ const TikTokBuilder: React.FC = () => {
             <a href="https://ads.tiktok.com/help/article?aid=10007898" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
               <span>⚙️</span> Conversion Tracking Setup
             </a>
+          </div>
+        </div>
+        
+        {/* TikTok Official Macros Reference */}
+        <div className="mt-6 p-4 bg-pink-900/30 rounded-lg">
+          <h4 className="text-sm font-semibold text-pink-100 mb-3">TikTok's 7 Official Macros</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-pink-200">
+            <div><code className="bg-black/30 px-2 py-1 rounded">__CAMPAIGN_NAME__</code> - Campaign Name</div>
+            <div><code className="bg-black/30 px-2 py-1 rounded">__CAMPAIGN_ID__</code> - Campaign ID</div>
+            <div><code className="bg-black/30 px-2 py-1 rounded">__AID_NAME__</code> - Ad Name</div>
+            <div><code className="bg-black/30 px-2 py-1 rounded">__AID__</code> - Ad ID</div>
+            <div><code className="bg-black/30 px-2 py-1 rounded">__CID_NAME__</code> - Creative Name</div>
+            <div><code className="bg-black/30 px-2 py-1 rounded">__CID__</code> - Creative ID</div>
+            <div><code className="bg-black/30 px-2 py-1 rounded">__PLACEMENT__</code> - Placement</div>
           </div>
         </div>
       </div>
