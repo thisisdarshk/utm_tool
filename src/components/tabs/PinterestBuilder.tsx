@@ -8,12 +8,15 @@ import Badge from '../common/Badge';
 import { useToast } from '../../hooks/useToast';
 
 const PinterestBuilder: React.FC = () => {
+  // Pinterest UTM Mapping - Following your specified mapping
   const [utmSource, setUtmSource] = useState('pinterest');
   const [utmMedium, setUtmMedium] = useState('paid_social');
-  const [utmCampaign, setUtmCampaign] = useState('{{campaign_name}}');
-  const [utmContent, setUtmContent] = useState('{{pin_id}}');
+  const [utmCampaign, setUtmCampaign] = useState('{campaignname}');
+  const [utmTerm, setUtmTerm] = useState('{adgroupname}');
+  const [utmContent, setUtmContent] = useState('{adid}');
   
   // Individual optional parameter toggles
+  const [includeUtmTerm, setIncludeUtmTerm] = useState(true);
   const [includeUtmContent, setIncludeUtmContent] = useState(true);
   
   // Pinterest-specific parameters
@@ -38,12 +41,6 @@ const PinterestBuilder: React.FC = () => {
       label: 'pinterest', 
       category: 'Static Sources',
       description: 'Pinterest platform traffic - Use for static source tracking'
-    },
-    { 
-      value: '{{campaign_name}}', 
-      label: '{{campaign_name}}', 
-      category: 'Dynamic Sources',
-      description: 'Dynamic campaign name - Automatically populated by Pinterest'
     }
   ], []);
 
@@ -75,179 +72,200 @@ const PinterestBuilder: React.FC = () => {
     }
   ], []);
 
-  // Pinterest-specific campaign options
+  // Pinterest-specific campaign options (using official macros)
   const campaignOptions = useMemo(() => [
     { 
-      value: '{{campaign_name}}', 
-      label: '{{campaign_name}}', 
+      value: '{campaignname}', 
+      label: '{campaignname}', 
       category: 'Campaign Info',
-      description: 'Dynamic campaign name from Pinterest - Automatically populated'
+      description: 'Use readable campaign name - Official Pinterest macro'
     },
     { 
-      value: '{{campaign_id}}', 
-      label: '{{campaign_id}}', 
+      value: '{campaignid}', 
+      label: '{campaignid}', 
       category: 'Campaign Info',
-      description: 'Dynamic campaign ID from Pinterest - Unique identifier'
-    }
-  ], []);
-    
-  // Pinterest-specific content options
-  const contentOptions = useMemo(() => [
-    { 
-      value: '{{pin_id}}', 
-      label: '{{pin_id}}', 
-      category: 'Pin Level',
-      description: 'Dynamic pin ID from Pinterest - Individual pin identifier'
-    },
-    { 
-      value: '{{ad_group_name}}', 
-      label: '{{ad_group_name}}', 
-      category: 'Ad Group Level',
-      description: 'Dynamic ad group name from Pinterest - Ad group identifier'
-    },
-    { 
-      value: '{{ad_group_id}}', 
-      label: '{{ad_group_id}}', 
-      category: 'Ad Group Level',
-      description: 'Dynamic ad group ID from Pinterest - Unique ad group identifier'
-    },
-    { 
-      value: 'standard_pin', 
-      label: 'standard_pin', 
-      category: 'Pin Variants',
-      description: 'Standard pin - Use for regular pin tracking'
-    },
-    { 
-      value: 'video_pin', 
-      label: 'video_pin', 
-      category: 'Pin Variants',
-      description: 'Video pin - Use for video pin tracking'
-    },
-    { 
-      value: 'carousel_pin', 
-      label: 'carousel_pin', 
-      category: 'Pin Variants',
-      description: 'Carousel pin - Use for carousel pin tracking'
-    },
-    { 
-      value: 'shopping_pin', 
-      label: 'shopping_pin', 
-      category: 'Pin Variants',
-      description: 'Shopping pin - Use for product catalog pin tracking'
+      description: 'Unique campaign ID - Official Pinterest macro'
     }
   ], []);
 
-  // Pinterest-specific parameters
-  const pinterestParams = useMemo(() => [
-    // Campaign Level Parameters
+  // Pinterest-specific term options (using official macros)
+  const termOptions = useMemo(() => [
     { 
-      id: 'campaign_id', 
-      value: '{{campaign_id}}', 
+      value: '{adgroupname}', 
+      label: '{adgroupname}', 
+      category: 'Ad Group Level',
+      description: 'Identifies ad group - Official Pinterest macro'
+    },
+    { 
+      value: '{adgroupid}', 
+      label: '{adgroupid}', 
+      category: 'Ad Group Level',
+      description: 'Ad group ID - Official Pinterest macro'
+    },
+    { 
+      value: '{keyword}', 
+      label: '{keyword}', 
+      category: 'Search Campaigns',
+      description: 'Matched keyword (percent-encoded) - For search campaigns'
+    }
+  ], []);
+    
+  // Pinterest-specific content options (using official macros)
+  const contentOptions = useMemo(() => [
+    { 
+      value: '{adid}', 
+      label: '{adid}', 
+      category: 'Pin Level',
+      description: 'Pin or creative ID - Official Pinterest macro'
+    },
+    { 
+      value: '{creative_id}', 
+      label: '{creative_id}', 
+      category: 'Pin Level',
+      description: 'Creative ID - Official Pinterest macro'
+    },
+    { 
+      value: '{product_name}', 
+      label: '{product_name}', 
+      category: 'Catalog Ads',
+      description: 'Product-level creative differentiation - For catalog ads'
+    }
+  ], []);
+
+  // Pinterest official macro parameters (based on your mapping table)
+  const pinterestParams = useMemo(() => [
+    // Campaign Level Parameters - Official Pinterest Macros
+    { 
+      id: 'campaignid', 
+      value: '{campaignid}', 
       label: 'Campaign ID', 
       category: 'campaign', 
-      description: 'Unique campaign identifier from Pinterest',
+      description: 'Unique campaign ID - Can be used as custom param or part of utm_campaign',
       availability: 'All Pinterest campaigns',
-      example: '626736533506'
+      example: '626736533506',
+      useCase: 'Unique campaign ID'
     },
     { 
-      id: 'campaign_name', 
-      value: '{{campaign_name}}', 
+      id: 'campaignname', 
+      value: '{campaignname}', 
       label: 'Campaign Name', 
       category: 'campaign', 
-      description: 'Campaign name from Pinterest',
+      description: 'Use readable campaign name - Maps to utm_campaign',
       availability: 'All Pinterest campaigns',
-      example: 'Spring_Collection_2025'
+      example: 'Spring_Collection_2025',
+      useCase: 'Use readable campaign name'
     },
     
-    // Ad Group Level Parameters
+    // Ad Group Level Parameters - Official Pinterest Macros
     { 
-      id: 'ad_group_id', 
-      value: '{{ad_group_id}}', 
+      id: 'adgroupid', 
+      value: '{adgroupid}', 
       label: 'Ad Group ID', 
       category: 'adgroup', 
-      description: 'Unique ad group identifier from Pinterest',
+      description: 'Ad group ID - Can be used as custom param or utm_term',
       availability: 'All Pinterest campaigns',
-      example: '626736533507'
+      example: '626736533507',
+      useCase: 'Ad group ID'
     },
     { 
-      id: 'ad_group_name', 
-      value: '{{ad_group_name}}', 
+      id: 'adgroupname', 
+      value: '{adgroupname}', 
       label: 'Ad Group Name', 
       category: 'adgroup', 
-      description: 'Ad group name from Pinterest - useful for targeting analysis',
+      description: 'Identifies ad group - Maps to utm_term',
       availability: 'All Pinterest campaigns',
-      example: 'Home_Decor_Interests'
+      example: 'Home_Decor_Interests',
+      useCase: 'Identifies ad group'
     },
     
-    // Pin Level Parameters
+    // Pin/Creative Level Parameters - Official Pinterest Macros
     { 
-      id: 'pin_id', 
-      value: '{{pin_id}}', 
-      label: 'Pin ID', 
+      id: 'adid', 
+      value: '{adid}', 
+      label: 'Ad ID', 
       category: 'pin', 
-      description: 'Unique pin identifier from Pinterest',
+      description: 'Pin or creative ID - Maps to utm_content',
       availability: 'All Pinterest campaigns',
-      example: '1234567890123456789'
+      example: '1234567890123456789',
+      useCase: 'Pin or creative ID'
     },
     { 
-      id: 'pin_format', 
-      value: '{{pin_format}}', 
-      label: 'Pin Format', 
+      id: 'creative_id', 
+      value: '{creative_id}', 
+      label: 'Creative ID', 
       category: 'pin', 
-      description: 'Format of the pin (standard, video, carousel, etc.)',
+      description: 'Creative ID - Alternative to {adid}',
       availability: 'All Pinterest campaigns',
-      example: 'standard, video, carousel'
+      example: '9876543210987654321',
+      useCase: 'Pin or creative ID'
     },
     
-    // Targeting & Audience Parameters
+    // Device Parameters - Official Pinterest Macros
     { 
-      id: 'audience_type', 
-      value: '{{audience_type}}', 
-      label: 'Audience Type', 
-      category: 'targeting', 
-      description: 'Type of audience targeting used',
-      availability: 'All Pinterest campaigns',
-      example: 'interest, actalike, customer_list'
-    },
-    { 
-      id: 'interest_category', 
-      value: '{{interest_category}}', 
-      label: 'Interest Category', 
-      category: 'targeting', 
-      description: 'Pinterest interest category targeted',
-      availability: 'Interest-targeted campaigns',
-      example: 'home_decor, fashion, food'
-    },
-    
-    // Device & Platform Parameters
-    { 
-      id: 'device_type', 
-      value: '{{device_type}}', 
+      id: 'device', 
+      value: '{device}', 
       label: 'Device Type', 
       category: 'device', 
-      description: 'Device type where ad was clicked',
+      description: 'Device: c=Computer, m=Mobile, t=Tablet',
       availability: 'All Pinterest campaigns',
-      example: 'mobile, desktop, tablet'
-    },
-    { 
-      id: 'placement', 
-      value: '{{placement}}', 
-      label: 'Placement', 
-      category: 'device', 
-      description: 'Pinterest placement where ad was shown',
-      availability: 'All Pinterest campaigns',
-      example: 'home_feed, search, related_pins'
+      example: 'c, m, t',
+      useCase: 'Device tracking'
     },
     
-    // Performance Parameters
+    // Search Campaign Parameters - Official Pinterest Macros
     { 
-      id: 'bid_type', 
-      value: '{{bid_type}}', 
-      label: 'Bid Type', 
-      category: 'performance', 
-      description: 'Bidding strategy used for the campaign',
+      id: 'keyword', 
+      value: '{keyword}', 
+      label: 'Keyword', 
+      category: 'search', 
+      description: 'Matched keyword (percent-encoded) - For search campaigns',
+      availability: 'Search campaigns only',
+      example: 'home%20decor%20ideas',
+      useCase: 'Matched keyword (percent-encoded)'
+    },
+    
+    // Product/Catalog Parameters - Official Pinterest Macros
+    { 
+      id: 'product_name', 
+      value: '{product_name}', 
+      label: 'Product Name', 
+      category: 'product', 
+      description: 'Product-level creative differentiation - For catalog ads',
+      availability: 'Catalog ads only',
+      example: 'Vintage_Wooden_Chair',
+      useCase: 'Product-level creative differentiation'
+    },
+    { 
+      id: 'product_id', 
+      value: '{product_id}', 
+      label: 'Product ID', 
+      category: 'product', 
+      description: 'Product ID - Useful for product-level attribution',
+      availability: 'Catalog ads only',
+      example: 'PROD_12345',
+      useCase: 'Product-level attribution'
+    },
+    { 
+      id: 'product_partition_id', 
+      value: '{product_partition_id}', 
+      label: 'Product Partition ID', 
+      category: 'product', 
+      description: 'Product partition ID - Useful for product-level attribution',
+      availability: 'Catalog ads only',
+      example: 'PART_67890',
+      useCase: 'Product-level attribution'
+    },
+    
+    // Base URL Parameter - Official Pinterest Macro
+    { 
+      id: 'unescapedlpurl', 
+      value: '{unescapedlpurl}', 
+      label: 'Unescaped Landing Page URL', 
+      category: 'url', 
+      description: 'Full landing page URL (unescaped) - Use as Base URL',
       availability: 'All Pinterest campaigns',
-      example: 'cpc, cpm, cpa'
+      example: 'https://example.com/product?id=123',
+      useCase: 'Base URL'
     }
   ], []);
 
@@ -263,12 +281,21 @@ const PinterestBuilder: React.FC = () => {
   }, [pinterestParams, searchTerm, selectedCategory]);
 
   // Handle individual optional parameter toggles with default value restoration
+  const handleUtmTermToggle = useCallback((enabled: boolean) => {
+    setIncludeUtmTerm(enabled);
+    
+    // If enabling and field is empty, restore default
+    if (enabled && !utmTerm.trim()) {
+      setUtmTerm('{adgroupname}');
+    }
+  }, [utmTerm]);
+
   const handleUtmContentToggle = useCallback((enabled: boolean) => {
     setIncludeUtmContent(enabled);
     
     // If enabling and field is empty, restore default
     if (enabled && !utmContent.trim()) {
-      setUtmContent('{{pin_id}}');
+      setUtmContent('{adid}');
     }
   }, [utmContent]);
 
@@ -282,6 +309,7 @@ const PinterestBuilder: React.FC = () => {
     if (utmCampaign) params.push(`utm_campaign=${utmCampaign}`);
     
     // Add optional UTM parameters only if individually enabled
+    if (includeUtmTerm && utmTerm) params.push(`utm_term=${utmTerm}`);
     if (includeUtmContent && utmContent) params.push(`utm_content=${utmContent}`);
 
     // Add selected Pinterest parameters
@@ -303,7 +331,7 @@ const PinterestBuilder: React.FC = () => {
 
     const finalString = params.join('&');
     setGeneratedString(finalString);
-  }, [utmSource, utmMedium, utmCampaign, utmContent, includeUtmContent, selectedParams, customParams, pinterestParams]);
+  }, [utmSource, utmMedium, utmCampaign, utmTerm, utmContent, includeUtmTerm, includeUtmContent, selectedParams, customParams, pinterestParams]);
 
   // Auto-generate when parameters change
   React.useEffect(() => {
@@ -356,8 +384,8 @@ const PinterestBuilder: React.FC = () => {
     }
     
     const template = {
-      utmSource, utmMedium, utmCampaign, utmContent,
-      includeUtmContent,
+      utmSource, utmMedium, utmCampaign, utmTerm, utmContent,
+      includeUtmTerm, includeUtmContent,
       selectedParams, customParams, timestamp: Date.now()
     };
     
@@ -367,7 +395,7 @@ const PinterestBuilder: React.FC = () => {
     
     success(`Template "${templateName}" saved successfully!`);
     setTemplateName('');
-  }, [templateName, utmSource, utmMedium, utmCampaign, utmContent, includeUtmContent, selectedParams, customParams, savedTemplates, success, error]);
+  }, [templateName, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, includeUtmTerm, includeUtmContent, selectedParams, customParams, savedTemplates, success, error]);
 
   const loadTemplate = useCallback(() => {
     if (!selectedTemplate || !savedTemplates[selectedTemplate]) {
@@ -379,9 +407,11 @@ const PinterestBuilder: React.FC = () => {
     setUtmSource(template.utmSource);
     setUtmMedium(template.utmMedium);
     setUtmCampaign(template.utmCampaign);
+    setUtmTerm(template.utmTerm);
     setUtmContent(template.utmContent);
     
     // Load individual toggles (with fallback for old templates)
+    setIncludeUtmTerm(template.includeUtmTerm ?? true);
     setIncludeUtmContent(template.includeUtmContent ?? true);
     
     setSelectedParams(template.selectedParams || {});
@@ -420,8 +450,10 @@ const PinterestBuilder: React.FC = () => {
   const resetFields = useCallback(() => {
     setUtmSource('pinterest');
     setUtmMedium('paid_social');
-    setUtmCampaign('{{campaign_name}}');
-    setUtmContent('{{pin_id}}');
+    setUtmCampaign('{campaignname}');
+    setUtmTerm('{adgroupname}');
+    setUtmContent('{adid}');
+    setIncludeUtmTerm(true);
     setIncludeUtmContent(true);
     setSelectedParams({});
     setCustomParams([]);
@@ -446,10 +478,11 @@ const PinterestBuilder: React.FC = () => {
     { value: 'all', label: 'All Parameters' },
     { value: 'campaign', label: 'Campaign Level' },
     { value: 'adgroup', label: 'Ad Group Level' },
-    { value: 'pin', label: 'Pin Level' },
-    { value: 'targeting', label: 'Targeting & Interests' },
-    { value: 'device', label: 'Device & Placement' },
-    { value: 'performance', label: 'Performance' }
+    { value: 'pin', label: 'Pin/Creative Level' },
+    { value: 'device', label: 'Device Tracking' },
+    { value: 'search', label: 'Search Campaigns' },
+    { value: 'product', label: 'Product/Catalog' },
+    { value: 'url', label: 'URL Parameters' }
   ];
 
   // Get category badge color
@@ -457,10 +490,11 @@ const PinterestBuilder: React.FC = () => {
     const badges = {
       campaign: { variant: 'info' as const, label: 'Campaign' },
       adgroup: { variant: 'success' as const, label: 'Ad Group' },
-      pin: { variant: 'warning' as const, label: 'Pin' },
-      targeting: { variant: 'default' as const, label: 'Targeting' },
-      device: { variant: 'info' as const, label: 'Device' },
-      performance: { variant: 'warning' as const, label: 'Performance' }
+      pin: { variant: 'warning' as const, label: 'Pin/Creative' },
+      device: { variant: 'default' as const, label: 'Device' },
+      search: { variant: 'info' as const, label: 'Search' },
+      product: { variant: 'success' as const, label: 'Product' },
+      url: { variant: 'warning' as const, label: 'URL' }
     };
     
     const badge = badges[category as keyof typeof badges];
@@ -478,7 +512,7 @@ const PinterestBuilder: React.FC = () => {
               Pinterest Ads Parameter Builder
             </h3>
             <p className="text-red-700 dark:text-red-300 text-sm">
-              Generate URL parameter strings for Pinterest's advertising platform
+              Generate URL parameter strings using Pinterest's official macro mapping
             </p>
           </div>
           <Button
@@ -516,13 +550,27 @@ const PinterestBuilder: React.FC = () => {
         </div>
       )}
 
-      {/* UTM Parameters */}
+      {/* Pinterest UTM Mapping */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center gap-3 mb-6">
           <Target className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            UTM Parameters
+            Pinterest → UTM Mapping
           </h3>
+          <Badge variant="success" size="sm">Official Mapping</Badge>
+        </div>
+
+        {/* Pinterest Mapping Notice */}
+        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <div className="flex items-start gap-2">
+            <Settings className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-red-800 dark:text-red-200">Pinterest's Official UTM Mapping</p>
+              <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                This configuration follows Pinterest's recommended macro → UTM parameter mapping for optimal campaign tracking and analysis.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* REQUIRED UTM PARAMETERS */}
@@ -535,7 +583,7 @@ const PinterestBuilder: React.FC = () => {
               options={sourceOptions}
               value={utmSource}
               onChange={setUtmSource}
-              placeholder="e.g., pinterest"
+              placeholder="pinterest"
               searchable
               clearable
               allowCustom
@@ -543,7 +591,7 @@ const PinterestBuilder: React.FC = () => {
               className="w-full"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Pinterest traffic source identifier
+              <strong>Purpose:</strong> Identifies Pinterest as the traffic source
             </p>
           </div>
 
@@ -555,7 +603,7 @@ const PinterestBuilder: React.FC = () => {
               options={mediumOptions}
               value={utmMedium}
               onChange={setUtmMedium}
-              placeholder="e.g., paid_social"
+              placeholder="paid_social"
               searchable
               clearable
               allowCustom
@@ -563,7 +611,7 @@ const PinterestBuilder: React.FC = () => {
               className="w-full"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Recommended: paid_social for Pinterest ads
+              <strong>Purpose:</strong> Recommended: paid_social for Pinterest ads
             </p>
           </div>
 
@@ -575,23 +623,57 @@ const PinterestBuilder: React.FC = () => {
               options={campaignOptions}
               value={utmCampaign}
               onChange={setUtmCampaign}
-              placeholder="e.g., spring_collection or {{campaign_name}}"
+              placeholder="{campaignname}"
               searchable
               clearable
               allowCustom
               groupByCategory
               className="w-full"
             />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <strong>Purpose:</strong> Use readable campaign name
+            </p>
           </div>
         </div>
 
         {/* OPTIONAL UTM PARAMETERS */}
         <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
           <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            Optional UTM Parameters
+            Optional UTM Parameters (Pinterest Official Macros)
           </h4>
           
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* UTM Term */}
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-2">
+                <input
+                  type="checkbox"
+                  id="include-utm-term"
+                  checked={includeUtmTerm}
+                  onChange={(e) => handleUtmTermToggle(e.target.checked)}
+                  className="rounded border-gray-300 text-red-600 focus:ring-red-500"
+                />
+                <label htmlFor="include-utm-term" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                  Campaign Term (utm_term)
+                </label>
+              </div>
+              <Dropdown
+                options={termOptions}
+                value={utmTerm}
+                onChange={setUtmTerm}
+                placeholder="{adgroupname}"
+                searchable
+                clearable
+                allowCustom
+                groupByCategory
+                disabled={!includeUtmTerm}
+                className={`w-full ${!includeUtmTerm ? 'opacity-50' : ''}`}
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <strong>Purpose:</strong> Identifies ad group
+              </p>
+            </div>
+
             {/* UTM Content */}
             <div className="relative">
               <div className="flex items-center gap-2 mb-2">
@@ -610,7 +692,7 @@ const PinterestBuilder: React.FC = () => {
                 options={contentOptions}
                 value={utmContent}
                 onChange={setUtmContent}
-                placeholder="e.g., standard_pin or {{pin_id}}"
+                placeholder="{adid}"
                 searchable
                 clearable
                 allowCustom
@@ -619,7 +701,7 @@ const PinterestBuilder: React.FC = () => {
                 className={`w-full ${!includeUtmContent ? 'opacity-50' : ''}`}
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Differentiate pins within the same campaign
+                <strong>Purpose:</strong> Pin or creative ID
               </p>
             </div>
           </div>
@@ -657,16 +739,16 @@ const PinterestBuilder: React.FC = () => {
               <p className="text-sm font-medium text-red-800 dark:text-red-200">Usage Instructions</p>
               <p className="text-sm text-red-700 dark:text-red-300 mt-1">
                 Copy this parameter string and paste it into Pinterest's URL parameters field in your ad campaign setup. 
-                It will be automatically appended to your destination URLs.
+                Pinterest will automatically replace the macros with actual values.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Pinterest Dynamic Parameters */}
+      {/* Pinterest Official Macro Parameters */}
       <Accordion 
-        title="Pinterest Dynamic Parameters" 
+        title="Pinterest Official Macro Parameters" 
         icon={<Target className="w-5 h-5" />}
         defaultOpen={true}
       >
@@ -727,7 +809,10 @@ const PinterestBuilder: React.FC = () => {
                     {param.availability}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">
-                    Example: {param.example}
+                    <strong>Use Case:</strong> {param.useCase}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    <strong>Example:</strong> {param.example}
                   </div>
                 </div>
               </div>
@@ -778,7 +863,7 @@ const PinterestBuilder: React.FC = () => {
                 <div className="flex-1">
                   <Input
                     label="Parameter Value"
-                    placeholder="e.g., {{custom.value}}"
+                    placeholder="e.g., {custom_value}"
                     value={param.value}
                     onChange={(e) => updateCustomParam(index, 'value', e.target.value)}
                   />
@@ -898,6 +983,19 @@ const PinterestBuilder: React.FC = () => {
             <a href="https://help.pinterest.com/en/business/article/ads-manager" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
               <span>⚙️</span> Ads Manager Setup
             </a>
+          </div>
+        </div>
+
+        {/* Pinterest UTM Mapping Reference */}
+        <div className="mt-6 p-4 bg-red-100 dark:bg-red-900/30 rounded-lg">
+          <h4 className="text-sm font-semibold text-red-900 dark:text-red-100 mb-3">Pinterest → UTM Mapping Reference</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-red-800 dark:text-red-200">
+            <div><strong>utm_campaign:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{campaignname}'}</code> - Use readable campaign name</div>
+            <div><strong>utm_term:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{adgroupname}'}</code> - Identifies ad group</div>
+            <div><strong>utm_content:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{adid}'}</code> - Pin or creative ID</div>
+            <div><strong>device:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{device}'}</code> - c, m, t (Computer, Mobile, Tablet)</div>
+            <div><strong>keyword:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{keyword}'}</code> - Matched keyword (percent-encoded)</div>
+            <div><strong>product_name:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{product_name}'}</code> - Product-level creative differentiation</div>
           </div>
         </div>
       </div>
