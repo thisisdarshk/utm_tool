@@ -29,6 +29,34 @@ const tabs = [
     description: 'Facebook & Instagram tracking', 
     color: 'from-pink-500 to-pink-600',
     shortLabel: 'Meta'
+  },
+  { 
+    id: 'tiktok', 
+    label: 'TikTok Ads', 
+    description: 'TikTok advertising parameters', 
+    color: 'from-black to-pink-500',
+    shortLabel: 'TikTok'
+  },
+  { 
+    id: 'reddit', 
+    label: 'Reddit Ads', 
+    description: 'Reddit advertising tracking', 
+    color: 'from-orange-500 to-orange-600',
+    shortLabel: 'Reddit'
+  },
+  { 
+    id: 'pinterest', 
+    label: 'Pinterest Ads', 
+    description: 'Pinterest advertising parameters', 
+    color: 'from-red-500 to-red-600',
+    shortLabel: 'Pinterest'
+  },
+  { 
+    id: 'snapchat', 
+    label: 'Snapchat Ads', 
+    description: 'Snapchat advertising tracking', 
+    color: 'from-yellow-400 to-yellow-500',
+    shortLabel: 'Snapchat'
   }
 ];
 
@@ -48,8 +76,8 @@ const TabNavigation: React.FC = () => {
 
   return (
     <nav className="mb-8" role="tablist" aria-label="Campaign builder tabs">
-      {/* Desktop View */}
-      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+      {/* Desktop View - Grid layout for 8 tabs */}
+      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-3">
         {tabs.map((tab) => {
           const isActive = state.activeTab === tab.id;
           
@@ -102,10 +130,10 @@ const TabNavigation: React.FC = () => {
         })}
       </div>
 
-      {/* Mobile View */}
+      {/* Mobile View - Scrollable horizontal layout */}
       <div className="md:hidden">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-          <div className="grid grid-cols-2 gap-0">
+          <div className="flex overflow-x-auto scrollbar-hide">
             {tabs.map((tab) => {
               const isActive = state.activeTab === tab.id;
               
@@ -115,8 +143,7 @@ const TabNavigation: React.FC = () => {
                   onClick={() => handleTabChange(tab.id)}
                   onKeyDown={(e) => handleKeyDown(e, tab.id)}
                   className={`
-                    p-3 transition-all duration-200 border-r border-b border-gray-200 dark:border-gray-700 last:border-r-0 
-                    ${tab.id === 'microsoftAds' || tab.id === 'metaAds' ? 'border-b-0' : ''}
+                    flex-shrink-0 p-3 min-w-[100px] transition-all duration-200 border-r border-gray-200 dark:border-gray-700 last:border-r-0
                     ${isActive 
                       ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' 
                       : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'

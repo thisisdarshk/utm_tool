@@ -8,6 +8,10 @@ const GA4Builder = React.lazy(() => import('../tabs/GA4Builder'));
 const GoogleAdsBuilder = React.lazy(() => import('../tabs/GoogleAdsBuilder'));
 const MicrosoftAdsBuilder = React.lazy(() => import('../tabs/MicrosoftAdsBuilder'));
 const MetaAdsBuilder = React.lazy(() => import('../tabs/MetaAdsBuilder'));
+const TikTokBuilder = React.lazy(() => import('../tabs/TikTokBuilder'));
+const RedditBuilder = React.lazy(() => import('../tabs/RedditBuilder'));
+const PinterestBuilder = React.lazy(() => import('../tabs/PinterestBuilder'));
+const SnapchatBuilder = React.lazy(() => import('../tabs/SnapchatBuilder'));
 
 const MainContent: React.FC = () => {
   const { state } = useUtm();
@@ -22,6 +26,14 @@ const MainContent: React.FC = () => {
         return <MicrosoftAdsBuilder />;
       case 'metaAds':
         return <MetaAdsBuilder />;
+      case 'tiktok':
+        return <TikTokBuilder />;
+      case 'reddit':
+        return <RedditBuilder />;
+      case 'pinterest':
+        return <PinterestBuilder />;
+      case 'snapchat':
+        return <SnapchatBuilder />;
       default:
         return <GA4Builder />;
     }

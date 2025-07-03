@@ -22,6 +22,10 @@ export interface UtmState {
   googleAds: TabData;
   microsoftAds: TabData;
   metaAds: TabData;
+  tiktok: TabData;
+  reddit: TabData;
+  pinterest: TabData;
+  snapchat: TabData;
   presets: Record<string, ConfigurationPreset>;
   history: string[];
 }

@@ -13,6 +13,10 @@ export const initialState: UtmState = {
   googleAds: createInitialTabData(),
   microsoftAds: createInitialTabData(),
   metaAds: createInitialTabData(),
+  tiktok: createInitialTabData(),
+  reddit: createInitialTabData(),
+  pinterest: createInitialTabData(),
+  snapchat: createInitialTabData(),
   presets: {},
   history: []
 };
