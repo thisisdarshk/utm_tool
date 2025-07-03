@@ -1122,7 +1122,7 @@ const PinterestBuilder: React.FC = () => {
           <h4 className="text-sm font-semibold text-red-900 dark:text-red-100 mb-3">Pinterest → UTM Mapping Reference</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-red-800 dark:text-red-200">
             <div><strong>utm_campaign:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{campaignname}'}</code> - Use readable campaign name</div>
-            <div><strong>Base URL:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{unescapedlpurl}'}</code> or <code className=\"bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{lpurl}'}</code></div>
+            <div><strong>Base URL:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{unescapedlpurl}'}</code> or <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{lpurl}'}</code></div>
             <div><strong>utm_term:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{adgroupname}'}</code> - Identifies ad group</div>
             <div><strong>utm_content:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{adid}'}</code> - Pin or creative ID</div>
             <div><strong>device:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{device}'}</code> - c, m, t (Computer, Mobile, Tablet)</div>
