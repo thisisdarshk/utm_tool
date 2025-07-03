@@ -9,7 +9,7 @@ import { useToast } from '../../hooks/useToast';
 
 // Platform logo components
 const GoogleLogo = ({ size = 16 }: { size?: number }) => (
-  <img src="/google-ads.svg" alt="Google Ads" width={size} height={size} className="object-contain" />
+  <img src="/google-ads.svg/google-ads.svg" alt="Google Ads" width={size} height={size} className="object-contain" />
 );
 
 const MicrosoftLogo = ({ size = 16 }: { size?: number }) => (
@@ -44,7 +44,7 @@ const SnapchatLogo = ({ size = 16 }: { size?: number }) => (
 );
 
 const GA4Logo = ({ size = 16 }: { size?: number }) => (
-  <img src="/google-analytics-4.svg" alt="GA4" width={size} height={size} className="object-contain" />
+  <img src="/google-analytics-4.svg/google-analytics-4.svg" alt="GA4" width={size} height={size} className="object-contain" />
 );
 
 const MetaAdsLogo = ({ size = 16 }: { size?: number }) => (
