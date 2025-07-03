@@ -153,7 +153,8 @@ const MobileTabNavigation: React.FC = () => {
     <nav className="mb-8" role="tablist" aria-label="Campaign builder tabs">
       {/* Desktop View - Responsive Grid */}
       <div className="hidden lg:block">
-        <div className="grid grid-cols-4 gap-3">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3">
+          <div className="flex items-center justify-between gap-2">
           {tabs.map((tab) => {
             const isActive = state.activeTab === tab.id;
             const LogoComponent = tab.logo;
@@ -163,10 +164,10 @@ const MobileTabNavigation: React.FC = () => {
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
                 className={`
-                  group relative overflow-hidden rounded-lg p-4 transition-all duration-300 transform hover:scale-105
+                  flex-1 flex flex-col items-center gap-2 p-3 rounded-lg transition-all duration-200
                   ${isActive 
-                    ? 'bg-white dark:bg-gray-800 shadow-lg border-2 border-blue-200 dark:border-blue-800' 
-                    : 'bg-white/70 dark:bg-gray-800/70 hover:bg-white dark:hover:bg-gray-800 shadow-md hover:shadow-lg border border-gray-200/60 dark:border-gray-700/60'
+                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-2 border-blue-200 dark:border-blue-800' 
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 border-2 border-transparent hover:text-gray-900 dark:hover:text-gray-100'
                   }
                 `}
                 role="tab"
@@ -174,29 +175,14 @@ const MobileTabNavigation: React.FC = () => {
                 aria-controls={`${tab.id}-panel`}
                 tabIndex={isActive ? 0 : -1}
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${tab.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
-                
-                <div className="relative z-10 text-center">
-                  <div className="flex justify-center mb-2">
-                    <LogoComponent size={24} />
-                  </div>
-                  <h3 className={`
-                    font-semibold text-base mb-1 transition-colors duration-300
-                    ${isActive 
-                      ? 'text-gray-900 dark:text-gray-100' 
-                      : 'text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100'
-                    }
-                  `}>
-                    {tab.label}
-                  </h3>
-                </div>
-                
-                {isActive && (
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
-                )}
+                <LogoComponent size={20} />
+                <span className="text-xs font-medium text-center leading-tight">
+                  {tab.shortLabel}
+                </span>
               </button>
             );
           })}
+          </div>
         </div>
       </div>
 

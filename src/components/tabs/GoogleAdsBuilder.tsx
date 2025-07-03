@@ -485,23 +485,24 @@ const GoogleAdsBuilder: React.FC = () => {
   return (
     <div className="space-y-8">
       {/* Video Tutorial Section */}
-      <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
-        <div className="flex items-center justify-between">
+      <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
+        <div className="flex items-center justify-between gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-2 flex items-center gap-2">
-              <Play className="w-5 h-5" />
+            <h3 className="text-base font-semibold text-green-900 dark:text-green-100 mb-1 flex items-center gap-2">
+              <Play className="w-4 h-4" />
               Google Ads Tracking Tutorial
             </h3>
-            <p className="text-green-700 dark:text-green-300 text-sm">
+            <p className="text-green-700 dark:text-green-300 text-xs">
               Learn how to set up advanced tracking templates for Google Ads campaigns
             </p>
           </div>
           <Button
             onClick={() => setShowVideoModal(true)}
             icon={Play}
+            size="sm"
             className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
           >
-            Watch Tutorial
+            Tutorial
           </Button>
         </div>
       </div>
