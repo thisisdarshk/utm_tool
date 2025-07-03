@@ -8,6 +8,7 @@ import Badge from '../common/Badge';
 import { useToast } from '../../hooks/useToast';
 
 const PinterestBuilder: React.FC = () => {
+  const [baseUrl, setBaseUrl] = useState('{unescapedlpurl}');
   const [utmSource, setUtmSource] = useState('pinterest');
   const [utmMedium, setUtmMedium] = useState('paid_social');
   const [utmCampaign, setUtmCampaign] = useState('{campaignname}');
@@ -24,6 +25,7 @@ const PinterestBuilder: React.FC = () => {
   const [customParams, setCustomParams] = useState<Array<{key: string, value: string}>>([]);
   const [generatedString, setGeneratedString] = useState('');
   const [copiedString, setCopiedString] = useState(false);
+  const [useLpurl, setUseLpurl] = useState(true);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -128,6 +130,41 @@ const PinterestBuilder: React.FC = () => {
       label: '{product_name}', 
       category: 'Product Level',
       description: 'Product title (from feed) - Useful in catalog/collection ads'
+    }
+  ], []);
+
+  // Handle individual optional parameter toggles with default value restoration
+  const handleUtmTermToggle = useCallback((enabled: boolean) => {
+    setIncludeUtmTerm(enabled);
+    
+    // If enabling and field is empty, restore default
+    if (enabled && !utmTerm.trim()) {
+      setUtmTerm('{adgroupname}');
+    }
+  }, [utmTerm]);
+
+  const handleUtmContentToggle = useCallback((enabled: boolean) => {
+    setIncludeUtmContent(enabled);
+    
+    // If enabling and field is empty, restore default
+    if (enabled && !utmContent.trim()) {
+      setUtmContent('{adid}');
+    }
+  }, [utmContent]);
+
+  // Base URL options
+  const baseUrlOptions = useMemo(() => [
+    { 
+      value: '{unescapedlpurl}', 
+      label: '{unescapedlpurl}', 
+      category: 'URL Parameters',
+      description: 'Landing page URL (unencoded/clean) - Preferred in UTM builders'
+    },
+    { 
+      value: '{lpurl}', 
+      label: '{lpurl}', 
+      category: 'URL Parameters',
+      description: 'Landing page URL (escaped) - For redirect-based tracking tools'
     }
   ], []);
 
@@ -341,25 +378,6 @@ const PinterestBuilder: React.FC = () => {
     });
   }, [pinterestParams, searchTerm, selectedCategory]);
 
-  // Handle individual optional parameter toggles with default value restoration
-  const handleUtmTermToggle = useCallback((enabled: boolean) => {
-    setIncludeUtmTerm(enabled);
-    
-    // If enabling and field is empty, restore default
-    if (enabled && !utmTerm.trim()) {
-      setUtmTerm('{adgroupname}');
-    }
-  }, [utmTerm]);
-
-  const handleUtmContentToggle = useCallback((enabled: boolean) => {
-    setIncludeUtmContent(enabled);
-    
-    // If enabling and field is empty, restore default
-    if (enabled && !utmContent.trim()) {
-      setUtmContent('{adid}');
-    }
-  }, [utmContent]);
-
   // Generate parameter string (no URL needed)
   const generateParameterString = useCallback(() => {
     const params = [];
@@ -390,9 +408,16 @@ const PinterestBuilder: React.FC = () => {
       }
     });
 
-    const finalString = params.join('&');
+    let finalString;
+    
+    if (useLpurl && baseUrl) {
+      finalString = `${baseUrl}?${params.join('&')}`;
+    } else {
+      finalString = params.join('&');
+    }
+    
     setGeneratedString(finalString);
-  }, [utmSource, utmMedium, utmCampaign, utmTerm, utmContent, includeUtmTerm, includeUtmContent, selectedParams, customParams, pinterestParams]);
+  }, [utmSource, utmMedium, utmCampaign, utmTerm, utmContent, includeUtmTerm, includeUtmContent, selectedParams, customParams, pinterestParams, useLpurl, baseUrl]);
 
   // Auto-generate when parameters change
   React.useEffect(() => {
@@ -446,6 +471,7 @@ const PinterestBuilder: React.FC = () => {
     
     const template = {
       utmSource, utmMedium, utmCampaign, utmTerm, utmContent,
+      baseUrl, useLpurl,
       includeUtmTerm, includeUtmContent,
       selectedParams, customParams, timestamp: Date.now()
     };
@@ -456,7 +482,7 @@ const PinterestBuilder: React.FC = () => {
     
     success(`Template "${templateName}" saved successfully!`);
     setTemplateName('');
-  }, [templateName, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, includeUtmTerm, includeUtmContent, selectedParams, customParams, savedTemplates, success, error]);
+  }, [templateName, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, baseUrl, useLpurl, includeUtmTerm, includeUtmContent, selectedParams, customParams, savedTemplates, success, error]);
 
   const loadTemplate = useCallback(() => {
     if (!selectedTemplate || !savedTemplates[selectedTemplate]) {
@@ -470,6 +496,8 @@ const PinterestBuilder: React.FC = () => {
     setUtmCampaign(template.utmCampaign);
     setUtmTerm(template.utmTerm);
     setUtmContent(template.utmContent);
+    setBaseUrl(template.baseUrl || '{unescapedlpurl}');
+    setUseLpurl(template.useLpurl ?? true);
     
     // Load individual toggles (with fallback for old templates)
     setIncludeUtmTerm(template.includeUtmTerm ?? true);
@@ -514,6 +542,8 @@ const PinterestBuilder: React.FC = () => {
     setUtmCampaign('{campaignname}');
     setUtmTerm('{adgroupname}');
     setUtmContent('{adid}');
+    setBaseUrl('{unescapedlpurl}');
+    setUseLpurl(true);
     setIncludeUtmTerm(true);
     setIncludeUtmContent(true);
     setSelectedParams({});
@@ -612,6 +642,47 @@ const PinterestBuilder: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Base URL Option */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Globe className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Base URL Options
+          </h3>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-2">
+            <input
+              type="checkbox"
+              id="use-lpurl"
+              checked={useLpurl}
+              onChange={(e) => setUseLpurl(e.target.checked)}
+              className="rounded border-gray-300 text-red-600 focus:ring-red-500"
+            />
+            <label htmlFor="use-lpurl" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+              Include Base URL in generated string
+            </label>
+          </div>
+          {useLpurl && (
+            <Dropdown
+              options={baseUrlOptions}
+              value={baseUrl}
+              onChange={setBaseUrl}
+              placeholder="Select base URL parameter"
+              searchable
+              clearable
+              allowCustom
+              groupByCategory
+              className="w-full"
+            />
+          )}
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            When enabled, the parameter string will include the base URL. This is useful for tracking templates.
+          </p>
+        </div>
+      </div>
 
       {/* UTM Parameters */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
@@ -784,13 +855,23 @@ const PinterestBuilder: React.FC = () => {
         <div className="mt-4 p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
           <div className="flex items-start gap-2">
             <Settings className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-medium text-red-800 dark:text-red-200">Pinterest Parameter Usage</p>
-              <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-                Copy this parameter string and paste it into Pinterest's URL parameters field in your ad campaign setup. 
-                Pinterest will automatically replace the parameters with actual values.
-              </p>
-            </div>
+            {useLpurl ? (
+              <div>
+                <p className="text-sm font-medium text-red-800 dark:text-red-200">Pinterest Tracking Template</p>
+                <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                  Copy this tracking template and paste it into Pinterest's tracking template field in your ad campaign setup.
+                  Pinterest will automatically replace the parameters with actual values.
+                </p>
+              </div>
+            ) : (
+              <div>
+                <p className="text-sm font-medium text-red-800 dark:text-red-200">Pinterest Parameter Usage</p>
+                <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                  Copy this parameter string and paste it into Pinterest's URL parameters field in your ad campaign setup. 
+                  Pinterest will automatically replace the parameters with actual values.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -1040,6 +1121,7 @@ const PinterestBuilder: React.FC = () => {
           <h4 className="text-sm font-semibold text-red-900 dark:text-red-100 mb-3">Pinterest → UTM Mapping Reference</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-red-800 dark:text-red-200">
             <div><strong>utm_campaign:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{campaignname}'}</code> - Use readable campaign name</div>
+            <div><strong>Base URL:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{unescapedlpurl}'}</code> or <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{lpurl}'}</code></div>
             <div><strong>utm_term:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{adgroupname}'}</code> - Identifies ad group</div>
             <div><strong>utm_content:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{adid}'}</code> - Pin or creative ID</div>
             <div><strong>device:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{device}'}</code> - c, m, t (Computer, Mobile, Tablet)</div>
