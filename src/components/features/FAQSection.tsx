@@ -12,78 +12,46 @@ const FAQSection: React.FC = () => {
   const faqs: FAQItem[] = [
     {
       question: "What are UTM parameters?",
-      answer: (
-        <p>
-          UTM parameters are tags added to URLs to track the effectiveness of online marketing campaigns. 
-          They help analytics platforms like Google Analytics 4 identify the source, medium, and campaign 
-          name that drove traffic to your website.
-        </p>
-      )
+      answer: <p>UTM parameters are tags added to URLs that help track where website traffic comes from.</p>
     },
     {
       question: "Why should I use UTM parameters?",
-      answer: (
-        <p>
-          UTM parameters provide valuable insights into which marketing channels and campaigns are driving 
-          traffic and conversions. They help you make data-driven decisions about where to allocate your 
-          marketing budget and how to optimize your campaigns.
-        </p>
-      )
+      answer: <p>UTM parameters help you identify which marketing efforts are most effective at driving traffic to your website.</p>
     },
     {
       question: "What's the difference between utm_source and utm_medium?",
       answer: (
         <div>
-          <p><strong>utm_source</strong> identifies where the traffic comes from (e.g., google, facebook, newsletter).</p>
-          <p><strong>utm_medium</strong> identifies what type of link was used (e.g., cpc, email, social).</p>
+          <p><strong>utm_source</strong> identifies where the traffic comes from.</p>
+          <p><strong>utm_medium</strong> identifies what type of link was used.</p>
         </div>
       )
     },
     {
       question: "How do GA4 channel definitions work?",
-      answer: (
-        <p>
-          GA4 uses predefined channel groupings to categorize your traffic based on the utm_source, 
-          utm_medium, and other parameters. Our tool predicts which GA4 channel your parameters will 
-          be assigned to, helping you ensure consistent tracking across campaigns.
-        </p>
-      )
+      answer: <p>GA4 uses predefined channel groupings to categorize your traffic based on UTM parameters.</p>
     },
     {
       question: "Can I save my UTM configurations for future use?",
-      answer: (
-        <p>
-          Yes! Our UTM Parameter Builder allows you to save templates for each platform. 
-          This makes it easy to maintain consistent UTM parameters across campaigns and 
-          quickly generate new tracking URLs.
-        </p>
-      )
+      answer: <p>Yes! You can save templates for each platform to maintain consistent tracking.</p>
     },
     {
       question: "What's the best practice for naming conventions?",
       answer: (
         <div>
-          <p>For consistent tracking, we recommend:</p>
+          <p>Best practices include:</p>
           <ul className="list-disc pl-5 mt-2">
             <li>Use lowercase consistently</li>
             <li>Use underscores (_) or hyphens (-) instead of spaces</li>
-            <li>Be consistent with naming across campaigns</li>
-            <li>Keep parameter values concise but descriptive</li>
-            <li>Document your UTM naming strategy for team alignment</li>
+            <li>Be consistent with naming</li>
+            <li>Keep values concise but descriptive</li>
           </ul>
         </div>
       )
     },
     {
       question: "How do I use platform-specific parameters like ValueTrack?",
-      answer: (
-        <p>
-          Our tool includes platform-specific builders for Google Ads (ValueTrack parameters), 
-          Microsoft Ads, Meta, TikTok, Pinterest, Reddit, and Snapchat. Each builder includes 
-          the official parameters and macros for that platform, making it easy to create 
-          advanced tracking templates.
-        </p>
-      )
+      answer: <p>Each platform tab includes the official parameters and macros for that specific platform.</p>
     }
   ];
 

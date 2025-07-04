@@ -6,23 +6,7 @@ const SEOSchema: React.FC = () => {
     "@type": "SoftwareApplication",
     "name": "UTM Parameter Builder",
     "applicationCategory": "MarketingApplication",
-    "operatingSystem": "Web",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "description": "Professional marketing campaign tracking tool for creating UTM parameters for GA4, Google Ads, Meta, TikTok, Pinterest, Reddit, Snapchat, and Klaviyo.",
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "ratingCount": "156"
-    },
-    "author": {
-      "@type": "Organization",
-      "name": "Elevar",
-      "url": "https://getelevar.com"
-    }
+    "operatingSystem": "Web"
   };
 
   return (

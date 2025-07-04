@@ -32,7 +32,7 @@ const Header: React.FC = () => {
       </div>
       <div className="mt-4 md:mt-0">
         <p className="text-sm text-gray-600 dark:text-gray-400 max-w-md">
-          Create perfect UTM parameters for GA4, Google Ads, Meta, TikTok, Pinterest, Reddit, Snapchat, and Klaviyo campaigns.
+          Create UTM parameters for your marketing campaigns
         </p>
       </div>
     </header>
