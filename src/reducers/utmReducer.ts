@@ -17,6 +17,7 @@ export const initialState: UtmState = {
   reddit: createInitialTabData(),
   pinterest: createInitialTabData(),
   snapchat: createInitialTabData(),
+  klaviyo: createInitialTabData(),
   presets: {},
   history: []
 };

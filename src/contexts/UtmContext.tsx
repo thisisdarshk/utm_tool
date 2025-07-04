@@ -100,7 +100,7 @@ export const UtmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
       
       // Ensure required properties exist
-      const requiredTabs = ['ga4', 'googleAds', 'microsoftAds', 'metaAds'];
+      const requiredTabs = ['ga4', 'googleAds', 'microsoftAds', 'metaAds', 'klaviyo'];
       for (const tab of requiredTabs) {
         if (!parsed[tab]) {
           parsed[tab] = { baseUrl: '', parameters: {}, options: {}, lastModified: Date.now() };

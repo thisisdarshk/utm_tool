@@ -43,6 +43,15 @@ const GA4Logo = ({ size = 20 }: { size?: number }) => (
   <img src="/google-analytics-4.svg" alt="GA4" width={size} height={size} className="object-contain" />
 );
 
+const KlaviyoLogo = ({ size = 20 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" fill="#5D38DB" />
+    <path d="M8 7L8 17" stroke="white" strokeWidth="2" strokeLinecap="round" />
+    <path d="M12 7L12 17" stroke="white" strokeWidth="2" strokeLinecap="round" />
+    <path d="M16 7L16 17" stroke="white" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
 const tabs = [
   { 
     id: 'ga4', 
@@ -99,6 +108,13 @@ const tabs = [
     color: 'from-yellow-400 to-yellow-500',
     shortLabel: 'Snapchat',
     logo: SnapchatLogo
+  },
+  { 
+    id: 'klaviyo', 
+    label: 'Klaviyo Email', 
+    color: 'from-purple-500 to-indigo-600',
+    shortLabel: 'Klaviyo',
+    logo: KlaviyoLogo
   }
 ];
 

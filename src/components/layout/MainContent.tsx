@@ -12,6 +12,7 @@ const TikTokBuilder = React.lazy(() => import('../tabs/TikTokBuilder'));
 const RedditBuilder = React.lazy(() => import('../tabs/RedditBuilder'));
 const PinterestBuilder = React.lazy(() => import('../tabs/PinterestBuilder'));
 const SnapchatBuilder = React.lazy(() => import('../tabs/SnapchatBuilder'));
+const KlaviyoBuilder = React.lazy(() => import('../tabs/KlaviyoBuilder'));
 
 const MainContent: React.FC = () => {
   const { state } = useUtm();
@@ -34,6 +35,8 @@ const MainContent: React.FC = () => {
         return <PinterestBuilder />;
       case 'snapchat':
         return <SnapchatBuilder />;
+      case 'klaviyo':
+        return <KlaviyoBuilder />;
       default:
         return <GA4Builder />;
     }

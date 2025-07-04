@@ -26,6 +26,7 @@ export interface UtmState {
   reddit: TabData;
   pinterest: TabData;
   snapchat: TabData;
+  klaviyo: TabData;
   presets: Record<string, ConfigurationPreset>;
   history: string[];
 }
