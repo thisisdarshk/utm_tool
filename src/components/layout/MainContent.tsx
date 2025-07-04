@@ -2,7 +2,6 @@ import React, { Suspense } from 'react';
 import { useUtm } from '../../contexts/UtmContext';
 import LoadingSpinner from '../common/LoadingSpinner';
 import ErrorBoundary from '../common/ErrorBoundary';
-import FAQSection from '../features/FAQSection';
 
 // Lazy load tab components for better performance
 const GA4Builder = React.lazy(() => import('../tabs/GA4Builder'));
@@ -81,7 +80,6 @@ const MainContent: React.FC = () => {
             {renderActiveTab()}
           </div>
         </Suspense>
-        <FAQSection />
       </ErrorBoundary>
     </main>
   );
