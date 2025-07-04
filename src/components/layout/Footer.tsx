@@ -33,7 +33,7 @@ const Footer: React.FC = () => {
       <div className="space-y-8">
         {/* Resource Links */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4" id="resources-heading">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
             Helpful Resources
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -47,10 +47,10 @@ const Footer: React.FC = () => {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h4 className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" id={`resource-${index}`}>
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       {link.label}
                     </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1" aria-labelledby={`resource-${index}`}>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                       {link.description}
                     </p>
                   </div>
@@ -96,8 +96,7 @@ const Footer: React.FC = () => {
           </p>
         </div>
       </div>
-    </footer>
-  );
+
       <div className="text-center space-y-4">
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Always test your tracking implementation before launching campaigns.
@@ -154,3 +153,10 @@ const Footer: React.FC = () => {
               Start building better UTM parameters today and gain deeper insights into your marketing campaign performance!
             </p>
           </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
