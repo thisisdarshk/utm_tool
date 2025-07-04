@@ -45,13 +45,22 @@ const GA4Builder: React.FC = () => {
   
   const { success, error } = useToast();
 
-  // Source options with categories
+  // Source options with ONLY Search, Social, Shopping, Video categories
   const sourceOptions = useMemo(() => {
     const options = [];
     
-    // Add sources from categories
-    Object.entries(SOURCE_CATEGORIES).forEach(([category, sources]) => {
+    // Only include these 4 categories as per GA4 channel grouping rules
+    const allowedCategories = [
+      'SOURCE_CATEGORY_SEARCH',
+      'SOURCE_CATEGORY_SOCIAL', 
+      'SOURCE_CATEGORY_SHOPPING',
+      'SOURCE_CATEGORY_VIDEO'
+    ];
+    
+    allowedCategories.forEach(category => {
       const categoryName = category.replace('SOURCE_CATEGORY_', '').toLowerCase();
+      const sources = SOURCE_CATEGORIES[category as keyof typeof SOURCE_CATEGORIES];
+      
       sources.forEach(source => {
         options.push({
           value: source,
@@ -61,16 +70,6 @@ const GA4Builder: React.FC = () => {
         });
       });
     });
-    
-    // Add common custom sources
-    const customSources = [
-      { value: 'email', label: 'email', category: 'email', description: 'Email campaigns' },
-      { value: 'newsletter', label: 'newsletter', category: 'email', description: 'Newsletter campaigns' },
-      { value: 'direct', label: 'direct', category: 'direct', description: 'Direct traffic' },
-      { value: 'affiliate', label: 'affiliate', category: 'affiliate', description: 'Affiliate marketing' }
-    ];
-    
-    options.push(...customSources);
     
     return options.sort((a, b) => a.label.localeCompare(b.label));
   }, []);
@@ -367,9 +366,25 @@ const GA4Builder: React.FC = () => {
     <div className="space-y-8">
       {/* 1. GA4 Channel Definitions (Always Visible) */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-          GA4 Channel Definitions
-        </h3>
+        <div className="flex items-center gap-3 mb-4">
+          <img 
+            src="/google-analytics-4.svg/google-analytics-4.svg" 
+            alt="GA4" 
+            className="w-6 h-6"
+            onError={(e) => {
+              // Fallback if logo fails to load
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              const fallback = document.createElement('div');
+              fallback.className = 'w-6 h-6 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-xs';
+              fallback.textContent = 'GA4';
+              target.parentNode?.insertBefore(fallback, target);
+            }}
+          />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            GA4 Channel Definitions
+          </h3>
+        </div>
         
         <div className="space-y-4">
           <div>
@@ -384,7 +399,7 @@ const GA4Builder: React.FC = () => {
               <option value="">All channels (no filtering)</option>
               {ga4Channels.map(channel => (
                 <option key={channel.name} value={channel.name}>
-                  {channel.name}
+                  {channel.name} - {channel.description.substring(0, 80)}...
                 </option>
               ))}
             </select>
@@ -575,6 +590,54 @@ const GA4Builder: React.FC = () => {
             helperText="Targeting criteria (remarketing, prospecting, etc.)"
           />
         </div>
+
+        {/* Custom Parameters - MOVED UNDER ACCORDION */}
+        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">
+              Custom Parameters
+            </h4>
+            <Button onClick={addCustomParam} icon={Plus} size="sm">
+              Add Parameter
+            </Button>
+          </div>
+          
+          {customParams.length === 0 ? (
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              <Settings className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>No custom parameters added. Click "Add Parameter" to add custom tracking parameters.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {customParams.map((param, index) => (
+                <div key={index} className="flex gap-3 items-end">
+                  <div className="flex-1">
+                    <Input
+                      label="Parameter Key"
+                      placeholder="e.g., custom_param"
+                      value={param.key}
+                      onChange={(e) => updateCustomParam(index, 'key', e.target.value)}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <Input
+                      label="Parameter Value"
+                      placeholder="e.g., custom_value"
+                      value={param.value}
+                      onChange={(e) => updateCustomParam(index, 'value', e.target.value)}
+                    />
+                  </div>
+                  <Button
+                    onClick={() => removeCustomParam(index)}
+                    variant="danger"
+                    icon={Trash2}
+                    size="sm"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </Accordion>
 
       {/* 4. Generated UTM URL */}
@@ -600,54 +663,6 @@ const GA4Builder: React.FC = () => {
             {generatedUrl || 'Enter parameters to generate URL...'}
           </code>
         </div>
-      </div>
-
-      {/* 5. Custom Parameters */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Custom Parameters
-          </h3>
-          <Button onClick={addCustomParam} icon={Plus} size="sm">
-            Add Parameter
-          </Button>
-        </div>
-        
-        {customParams.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            <Settings className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>No custom parameters added. Click "Add Parameter" to add custom tracking parameters.</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {customParams.map((param, index) => (
-              <div key={index} className="flex gap-3 items-end">
-                <div className="flex-1">
-                  <Input
-                    label="Parameter Key"
-                    placeholder="e.g., custom_param"
-                    value={param.key}
-                    onChange={(e) => updateCustomParam(index, 'key', e.target.value)}
-                  />
-                </div>
-                <div className="flex-1">
-                  <Input
-                    label="Parameter Value"
-                    placeholder="e.g., custom_value"
-                    value={param.value}
-                    onChange={(e) => updateCustomParam(index, 'value', e.target.value)}
-                  />
-                </div>
-                <Button
-                  onClick={() => removeCustomParam(index)}
-                  variant="danger"
-                  icon={Trash2}
-                  size="sm"
-                />
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* 6. GA4 Channel Predictor */}
