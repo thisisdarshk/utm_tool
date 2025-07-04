@@ -25,6 +25,10 @@ const GA4Builder: React.FC = () => {
   const [includeUtmTerm, setIncludeUtmTerm] = useState(false);
   const [includeUtmContent, setIncludeUtmContent] = useState(false);
   
+  // Channel filtering state
+  const [selectedChannel, setSelectedChannel] = useState('');
+  const [channelFilterActive, setChannelFilterActive] = useState(false);
+  
   // Advanced GA4 parameters
   const [selectedParams, setSelectedParams] = useState<Record<string, boolean>>({});
   const [customParams, setCustomParams] = useState<Array<{key: string, value: string}>>([]);
@@ -35,7 +39,6 @@ const GA4Builder: React.FC = () => {
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedChannel, setSelectedChannel] = useState('');
   const [spaceEncoding, setSpaceEncoding] = useState<'percent' | 'plus' | 'underscore'>('percent');
   
   // Template management
@@ -106,6 +109,47 @@ const GA4Builder: React.FC = () => {
     { value: 'sms', label: 'sms', category: 'SMS', description: 'SMS marketing' },
     { value: 'push', label: 'push', category: 'Push', description: 'Push notifications' }
   ], []);
+
+  // Filter source and medium options based on selected channel
+  const filteredSourceOptions = useMemo(() => {
+    if (!channelFilterActive || !selectedChannel) return sourceOptions;
+    
+    const channel = ga4Channels.find(ch => ch.name === selectedChannel);
+    if (!channel || channel.recommendedSources.length === 0) return sourceOptions;
+    
+    return sourceOptions.filter(option => 
+      channel.recommendedSources.includes(option.value)
+    );
+  }, [sourceOptions, selectedChannel, channelFilterActive]);
+
+  const filteredMediumOptions = useMemo(() => {
+    if (!channelFilterActive || !selectedChannel) return mediumOptions;
+    
+    const channel = ga4Channels.find(ch => ch.name === selectedChannel);
+    if (!channel || channel.recommendedMediums.length === 0) return mediumOptions;
+    
+    return mediumOptions.filter(option => 
+      channel.recommendedMediums.includes(option.value)
+    );
+  }, [mediumOptions, selectedChannel, channelFilterActive]);
+
+  // Handle channel selection
+  const handleChannelChange = useCallback((channelName: string) => {
+    setSelectedChannel(channelName);
+    
+    if (channelName) {
+      const channel = ga4Channels.find(ch => ch.name === channelName);
+      if (channel) {
+        // Auto-populate recommended values if current values are empty
+        if (!utmSource && channel.recommendedSources.length > 0) {
+          setUtmSource(channel.recommendedSources[0]);
+        }
+        if (!utmMedium && channel.recommendedMediums.length > 0) {
+          setUtmMedium(channel.recommendedMediums[0]);
+        }
+      }
+    }
+  }, [utmSource, utmMedium]);
 
   // Advanced GA4 parameters
   const ga4Params = useMemo(() => [
@@ -326,6 +370,8 @@ const GA4Builder: React.FC = () => {
     setUtmContent('');
     setIncludeUtmTerm(false);
     setIncludeUtmContent(false);
+    setSelectedChannel('');
+    setChannelFilterActive(false);
     setSelectedParams({});
     setCustomParams([]);
     setSpaceEncoding('percent');
@@ -418,6 +464,75 @@ const GA4Builder: React.FC = () => {
         </div>
       )}
 
+      {/* GA4 Channel Selector */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Filter className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            GA4 Channel Targeting (Optional)
+          </h3>
+          <Badge variant="info" size="sm">Recommended</Badge>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-4">
+            <input
+              type="checkbox"
+              id="channel-filter-active"
+              checked={channelFilterActive}
+              onChange={(e) => setChannelFilterActive(e.target.checked)}
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <label htmlFor="channel-filter-active" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+              Filter source and medium options by GA4 channel
+            </label>
+          </div>
+
+          {channelFilterActive && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Target GA4 Channel
+              </label>
+              <select
+                value={selectedChannel}
+                onChange={(e) => handleChannelChange(e.target.value)}
+                className="w-full p-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500/20 focus:outline-none focus:ring-4"
+              >
+                <option value="">Select a GA4 channel to target...</option>
+                {ga4Channels.map(channel => (
+                  <option key={channel.name} value={channel.name}>
+                    {channel.name}
+                  </option>
+                ))}
+              </select>
+              
+              {selectedChannel && (
+                <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <Target className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                        {selectedChannel} Channel
+                      </p>
+                      <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                        {ga4Channels.find(ch => ch.name === selectedChannel)?.description}
+                      </p>
+                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                        <strong>Condition:</strong> {ga4Channels.find(ch => ch.name === selectedChannel)?.condition}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                When enabled, source and medium dropdowns will only show options that match your selected GA4 channel
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Base URL & UTM Parameters */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center gap-3 mb-6">
@@ -445,7 +560,7 @@ const GA4Builder: React.FC = () => {
                 Campaign Source (utm_source) *
               </label>
               <Dropdown
-                options={sourceOptions}
+                options={filteredSourceOptions}
                 value={utmSource}
                 onChange={setUtmSource}
                 placeholder="e.g., google, facebook"
@@ -456,7 +571,7 @@ const GA4Builder: React.FC = () => {
                 className="w-full"
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Where the traffic comes from
+                Where the traffic comes from {channelFilterActive && selectedChannel ? `(filtered for ${selectedChannel})` : ''}
               </p>
             </div>
 
@@ -465,7 +580,7 @@ const GA4Builder: React.FC = () => {
                 Campaign Medium (utm_medium) *
               </label>
               <Dropdown
-                options={mediumOptions}
+                options={filteredMediumOptions}
                 value={utmMedium}
                 onChange={setUtmMedium}
                 placeholder="e.g., cpc, email, social"
@@ -476,7 +591,7 @@ const GA4Builder: React.FC = () => {
                 className="w-full"
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                How the traffic gets to you
+                How the traffic gets to you {channelFilterActive && selectedChannel ? `(filtered for ${selectedChannel})` : ''}
               </p>
             </div>
 
