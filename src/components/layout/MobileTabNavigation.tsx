@@ -40,7 +40,7 @@ const SnapchatLogo = ({ size = 20 }: { size?: number }) => (
 );
 
 const GA4Logo = ({ size = 20 }: { size?: number }) => (
-  <img src="/google-analytics-4.svg/google-analytics-4.svg" alt="GA4" width={size} height={size} className="object-contain" />
+  <img src="/google-analytics-4.svg" alt="GA4" width={size} height={size} className="object-contain" />
 );
 
 const tabs = [
