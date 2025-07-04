@@ -43,7 +43,7 @@ const GA4Logo = ({ size = 20 }: { size?: number }) => (
   <img src="/google-analytics-4.svg" alt="GA4" width={size} height={size} className="object-contain" />
 );
 
-const KlaviyoLogo = ({ size = 20 }: { size?: number }) => (
+const KlaviyoLogo = ({ size = 30 }: { size?: number }) => (
   <img src="/klaviyo-logo.svg" alt="Klaviyo" width={size} height={size} className="object-contain" />
 );
 
