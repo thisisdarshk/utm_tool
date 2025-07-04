@@ -366,9 +366,16 @@ const GA4Builder: React.FC = () => {
     <div className="space-y-8">
       {/* 1. GA4 Channel Definitions (Always Visible) */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-          GA4 Channel Definitions
-        </h3>
+        <div className="flex items-center gap-3 mb-4">
+          <img 
+            src="/google-analytics-4.svg" 
+            alt="GA4" 
+            className="w-6 h-6"
+          />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            GA4 Channel Definitions
+          </h3>
+        </div>
         
         <div className="space-y-4">
           <div>
@@ -613,7 +620,7 @@ const GA4Builder: React.FC = () => {
           <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Predicted Channel:
+                Predicted Channel: 
               </span>
               <Badge 
                 variant={predictedChannel === 'Unassigned' ? 'warning' : 'success'} 
@@ -623,7 +630,7 @@ const GA4Builder: React.FC = () => {
               </Badge>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              <strong>Rationale:</strong> {channelRationale}
+              <strong>Explanation:</strong> {channelRationale}
             </p>
           </div>
           
