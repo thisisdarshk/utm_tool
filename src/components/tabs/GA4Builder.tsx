@@ -383,7 +383,7 @@ const GA4Builder: React.FC = () => {
               <option value="">All channels (no filtering)</option>
               {ga4Channels.map(channel => (
                 <option key={channel.name} value={channel.name}>
-                  {channel.name} - {channel.description.substring(0, 80)}...
+                  {channel.name}
                 </option>
               ))}
             </select>
@@ -412,7 +412,17 @@ const GA4Builder: React.FC = () => {
         </h3>
         
         <div className="space-y-6">
-          {/* Website URL */}
+          <Input
+            label="Website URL"
+            value={baseUrl}
+            onChange={(e) => setBaseUrl(e.target.value)}
+            onBlur={handleUrlBlur}
+            placeholder="https://example.com/page"
+            required
+            error={urlError}
+            helperText="The destination URL for your campaign"
+          />
+
           {/* REQUIRED UTM PARAMETERS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -468,10 +478,7 @@ const GA4Builder: React.FC = () => {
       </div>
 
       {/* 3. Additional UTM Parameters (Accordion) */}
-      <Accordion 
-        title="Optional UTM Parameters" 
-        defaultOpen={false}
-      >
+      <Accordion title="Optional UTM Parameters" defaultOpen={false}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label="Campaign Term (utm_term)"
@@ -521,7 +528,7 @@ const GA4Builder: React.FC = () => {
             helperText="Targeting criteria (remarketing, prospecting, etc.)"
           />
         </div>
-
+        
         {/* Custom Parameters - MOVED UNDER ACCORDION */}
         <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
           <div className="flex items-center justify-between mb-4">
@@ -569,7 +576,6 @@ const GA4Builder: React.FC = () => {
             </div>
           )}
         </div>
-
       </Accordion>
 
       {/* 4. Generated UTM URL */}
@@ -633,11 +639,7 @@ const GA4Builder: React.FC = () => {
       </div>
 
       {/* Template Management (Accordion) */}
-      <Accordion 
-        title="Template Management" 
-        icon={<Save className="w-5 h-5" />}
-        defaultOpen={false}
-      >
+      <Accordion title="Template Management" icon={<Save className="w-5 h-5" />} defaultOpen={false}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <h3 className="text-md font-medium text-gray-700 dark:text-gray-300">Save Template</h3>
