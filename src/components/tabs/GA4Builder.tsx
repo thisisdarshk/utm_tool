@@ -6,8 +6,6 @@ import Dropdown from '../common/Dropdown';
 import Accordion from '../common/Accordion';
 import Badge from '../common/Badge';
 import Card from '../common/Card';
-import ParameterValidator from '../features/ParameterValidator';
-import UrlPreview from '../features/UrlPreview';
 import { useToast } from '../../hooks/useToast';
 import { predictGA4Channel } from '../../utils/validation';
 import { SOURCE_CATEGORIES, getSourceCategory } from '../../data/sourceCategories';
@@ -20,26 +18,24 @@ const GA4Builder: React.FC = () => {
   const [utmCampaign, setUtmCampaign] = useState('');
   const [utmTerm, setUtmTerm] = useState('');
   const [utmContent, setUtmContent] = useState('');
+  const [utmId, setUtmId] = useState('');
+  const [utmSourcePlatform, setUtmSourcePlatform] = useState('');
+  const [utmCreativeFormat, setUtmCreativeFormat] = useState('');
+  const [utmMarketingTactic, setUtmMarketingTactic] = useState('');
   
-  // Individual optional parameter toggles
-  const [includeUtmTerm, setIncludeUtmTerm] = useState(false);
-  const [includeUtmContent, setIncludeUtmContent] = useState(false);
-  
-  // Channel filtering state
+  // Selected GA4 channel for filtering
   const [selectedChannel, setSelectedChannel] = useState('');
-  const [channelFilterActive, setChannelFilterActive] = useState(false);
   
-  // Advanced GA4 parameters
-  const [selectedParams, setSelectedParams] = useState<Record<string, boolean>>({});
+  // Space encoding
+  const [spaceEncoding, setSpaceEncoding] = useState<'percent' | 'plus' | 'underscore'>('percent');
+  
+  // Custom parameters
   const [customParams, setCustomParams] = useState<Array<{key: string, value: string}>>([]);
   
-  // UI state
+  // Generated URL and validation
   const [generatedUrl, setGeneratedUrl] = useState('');
+  const [urlError, setUrlError] = useState('');
   const [copiedUrl, setCopiedUrl] = useState(false);
-  const [showVideoModal, setShowVideoModal] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [spaceEncoding, setSpaceEncoding] = useState<'percent' | 'plus' | 'underscore'>('percent');
   
   // Template management
   const [savedTemplates, setSavedTemplates] = useState<Record<string, any>>({});
@@ -112,7 +108,7 @@ const GA4Builder: React.FC = () => {
 
   // Filter source and medium options based on selected channel
   const filteredSourceOptions = useMemo(() => {
-    if (!channelFilterActive || !selectedChannel) return sourceOptions;
+    if (!selectedChannel) return sourceOptions;
     
     const channel = ga4Channels.find(ch => ch.name === selectedChannel);
     if (!channel || channel.recommendedSources.length === 0) return sourceOptions;
@@ -120,10 +116,10 @@ const GA4Builder: React.FC = () => {
     return sourceOptions.filter(option => 
       channel.recommendedSources.includes(option.value)
     );
-  }, [sourceOptions, selectedChannel, channelFilterActive]);
+  }, [sourceOptions, selectedChannel]);
 
   const filteredMediumOptions = useMemo(() => {
-    if (!channelFilterActive || !selectedChannel) return mediumOptions;
+    if (!selectedChannel) return mediumOptions;
     
     const channel = ga4Channels.find(ch => ch.name === selectedChannel);
     if (!channel || channel.recommendedMediums.length === 0) return mediumOptions;
@@ -131,86 +127,42 @@ const GA4Builder: React.FC = () => {
     return mediumOptions.filter(option => 
       channel.recommendedMediums.includes(option.value)
     );
-  }, [mediumOptions, selectedChannel, channelFilterActive]);
+  }, [mediumOptions, selectedChannel]);
 
-  // Handle channel selection
-  const handleChannelChange = useCallback((channelName: string) => {
-    setSelectedChannel(channelName);
+  // Validate URL format
+  const validateUrl = useCallback((url: string) => {
+    if (!url.trim()) {
+      setUrlError('Website URL is required');
+      return false;
+    }
     
-    if (channelName) {
-      const channel = ga4Channels.find(ch => ch.name === channelName);
-      if (channel) {
-        // Auto-populate recommended values if current values are empty
-        if (!utmSource && channel.recommendedSources.length > 0) {
-          setUtmSource(channel.recommendedSources[0]);
-        }
-        if (!utmMedium && channel.recommendedMediums.length > 0) {
-          setUtmMedium(channel.recommendedMediums[0]);
-        }
-      }
+    try {
+      new URL(url);
+      setUrlError('');
+      return true;
+    } catch {
+      setUrlError('Invalid URL format. Please include http:// or https://');
+      return false;
     }
-  }, [utmSource, utmMedium]);
-
-  // Advanced GA4 parameters
-  const ga4Params = useMemo(() => [
-    {
-      id: 'utm_id',
-      value: '',
-      label: 'Campaign ID',
-      category: 'campaign',
-      description: 'A unique identifier for your campaign',
-      availability: 'All campaigns',
-      example: 'campaign_123'
-    },
-    {
-      id: 'utm_source_platform',
-      value: '',
-      label: 'Source Platform',
-      category: 'campaign',
-      description: 'Platform where marketing activity is managed',
-      availability: 'All campaigns',
-      example: 'Google Ads'
-    },
-    {
-      id: 'utm_creative_format',
-      value: '',
-      label: 'Creative Format',
-      category: 'creative',
-      description: 'Type of creative (display, video, search, etc.)',
-      availability: 'All campaigns',
-      example: 'display_banner_300x250'
-    },
-    {
-      id: 'utm_marketing_tactic',
-      value: '',
-      label: 'Marketing Tactic',
-      category: 'targeting',
-      description: 'Targeting criteria (remarketing, prospecting, etc.)',
-      availability: 'All campaigns',
-      example: 'remarketing_dynamic'
-    }
-  ], []);
-
-  // Filter parameters based on search and category
-  const filteredParams = useMemo(() => {
-    return ga4Params.filter(param => {
-      const matchesSearch = param.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           param.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || param.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [ga4Params, searchTerm, selectedCategory]);
-
-  // Handle individual optional parameter toggles
-  const handleUtmTermToggle = useCallback((enabled: boolean) => {
-    setIncludeUtmTerm(enabled);
-    if (!enabled) setUtmTerm('');
   }, []);
 
-  const handleUtmContentToggle = useCallback((enabled: boolean) => {
-    setIncludeUtmContent(enabled);
-    if (!enabled) setUtmContent('');
-  }, []);
+  // Handle URL blur validation
+  const handleUrlBlur = useCallback(() => {
+    validateUrl(baseUrl);
+  }, [baseUrl, validateUrl]);
+
+  // Apply space encoding
+  const applySpaceEncoding = useCallback((value: string) => {
+    switch (spaceEncoding) {
+      case 'plus':
+        return value.replace(/ /g, '+');
+      case 'underscore':
+        return value.replace(/ /g, '_');
+      case 'percent':
+      default:
+        return encodeURIComponent(value).replace(/%20/g, '%20');
+    }
+  }, [spaceEncoding]);
 
   // Generate URL
   const generateUrl = useCallback(() => {
@@ -219,57 +171,40 @@ const GA4Builder: React.FC = () => {
       return;
     }
 
+    const isValidUrl = validateUrl(baseUrl);
+    if (!isValidUrl) {
+      setGeneratedUrl('');
+      return;
+    }
+
     try {
       const url = new URL(baseUrl);
       const params = new URLSearchParams(url.search);
       
-      // Add UTM parameters
-      if (utmSource) params.set('utm_source', utmSource);
-      if (utmMedium) params.set('utm_medium', utmMedium);
-      if (utmCampaign) params.set('utm_campaign', utmCampaign);
-      if (includeUtmTerm && utmTerm) params.set('utm_term', utmTerm);
-      if (includeUtmContent && utmContent) params.set('utm_content', utmContent);
-      
-      // Add selected advanced parameters
-      Object.entries(selectedParams).forEach(([paramId, isSelected]) => {
-        if (isSelected) {
-          const param = ga4Params.find(p => p.id === paramId);
-          if (param && param.value) {
-            params.set(paramId, param.value);
-          }
-        }
-      });
+      // Add UTM parameters with space encoding
+      if (utmSource) params.set('utm_source', applySpaceEncoding(utmSource));
+      if (utmMedium) params.set('utm_medium', applySpaceEncoding(utmMedium));
+      if (utmCampaign) params.set('utm_campaign', applySpaceEncoding(utmCampaign));
+      if (utmTerm) params.set('utm_term', applySpaceEncoding(utmTerm));
+      if (utmContent) params.set('utm_content', applySpaceEncoding(utmContent));
+      if (utmId) params.set('utm_id', applySpaceEncoding(utmId));
+      if (utmSourcePlatform) params.set('utm_source_platform', applySpaceEncoding(utmSourcePlatform));
+      if (utmCreativeFormat) params.set('utm_creative_format', applySpaceEncoding(utmCreativeFormat));
+      if (utmMarketingTactic) params.set('utm_marketing_tactic', applySpaceEncoding(utmMarketingTactic));
       
       // Add custom parameters
       customParams.forEach(param => {
         if (param.key && param.value) {
-          params.set(param.key, param.value);
+          params.set(param.key, applySpaceEncoding(param.value));
         }
       });
       
-      // Handle space encoding
-      let paramString = params.toString();
-      if (spaceEncoding === 'plus') {
-        paramString = paramString.replace(/%20/g, '+');
-      } else if (spaceEncoding === 'underscore') {
-        paramString = paramString.replace(/%20/g, '_');
-      }
-      
-      url.search = paramString;
+      url.search = params.toString();
       setGeneratedUrl(url.toString());
     } catch (err) {
-      // Fallback for invalid URLs
-      const params = [];
-      if (utmSource) params.push(`utm_source=${encodeURIComponent(utmSource)}`);
-      if (utmMedium) params.push(`utm_medium=${encodeURIComponent(utmMedium)}`);
-      if (utmCampaign) params.push(`utm_campaign=${encodeURIComponent(utmCampaign)}`);
-      if (includeUtmTerm && utmTerm) params.push(`utm_term=${encodeURIComponent(utmTerm)}`);
-      if (includeUtmContent && utmContent) params.push(`utm_content=${encodeURIComponent(utmContent)}`);
-      
-      const separator = baseUrl.includes('?') ? '&' : '?';
-      setGeneratedUrl(params.length > 0 ? `${baseUrl}${separator}${params.join('&')}` : baseUrl);
+      setGeneratedUrl('');
     }
-  }, [baseUrl, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, includeUtmTerm, includeUtmContent, selectedParams, customParams, ga4Params, spaceEncoding]);
+  }, [baseUrl, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, utmId, utmSourcePlatform, utmCreativeFormat, utmMarketingTactic, customParams, applySpaceEncoding, validateUrl]);
 
   // Auto-generate when parameters change
   React.useEffect(() => {
@@ -284,6 +219,20 @@ const GA4Builder: React.FC = () => {
     return 'Unassigned';
   }, [utmSource, utmMedium, utmCampaign]);
 
+  // Get channel prediction rationale
+  const channelRationale = useMemo(() => {
+    if (!utmSource || !utmMedium) {
+      return 'Requires utm_source and utm_medium for prediction';
+    }
+    
+    const channel = ga4Channels.find(ch => ch.name === predictedChannel);
+    if (channel) {
+      return `Matches condition: ${channel.condition}`;
+    }
+    
+    return 'Does not match any GA4 channel definition';
+  }, [utmSource, utmMedium, predictedChannel]);
+
   // Copy to clipboard
   const copyToClipboard = async () => {
     try {
@@ -296,6 +245,21 @@ const GA4Builder: React.FC = () => {
     }
   };
 
+  // Custom parameter management
+  const addCustomParam = () => {
+    setCustomParams(prev => [...prev, { key: '', value: '' }]);
+  };
+
+  const updateCustomParam = (index: number, field: 'key' | 'value', value: string) => {
+    setCustomParams(prev => prev.map((param, i) => 
+      i === index ? { ...param, [field]: value } : param
+    ));
+  };
+
+  const removeCustomParam = (index: number) => {
+    setCustomParams(prev => prev.filter((_, i) => i !== index));
+  };
+
   // Template management
   const saveTemplate = useCallback(() => {
     if (!templateName.trim()) {
@@ -305,8 +269,9 @@ const GA4Builder: React.FC = () => {
     
     const template = {
       baseUrl, utmSource, utmMedium, utmCampaign, utmTerm, utmContent,
-      includeUtmTerm, includeUtmContent, selectedParams, customParams,
-      spaceEncoding, timestamp: Date.now()
+      utmId, utmSourcePlatform, utmCreativeFormat, utmMarketingTactic,
+      selectedChannel, spaceEncoding, customParams,
+      timestamp: Date.now()
     };
     
     const newTemplates = { ...savedTemplates, [templateName]: template };
@@ -315,7 +280,7 @@ const GA4Builder: React.FC = () => {
     
     success(`Template "${templateName}" saved successfully!`);
     setTemplateName('');
-  }, [templateName, baseUrl, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, includeUtmTerm, includeUtmContent, selectedParams, customParams, spaceEncoding, savedTemplates, success, error]);
+  }, [templateName, baseUrl, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, utmId, utmSourcePlatform, utmCreativeFormat, utmMarketingTactic, selectedChannel, spaceEncoding, customParams, savedTemplates, success, error]);
 
   const loadTemplate = useCallback(() => {
     if (!selectedTemplate || !savedTemplates[selectedTemplate]) {
@@ -330,11 +295,13 @@ const GA4Builder: React.FC = () => {
     setUtmCampaign(template.utmCampaign || '');
     setUtmTerm(template.utmTerm || '');
     setUtmContent(template.utmContent || '');
-    setIncludeUtmTerm(template.includeUtmTerm ?? false);
-    setIncludeUtmContent(template.includeUtmContent ?? false);
-    setSelectedParams(template.selectedParams || {});
-    setCustomParams(template.customParams || []);
+    setUtmId(template.utmId || '');
+    setUtmSourcePlatform(template.utmSourcePlatform || '');
+    setUtmCreativeFormat(template.utmCreativeFormat || '');
+    setUtmMarketingTactic(template.utmMarketingTactic || '');
+    setSelectedChannel(template.selectedChannel || '');
     setSpaceEncoding(template.spaceEncoding || 'percent');
+    setCustomParams(template.customParams || []);
     setLoadedTemplateName(selectedTemplate);
     
     success(`Template "${selectedTemplate}" loaded successfully!`);
@@ -368,31 +335,16 @@ const GA4Builder: React.FC = () => {
     setUtmCampaign('');
     setUtmTerm('');
     setUtmContent('');
-    setIncludeUtmTerm(false);
-    setIncludeUtmContent(false);
+    setUtmId('');
+    setUtmSourcePlatform('');
+    setUtmCreativeFormat('');
+    setUtmMarketingTactic('');
     setSelectedChannel('');
-    setChannelFilterActive(false);
-    setSelectedParams({});
-    setCustomParams([]);
     setSpaceEncoding('percent');
+    setCustomParams([]);
     setLoadedTemplateName('');
     success('Form reset successfully!');
   }, [success]);
-
-  // Custom parameter management
-  const addCustomParam = () => {
-    setCustomParams(prev => [...prev, { key: '', value: '' }]);
-  };
-
-  const updateCustomParam = (index: number, field: 'key' | 'value', value: string) => {
-    setCustomParams(prev => prev.map((param, i) => 
-      i === index ? { ...param, [field]: value } : param
-    ));
-  };
-
-  const removeCustomParam = (index: number) => {
-    setCustomParams(prev => prev.filter((_, i) => i !== index));
-  };
 
   // Load saved templates on mount
   React.useEffect(() => {
@@ -406,152 +358,114 @@ const GA4Builder: React.FC = () => {
     }
   }, []);
 
-  // Categories for filtering
-  const categories = [
-    { value: 'all', label: 'All Parameters' },
-    { value: 'campaign', label: 'Campaign Level' },
-    { value: 'creative', label: 'Creative Level' },
-    { value: 'targeting', label: 'Targeting' }
-  ];
+  // Get selected channel details
+  const selectedChannelData = useMemo(() => {
+    return ga4Channels.find(ch => ch.name === selectedChannel);
+  }, [selectedChannel]);
 
   return (
     <div className="space-y-8">
-      {/* Video Tutorial Section */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h3 className="text-base font-semibold text-blue-900 dark:text-blue-100 mb-1 flex items-center gap-2">
-              <Play className="w-4 h-4" />
-              GA4 UTM Builder Tutorial
-            </h3>
-            <p className="text-blue-700 dark:text-blue-300 text-xs">
-              Learn how to create GA4-compliant UTM parameters with channel prediction
-            </p>
-          </div>
-          <Button
-            onClick={() => setShowVideoModal(true)}
-            icon={Play}
-            size="sm"
-            className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
-          >
-            Tutorial
-          </Button>
-        </div>
-      </div>
-
-      {/* Video Modal */}
-      {showVideoModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
-            <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-semibold">GA4 UTM Builder Tutorial</h3>
-              <Button onClick={() => setShowVideoModal(false)} variant="ghost" icon={X} size="sm" />
-            </div>
-            <div className="p-6">
-              <div className="aspect-video bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <Play className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400 text-lg font-medium">
-                    GA4 UTM Builder Tutorial Placeholder
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-                    Replace with your GA4 tutorial video
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* GA4 Channel Selector */}
+      {/* 1. GA4 Channel Definitions (Always Visible) */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <Filter className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            GA4 Channel Targeting (Optional)
-          </h3>
-          <Badge variant="info" size="sm">Recommended</Badge>
-        </div>
-
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          GA4 Channel Definitions
+        </h3>
+        
         <div className="space-y-4">
-          <div className="flex items-center gap-2 mb-4">
-            <input
-              type="checkbox"
-              id="channel-filter-active"
-              checked={channelFilterActive}
-              onChange={(e) => setChannelFilterActive(e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <label htmlFor="channel-filter-active" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-              Filter source and medium options by GA4 channel
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Select GA4 Channel (Optional)
             </label>
+            <select
+              value={selectedChannel}
+              onChange={(e) => setSelectedChannel(e.target.value)}
+              className="w-full p-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500/20 focus:outline-none focus:ring-4"
+            >
+              <option value="">All channels (no filtering)</option>
+              {ga4Channels.map(channel => (
+                <option key={channel.name} value={channel.name}>
+                  {channel.name}
+                </option>
+              ))}
+            </select>
           </div>
-
-          {channelFilterActive && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Target GA4 Channel
-              </label>
-              <select
-                value={selectedChannel}
-                onChange={(e) => handleChannelChange(e.target.value)}
-                className="w-full p-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500/20 focus:outline-none focus:ring-4"
-              >
-                <option value="">Select a GA4 channel to target...</option>
-                {ga4Channels.map(channel => (
-                  <option key={channel.name} value={channel.name}>
-                    {channel.name}
-                  </option>
-                ))}
-              </select>
-              
-              {selectedChannel && (
-                <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                  <div className="flex items-start gap-2">
-                    <Target className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                        {selectedChannel} Channel
-                      </p>
-                      <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                        {ga4Channels.find(ch => ch.name === selectedChannel)?.description}
-                      </p>
-                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
-                        <strong>Condition:</strong> {ga4Channels.find(ch => ch.name === selectedChannel)?.condition}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                When enabled, source and medium dropdowns will only show options that match your selected GA4 channel
+          
+          {selectedChannelData && (
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                {selectedChannelData.name}
+              </h4>
+              <p className="text-sm text-blue-800 dark:text-blue-200 mb-3">
+                <strong>Description:</strong> {selectedChannelData.description}
+              </p>
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                <strong>GA4 Grouping Condition:</strong> {selectedChannelData.condition}
               </p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Base URL & UTM Parameters */}
+      {/* 2. Base URL & UTM Parameters */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <Globe className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Base URL & UTM Parameters
-          </h3>
-          <Badge variant="info" size="sm">Required</Badge>
-        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
+          Base URL & UTM Parameters
+        </h3>
+        
         <div className="space-y-6">
-          {/* Base URL */}
+          {/* Website URL */}
           <Input
             label="Website URL"
             value={baseUrl}
             onChange={(e) => setBaseUrl(e.target.value)}
+            onBlur={handleUrlBlur}
             placeholder="https://example.com/page"
             required
+            error={urlError}
             helperText="The destination URL for your campaign"
           />
+
+          {/* Space Encoding */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Space Encoding
+            </label>
+            <div className="flex gap-6">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="spaceEncoding"
+                  value="percent"
+                  checked={spaceEncoding === 'percent'}
+                  onChange={(e) => setSpaceEncoding(e.target.value as 'percent')}
+                  className="mr-2 text-blue-600 focus:ring-blue-500"
+                />
+                Percent (%20)
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="spaceEncoding"
+                  value="plus"
+                  checked={spaceEncoding === 'plus'}
+                  onChange={(e) => setSpaceEncoding(e.target.value as 'plus')}
+                  className="mr-2 text-blue-600 focus:ring-blue-500"
+                />
+                Plus (+)
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="spaceEncoding"
+                  value="underscore"
+                  checked={spaceEncoding === 'underscore'}
+                  onChange={(e) => setSpaceEncoding(e.target.value as 'underscore')}
+                  className="mr-2 text-blue-600 focus:ring-blue-500"
+                />
+                Underscore (_)
+              </label>
+            </div>
+          </div>
 
           {/* Required UTM Parameters */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -571,7 +485,7 @@ const GA4Builder: React.FC = () => {
                 className="w-full"
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Where the traffic comes from {channelFilterActive && selectedChannel ? `(filtered for ${selectedChannel})` : ''}
+                Where the traffic comes from {selectedChannel ? `(filtered for ${selectedChannel})` : ''}
               </p>
             </div>
 
@@ -591,7 +505,7 @@ const GA4Builder: React.FC = () => {
                 className="w-full"
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                How the traffic gets to you {channelFilterActive && selectedChannel ? `(filtered for ${selectedChannel})` : ''}
+                How the traffic gets to you {selectedChannel ? `(filtered for ${selectedChannel})` : ''}
               </p>
             </div>
 
@@ -599,132 +513,86 @@ const GA4Builder: React.FC = () => {
               label="Campaign Name (utm_campaign) *"
               value={utmCampaign}
               onChange={(e) => setUtmCampaign(e.target.value)}
-              placeholder="summer_sale_2025"
+              placeholder="e.g., summer_sale_2025"
               required
               helperText="What campaign it's for"
             />
           </div>
-
-          {/* Optional UTM Parameters */}
-          <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-            <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              Optional UTM Parameters
-            </h4>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="relative">
-                <div className="flex items-center gap-2 mb-2">
-                  <input
-                    type="checkbox"
-                    id="include-utm-term"
-                    checked={includeUtmTerm}
-                    onChange={(e) => handleUtmTermToggle(e.target.checked)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label htmlFor="include-utm-term" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                    Campaign Term (utm_term)
-                  </label>
-                </div>
-                <Input
-                  value={utmTerm}
-                  onChange={(e) => setUtmTerm(e.target.value)}
-                  placeholder="running+shoes"
-                  disabled={!includeUtmTerm}
-                  helperText="Keywords for paid search"
-                  className={!includeUtmTerm ? 'opacity-50' : ''}
-                />
-              </div>
-
-              <div className="relative">
-                <div className="flex items-center gap-2 mb-2">
-                  <input
-                    type="checkbox"
-                    id="include-utm-content"
-                    checked={includeUtmContent}
-                    onChange={(e) => handleUtmContentToggle(e.target.checked)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label htmlFor="include-utm-content" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                    Campaign Content (utm_content)
-                  </label>
-                </div>
-                <Input
-                  value={utmContent}
-                  onChange={(e) => setUtmContent(e.target.value)}
-                  placeholder="logolink"
-                  disabled={!includeUtmContent}
-                  helperText="Differentiate similar content"
-                  className={!includeUtmContent ? 'opacity-50' : ''}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Space Encoding Options */}
-          <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-            <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              Space Encoding
-            </h4>
-            <div className="flex gap-4">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="spaceEncoding"
-                  value="percent"
-                  checked={spaceEncoding === 'percent'}
-                  onChange={(e) => setSpaceEncoding(e.target.value as 'percent')}
-                  className="mr-2"
-                />
-                Percent (%20)
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="spaceEncoding"
-                  value="plus"
-                  checked={spaceEncoding === 'plus'}
-                  onChange={(e) => setSpaceEncoding(e.target.value as 'plus')}
-                  className="mr-2"
-                />
-                Plus (+)
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="spaceEncoding"
-                  value="underscore"
-                  checked={spaceEncoding === 'underscore'}
-                  onChange={(e) => setSpaceEncoding(e.target.value as 'underscore')}
-                  className="mr-2"
-                />
-                Underscore (_)
-              </label>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              Choose how spaces in parameter values should be encoded in the generated URL
-            </p>
-          </div>
         </div>
       </div>
 
-      {/* Generated URL Preview */}
+      {/* 3. Additional UTM Parameters (Accordion) */}
+      <Accordion 
+        title="Optional UTM Parameters" 
+        defaultOpen={false}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Campaign Term (utm_term)"
+            value={utmTerm}
+            onChange={(e) => setUtmTerm(e.target.value)}
+            placeholder="running+shoes"
+            helperText="Keywords for paid search campaigns"
+          />
+          
+          <Input
+            label="Campaign Content (utm_content)"
+            value={utmContent}
+            onChange={(e) => setUtmContent(e.target.value)}
+            placeholder="logolink"
+            helperText="Used to differentiate similar content or links within the same ad"
+          />
+          
+          <Input
+            label="Campaign ID (utm_id)"
+            value={utmId}
+            onChange={(e) => setUtmId(e.target.value)}
+            placeholder="campaign_123"
+            helperText="A unique identifier for your campaign"
+          />
+          
+          <Input
+            label="Source Platform (utm_source_platform)"
+            value={utmSourcePlatform}
+            onChange={(e) => setUtmSourcePlatform(e.target.value)}
+            placeholder="Google Ads"
+            helperText="Platform where marketing activity is managed"
+          />
+          
+          <Input
+            label="Creative Format (utm_creative_format)"
+            value={utmCreativeFormat}
+            onChange={(e) => setUtmCreativeFormat(e.target.value)}
+            placeholder="display_banner_300x250"
+            helperText="Type of creative (display, video, search, etc.)"
+          />
+          
+          <Input
+            label="Marketing Tactic (utm_marketing_tactic)"
+            value={utmMarketingTactic}
+            onChange={(e) => setUtmMarketingTactic(e.target.value)}
+            placeholder="remarketing_dynamic"
+            helperText="Targeting criteria (remarketing, prospecting, etc.)"
+          />
+        </div>
+      </Accordion>
+
+      {/* 4. Generated UTM URL */}
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-6 border-2 border-blue-200 dark:border-blue-800 shadow-lg">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-blue-900 dark:text-blue-100 flex items-center gap-2">
             <Zap className="w-6 h-6" />
             Generated UTM URL
           </h2>
-          <div className="flex gap-2">
-            <Button
-              onClick={copyToClipboard}
-              disabled={!generatedUrl}
-              icon={copiedUrl ? Check : Copy}
-              variant={copiedUrl ? 'success' : 'primary'}
-              size="lg"
-            >
-              {copiedUrl ? 'Copied!' : 'Copy URL'}
-            </Button>
-          </div>
+          <Button
+            onClick={copyToClipboard}
+            disabled={!generatedUrl || !!urlError}
+            icon={copiedUrl ? Check : Copy}
+            variant={copiedUrl ? 'success' : 'primary'}
+            size="lg"
+          >
+            {copiedUrl ? 'Copied!' : 'Copy URL'}
+          </Button>
         </div>
         
         <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-700 shadow-inner">
@@ -732,132 +600,14 @@ const GA4Builder: React.FC = () => {
             {generatedUrl || 'Enter parameters to generate URL...'}
           </code>
         </div>
-
-        {/* Channel Prediction */}
-        {predictedChannel && utmSource && utmMedium && (
-          <div className="mt-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-            <div className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              <div>
-                <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                  Predicted GA4 Channel: <span className="font-bold">{predictedChannel}</span>
-                </p>
-                <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                  Based on your source and medium combination
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* URL Preview Component */}
-      {generatedUrl && (
-        <UrlPreview
-          url={generatedUrl}
-          baseUrl={baseUrl}
-          parameters={{
-            utm_source: utmSource,
-            utm_medium: utmMedium,
-            utm_campaign: utmCampaign,
-            ...(includeUtmTerm && utmTerm && { utm_term: utmTerm }),
-            ...(includeUtmContent && utmContent && { utm_content: utmContent })
-          }}
-        />
-      )}
-
-      {/* Parameter Validator */}
-      {(utmSource || utmMedium || utmCampaign) && (
-        <ParameterValidator
-          source={utmSource}
-          medium={utmMedium}
-          campaign={utmCampaign}
-          predictedChannel={predictedChannel}
-          baseUrl={baseUrl}
-        />
-      )}
-
-      {/* Advanced GA4 Parameters */}
-      <Accordion 
-        title="Advanced GA4 Parameters" 
-        icon={<Settings className="w-5 h-5" />}
-        defaultOpen={false}
-      >
-        {/* Search and Filter */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="flex-1">
-            <Input
-              placeholder="Search parameters..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              icon={<Search className="w-4 h-4" />}
-            />
-          </div>
-          <div className="sm:w-64">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
-            >
-              {categories.map(cat => (
-                <option key={cat.value} value={cat.value}>{cat.label}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Parameters Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredParams.map(param => (
-            <div key={param.id} className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-              <input
-                type="checkbox"
-                id={param.id}
-                checked={selectedParams[param.id] || false}
-                onChange={(e) => {
-                  setSelectedParams(prev => ({
-                    ...prev,
-                    [param.id]: e.target.checked
-                  }));
-                }}
-                className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <div className="flex-1 min-w-0">
-                <label htmlFor={param.id} className="block text-sm font-medium text-gray-900 dark:text-gray-100 cursor-pointer mb-1">
-                  {param.label}
-                </label>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                  {param.description}
-                </p>
-                {selectedParams[param.id] && (
-                  <Input
-                    placeholder={param.example}
-                    value={param.value}
-                    onChange={(e) => {
-                      const updatedParams = ga4Params.map(p => 
-                        p.id === param.id ? { ...p, value: e.target.value } : p
-                      );
-                      // Update the param value in the array
-                    }}
-                    size="sm"
-                  />
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Accordion>
-
-      {/* Custom Parameters */}
-      <Accordion 
-        title="Custom Parameters" 
-        icon={<Plus className="w-5 h-5" />}
-        defaultOpen={false}
-      >
+      {/* 5. Custom Parameters */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Add custom tracking parameters for advanced analytics
-          </p>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Custom Parameters
+          </h3>
           <Button onClick={addCustomParam} icon={Plus} size="sm">
             Add Parameter
           </Button>
@@ -898,9 +648,44 @@ const GA4Builder: React.FC = () => {
             ))}
           </div>
         )}
-      </Accordion>
+      </div>
 
-      {/* Template Management */}
+      {/* 6. GA4 Channel Predictor */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          GA4 Default Channel Prediction
+        </h3>
+        
+        <div className="space-y-4">
+          <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Predicted Channel:
+              </span>
+              <Badge 
+                variant={predictedChannel === 'Unassigned' ? 'warning' : 'success'} 
+                size="sm"
+              >
+                {predictedChannel}
+              </Badge>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              <strong>Rationale:</strong> {channelRationale}
+            </p>
+          </div>
+          
+          {predictedChannel === 'Unassigned' && utmSource && utmMedium && (
+            <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                Your current source and medium combination doesn't match any GA4 channel definition. 
+                Consider reviewing the channel conditions above or adjusting your parameters.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 7. Template Management (Accordion) */}
       <Accordion 
         title="Template Management" 
         icon={<Save className="w-5 h-5" />}
@@ -980,32 +765,6 @@ const GA4Builder: React.FC = () => {
           </div>
         )}
       </Accordion>
-
-
-      {/* Help Section */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">
-          GA4 Resources
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
-            <a href="https://support.google.com/analytics/answer/10917952" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>📖</span> GA4 UTM Parameters Guide
-            </a>
-            <a href="https://support.google.com/analytics/answer/9756891" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>🔗</span> GA4 Channel Definitions
-            </a>
-          </div>
-          <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
-            <button onClick={() => setShowVideoModal(true)} className="flex items-center gap-2 hover:underline text-left">
-              <Play size={16} /> Watch Tutorial Video
-            </button>
-            <a href="https://support.google.com/analytics/answer/9267735" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>⚙️</span> GA4 Setup Guide
-            </a>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
