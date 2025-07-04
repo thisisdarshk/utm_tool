@@ -72,7 +72,7 @@ const UrlPreview: React.FC<UrlPreviewProps> = ({
   return (
     <Card className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2" id="url-preview-heading">
           <Globe className="w-5 h-5" />
           URL Preview
         </h3>
@@ -114,36 +114,36 @@ const UrlPreview: React.FC<UrlPreviewProps> = ({
         <div className="space-y-4">
           {/* URL Analysis Stats */}
           {showAnalytics && urlAnalysis && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-              <div className="text-center">
-                <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg" role="region" aria-label="URL analysis statistics">
+              <div className="text-center" role="group" aria-labelledby="total-length-label">
+                <div className="text-lg font-bold text-gray-900 dark:text-gray-100" id="total-length-value">
                   {urlAnalysis.totalLength}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="text-xs text-gray-500 dark:text-gray-400" id="total-length-label">
                   Total Length
                 </div>
               </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
+              <div className="text-center" role="group" aria-labelledby="parameters-count-label">
+                <div className="text-lg font-bold text-gray-900 dark:text-gray-100" id="parameters-count-value">
                   {urlAnalysis.parameterCount}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="text-xs text-gray-500 dark:text-gray-400" id="parameters-count-label">
                   Parameters
                 </div>
               </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
+              <div className="text-center" role="group" aria-labelledby="utm-params-label">
+                <div className="text-lg font-bold text-gray-900 dark:text-gray-100" id="utm-params-value">
                   {urlAnalysis.utmParams.length}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="text-xs text-gray-500 dark:text-gray-400" id="utm-params-label">
                   UTM Params
                 </div>
               </div>
-              <div className="text-center">
-                <div className={`text-lg font-bold ${urlAnalysis.totalLength > 2000 ? 'text-red-500' : 'text-green-500'}`}>
+              <div className="text-center" role="group" aria-labelledby="length-ok-label">
+                <div className={`text-lg font-bold ${urlAnalysis.totalLength > 2000 ? 'text-red-500' : 'text-green-500'}`} id="length-ok-value">
                   {urlAnalysis.totalLength <= 2000 ? '✓' : '⚠'}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="text-xs text-gray-500 dark:text-gray-400" id="length-ok-label">
                   Length OK
                 </div>
               </div>

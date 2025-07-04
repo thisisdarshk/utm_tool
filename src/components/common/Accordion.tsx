@@ -51,6 +51,8 @@ const Accordion: React.FC<AccordionProps> = ({
   return (
     <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden ${className}`}>
       <button
+        aria-expanded={isOpen}
+        aria-controls={`accordion-content-${title.replace(/\s+/g, '-').toLowerCase()}`}
         onClick={handleToggle}
         onKeyDown={handleKeyDown}
         disabled={disabled}
@@ -93,8 +95,10 @@ const Accordion: React.FC<AccordionProps> = ({
       <div
         ref={contentRef}
         id={`accordion-content-${title.replace(/\s+/g, '-').toLowerCase()}`}
+        id={`accordion-content-${title.replace(/\s+/g, '-').toLowerCase()}`}
         className="overflow-hidden transition-all duration-300 ease-in-out"
         style={{ height: contentHeight }}
+        aria-hidden={!isOpen}
         aria-hidden={!isOpen}
       >
         <div className="p-6 pt-0">

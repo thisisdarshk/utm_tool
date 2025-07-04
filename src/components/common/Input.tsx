@@ -57,6 +57,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
         <input
           ref={ref}
           id={inputId}
+          aria-describedby={error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined}
+          aria-invalid={error ? 'true' : 'false'}
           type={actualType}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -99,13 +101,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
       </div>
       
       {error && (
-        <p id={`${inputId}-error`} className="text-sm text-red-600 dark:text-red-400 font-medium" role="alert">
+        <p id={`${inputId}-error`} className="text-sm text-red-600 dark:text-red-400 font-medium mt-1" role="alert">
           {error}
         </p>
       )}
       
       {helperText && !error && (
-        <p id={`${inputId}-helper`} className="text-sm text-gray-500 dark:text-gray-400">
+        <p id={`${inputId}-helper`} className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           {helperText}
         </p>
       )}

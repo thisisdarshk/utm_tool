@@ -8,6 +8,7 @@ import Footer from './components/layout/Footer';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import Toast from './components/common/Toast';
 import { useToast } from './hooks/useToast';
+import SEOSchema from './components/common/SEOSchema';
 
 const ToastContainer: React.FC = () => {
   const { toasts, removeToast } = useToast();
@@ -29,6 +30,7 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
+        <SEOSchema />
         <UtmProvider>
           <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-blue-950 text-gray-900 dark:text-gray-100 transition-all duration-300">
             <div className="container mx-auto px-4 md:px-8 max-w-7xl">

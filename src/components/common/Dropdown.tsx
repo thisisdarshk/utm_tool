@@ -170,6 +170,10 @@ const Dropdown: React.FC<DropdownProps> = ({
       <button
         id={dropdownId}
         type="button"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-invalid={error ? 'true' : 'false'}
+        aria-describedby={error ? `${dropdownId}-error` : helperText ? `${dropdownId}-helper` : undefined}
         onClick={handleToggle}
         onKeyDown={handleKeyDown}
         onFocus={() => setIsFocused(true)}
@@ -214,11 +218,12 @@ const Dropdown: React.FC<DropdownProps> = ({
       {isOpen && (
         <div className={`
           absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 
-          border-2 border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl
+          border-2 border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl 
           overflow-hidden
         `} 
-        style={{ maxHeight: '600px' }}
-        role="listbox">
+        style={{ maxHeight: '600px' }} 
+        role="listbox"
+        aria-labelledby={dropdownId}>
           {(searchable || allowCustom) && (
             <div className="p-4 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50">
               {!showCustomInput ? (

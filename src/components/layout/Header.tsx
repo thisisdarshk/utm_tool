@@ -22,13 +22,18 @@ const Header: React.FC = () => {
           <div className="w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
         </div>
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent leading-tight">
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent leading-tight" id="main-heading">
             UTM Parameter Builder
           </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium" id="main-subtitle">
             Professional marketing campaign tracking tool
           </p>
         </div>
+      </div>
+      <div className="mt-4 md:mt-0">
+        <p className="text-sm text-gray-600 dark:text-gray-400 max-w-md">
+          Create perfect UTM parameters for GA4, Google Ads, Meta, TikTok, Pinterest, Reddit, Snapchat, and Klaviyo campaigns.
+        </p>
       </div>
     </header>
   );

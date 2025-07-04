@@ -285,7 +285,7 @@ const ParameterValidator: React.FC<ParameterValidatorProps> = ({
   return (
     <Card className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100" id="parameter-validation-heading">
           Parameter Validation
         </h3>
         <div className="flex gap-2">
@@ -298,10 +298,10 @@ const ParameterValidator: React.FC<ParameterValidatorProps> = ({
       {/* Overall Score */}
       <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300" id="quality-score-label">
             Configuration Quality Score
           </span>
-          <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
+          <span className="text-lg font-bold text-gray-900 dark:text-gray-100" aria-labelledby="quality-score-label">
             {stats.score}%
           </span>
         </div>
@@ -316,7 +316,7 @@ const ParameterValidator: React.FC<ParameterValidatorProps> = ({
       {/* Validation Rules */}
       <div className="space-y-3">
         {validationRules.map((rule) => (
-          <div key={rule.id} className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <div key={rule.id} className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" role="region" aria-label={`Validation rule: ${rule.name}`}>
             {getIcon(rule.status)}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
