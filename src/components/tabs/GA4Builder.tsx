@@ -465,7 +465,6 @@ const GA4Builder: React.FC = () => {
             />
           </div>
         </div>
-        </div>
       </div>
 
       {/* 3. Additional UTM Parameters (Accordion) */}
@@ -571,53 +570,6 @@ const GA4Builder: React.FC = () => {
           )}
         </div>
 
-        {/* Custom Parameters - MOVED UNDER ACCORDION */}
-        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">
-              Custom Parameters
-            </h4>
-            <Button onClick={addCustomParam} icon={Plus} size="sm">
-              Add Parameter
-            </Button>
-          </div>
-          
-          {customParams.length === 0 ? (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-              <Settings className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No custom parameters added. Click "Add Parameter" to add custom tracking parameters.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {customParams.map((param, index) => (
-                <div key={index} className="flex gap-3 items-end">
-                  <div className="flex-1">
-                    <Input
-                      label="Parameter Key"
-                      placeholder="e.g., custom_param"
-                      value={param.key}
-                      onChange={(e) => updateCustomParam(index, 'key', e.target.value)}
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <Input
-                      label="Parameter Value"
-                      placeholder="e.g., custom_value"
-                      value={param.value}
-                      onChange={(e) => updateCustomParam(index, 'value', e.target.value)}
-                    />
-                  </div>
-                  <Button
-                    onClick={() => removeCustomParam(index)}
-                    variant="danger"
-                    icon={Trash2}
-                    size="sm"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
       </Accordion>
 
       {/* 4. Generated UTM URL */}
