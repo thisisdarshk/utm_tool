@@ -245,7 +245,7 @@ export const analyzeUrl = (url: string): UrlAnalysisResult => {
     // Add explanation for the channel prediction
     const channelData = ga4Channels.find(c => c.name === analysis.predictedChannel);
     if (channelData) {
-      analysis.channelExplanation = `Matches condition: ${channelData.condition}`;
+      analysis.channelExplanation = getSimpleChannelExplanation(source, medium, campaign, analysis.predictedChannel);
     }
 
     // Check for common issues with better messaging
@@ -284,5 +284,74 @@ export const analyzeUrl = (url: string): UrlAnalysisResult => {
     return analysis;
   } catch (error) {
     throw new Error('Invalid URL format');
+  }
+};
+
+// Helper function to provide simple English explanations for channel predictions
+const getSimpleChannelExplanation = (source: string, medium: string, campaign: string, predictedChannel: string): string => {
+  const src = source.toLowerCase().trim();
+  const med = medium.toLowerCase().trim();
+  const camp = campaign.toLowerCase().trim();
+
+  switch (predictedChannel) {
+    case 'Direct':
+      return 'Users typed your URL directly or used a bookmark';
+    
+    case 'Cross-network':
+      return 'Campaign name contains "cross-network" indicating multi-network ads';
+    
+    case 'Paid Shopping':
+      if (camp.includes('shop')) {
+        return 'Campaign name contains shopping keywords and uses paid advertising';
+      }
+      return 'Traffic from shopping sites using paid advertising';
+    
+    case 'Paid Search':
+      return 'Paid ads on search engines like Google or Bing';
+    
+    case 'Paid Social':
+      return 'Paid ads on social media platforms';
+    
+    case 'Paid Video':
+      return 'Paid ads on video platforms like YouTube';
+    
+    case 'Display':
+      return 'Display advertising (banners, visual ads)';
+    
+    case 'Paid Other':
+      return 'Paid advertising that doesn\'t fit other specific categories';
+    
+    case 'Organic Shopping':
+      return 'Non-paid links from shopping sites';
+    
+    case 'Organic Social':
+      return 'Non-paid links from social media platforms';
+    
+    case 'Organic Video':
+      return 'Non-paid links from video platforms';
+    
+    case 'Organic Search':
+      return 'Non-paid search results from search engines';
+    
+    case 'Referral':
+      return 'Links from other websites (blogs, news sites, etc.)';
+    
+    case 'Email':
+      return 'Links from email campaigns';
+    
+    case 'Affiliates':
+      return 'Links from affiliate marketing partners';
+    
+    case 'Audio':
+      return 'Ads on audio platforms like podcasts';
+    
+    case 'SMS':
+      return 'Links from text messages';
+    
+    case 'Mobile Push Notifications':
+      return 'Links from mobile app notifications';
+    
+    default:
+      return 'Parameters don\'t match any standard GA4 channel definition';
   }
 };

@@ -58,6 +58,27 @@ export const ga4Parameters = {
 
 export const ga4Channels: Channel[] = [
   {
+    name: 'Affiliates',
+    description: 'Affiliates is the channel by which users arrive at your site/app via links on affiliate sites.',
+    condition: 'Medium = affiliate',
+    recommendedMediums: ['affiliate'],
+    recommendedSources: []
+  },
+  {
+    name: 'Audio',
+    description: 'Audio is the channel by which users arrive at your site/app via ads on audio platforms (e.g., podcast platforms).',
+    condition: 'Medium exactly matches audio',
+    recommendedMediums: ['audio'],
+    recommendedSources: []
+  },
+  {
+    name: 'Cross-network',
+    description: 'Cross-network is the channel by which users arrive at your site/app via ads that appear on a variety of networks (e.g., Search and Display).',
+    condition: 'Campaign Name contains "cross-network"',
+    recommendedMediums: [],
+    recommendedSources: []
+  },
+  {
     name: 'Direct',
     description: 'Direct is the channel by which users arrive at your site/app via a saved link or by entering your URL.',
     condition: 'Source exactly matches "(direct)" AND Medium is one of ("(not set)", "(none)")',
@@ -65,53 +86,32 @@ export const ga4Channels: Channel[] = [
     recommendedSources: ['(direct)']
   },
   {
-    name: 'Cross-network',
-    description: 'Cross-network is the channel by which users arrive at your site/app via ads that appear on a variety of networks (e.g., Search and Display). Cross-network includes Demand Gen, Performance Max and Smart Shopping.',
-    condition: 'Campaign Name contains "cross-network"',
-    recommendedMediums: [], // GA4 documentation specifies NO medium requirements for Cross-network
-    recommendedSources: [] // GA4 documentation specifies NO source requirements for Cross-network
-  },
-  {
-    name: 'Paid Shopping',
-    description: 'Paid Shopping is the channel by which users arrive at your site/app via paid ads on shopping sites like Amazon or ebay or on individual retailer sites.',
-    condition: '(Source matches a list of shopping sites OR Campaign Name matches regex ^(.*(([^a-df-z]|^)shop|shopping).*)$) AND Medium matches regex ^(.*cp.*|ppc|retargeting|paid.*)$',
-    recommendedMediums: ['cpc', 'ppc', 'paid', 'retargeting'],
-    recommendedSources: SOURCE_CATEGORIES.SOURCE_CATEGORY_SHOPPING
-  },
-  {
-    name: 'Paid Search',
-    description: 'Paid Search is the channel by which users arrive at your site/app via ads on search-engine sites like Bing, Baidu, or Google.',
-    condition: 'Source matches a list of search sites AND Medium matches regex ^(.*cp.*|ppc|retargeting|paid.*)$',
-    recommendedMediums: ['cpc', 'ppc', 'paid', 'retargeting'],
-    recommendedSources: SOURCE_CATEGORIES.SOURCE_CATEGORY_SEARCH
-  },
-  {
-    name: 'Paid Social',
-    description: 'Paid Social is the channel by which users arrive at your site/app via ads on social sites like Facebook, TikTok, and Twitter.',
-    condition: 'Source matches a regex list of social sites AND Medium matches regex ^(.*cp.*|ppc|retargeting|paid.*)$',
-    recommendedMediums: ['cpc', 'ppc', 'paid', 'retargeting'],
-    recommendedSources: SOURCE_CATEGORIES.SOURCE_CATEGORY_SOCIAL
-  },
-  {
-    name: 'Paid Video',
-    description: 'Paid Video is the channel by which users arrive at your site/app via ads on video sites like TikTok, Vimeo, and YouTube.',
-    condition: 'Source matches a list of video sites AND Medium matches regex ^(.*cp.*|ppc|retargeting|paid.*)$',
-    recommendedMediums: ['cpc', 'ppc', 'paid', 'retargeting'],
-    recommendedSources: SOURCE_CATEGORIES.SOURCE_CATEGORY_VIDEO
-  },
-  {
     name: 'Display',
     description: 'Display is the channel by which users arrive at your site/app via display ads, including ads on the Google Display Network.',
     condition: 'Medium is one of ("display", "banner", "expandable", "interstitial", "cpm")',
     recommendedMediums: ['display', 'banner', 'expandable', 'interstitial', 'cpm'],
-    recommendedSources: [] // GA4 documentation specifies NO source requirements for Display channel
+    recommendedSources: []
   },
   {
-    name: 'Paid Other',
-    description: 'Paid Other is the channel by which users arrive at your site/app via ads, but not through an ad identified as Search, Social, Shopping, or Video.',
-    condition: 'Medium matches regex ^(.*cp.*|ppc|retargeting|paid.*)$',
-    recommendedMediums: ['cpc', 'ppc', 'paid', 'retargeting'],
-    recommendedSources: []
+    name: 'Email',
+    description: 'Email is the channel by which users arrive at your site/app via links in email.',
+    condition: 'Source = email|e-mail|e_mail|e mail OR Medium = email|e-mail|e_mail|e mail',
+    recommendedMediums: ['email', 'e-mail', 'e_mail', 'e mail'],
+    recommendedSources: ['email', 'e-mail', 'e_mail', 'e mail']
+  },
+  {
+    name: 'Mobile Push Notifications',
+    description: 'Mobile Push Notifications is the channel by which users arrive at your site/app via links in mobile-device messages when they\'re not actively using the app.',
+    condition: 'Medium ends with "push" OR Medium contains "mobile" or "notification" OR Source exactly matches "firebase"',
+    recommendedMediums: ['push', 'mobile', 'notification', 'mobile_push', 'app_push'],
+    recommendedSources: ['firebase']
+  },
+  {
+    name: 'Organic Search',
+    description: 'Organic Search is the channel by which users arrive at your site/app via non-ad links in organic-search results.',
+    condition: 'Source matches a list of search sites listed under "SOURCE_CATEGORY_SEARCH" OR Medium exactly matches organic',
+    recommendedMediums: ['organic'],
+    recommendedSources: SOURCE_CATEGORIES.SOURCE_CATEGORY_SEARCH
   },
   {
     name: 'Organic Shopping',
@@ -122,7 +122,7 @@ export const ga4Channels: Channel[] = [
   },
   {
     name: 'Organic Social',
-    description: 'Organic Social is the channel by which users arrive at your site/app via non-ad links on social sites like Facebook, TikTok, or Twitter.',
+    description: 'Organic Social is the channel by which users arrive at your site/app via non-ad links on social sites like Facebook or Twitter.',
     condition: 'Source matches a regex list of social sites OR Medium is one of ("social", "social-network", "social-media", "sm", "social network", "social media")',
     recommendedMediums: ['social', 'social-network', 'social-media', 'sm', 'social network', 'social media'],
     recommendedSources: SOURCE_CATEGORIES.SOURCE_CATEGORY_SOCIAL
@@ -135,53 +135,53 @@ export const ga4Channels: Channel[] = [
     recommendedSources: SOURCE_CATEGORIES.SOURCE_CATEGORY_VIDEO
   },
   {
-    name: 'Organic Search',
-    description: 'Organic Search is the channel by which users arrive at your site/app via non-ad links in organic-search results.',
-    condition: 'Source matches a list of search sites listed under "SOURCE_CATEGORY_SEARCH" OR Medium exactly matches organic',
-    recommendedMediums: ['organic'],
+    name: 'Paid Other',
+    description: 'Paid Other is the channel by which users arrive at your site/app via ads, but not through an ad identified as Search, Social, Shopping, or Video.',
+    condition: 'Medium matches regex ^(.*cp.*|ppc|retargeting|paid.*)$',
+    recommendedMediums: ['cpc', 'ppc', 'paid', 'retargeting'],
+    recommendedSources: []
+  },
+  {
+    name: 'Paid Search',
+    description: 'Paid Search is the channel by which users arrive at your site/app via ads on search-engine sites like Bing, Baidu, or Google.',
+    condition: 'Source matches a list of search sites AND Medium matches regex ^(.*cp.*|ppc|retargeting|paid.*)$',
+    recommendedMediums: ['cpc', 'ppc', 'paid', 'retargeting'],
     recommendedSources: SOURCE_CATEGORIES.SOURCE_CATEGORY_SEARCH
+  },
+  {
+    name: 'Paid Shopping',
+    description: 'Paid Shopping is the channel by which users arrive at your site/app via paid ads on shopping sites like Amazon or ebay or on individual retailer sites.',
+    condition: '(Source matches a list of shopping sites OR Campaign Name matches regex ^(.*(([^a-df-z]|^)shop|shopping).*)$) AND Medium matches regex ^(.*cp.*|ppc|retargeting|paid.*)$',
+    recommendedMediums: ['cpc', 'ppc', 'paid', 'retargeting'],
+    recommendedSources: SOURCE_CATEGORIES.SOURCE_CATEGORY_SHOPPING
+  },
+  {
+    name: 'Paid Social',
+    description: 'Paid Social is the channel by which users arrive at your site/app via ads on social sites like Facebook and Twitter.',
+    condition: 'Source matches a regex list of social sites AND Medium matches regex ^(.*cp.*|ppc|retargeting|paid.*)$',
+    recommendedMediums: ['cpc', 'ppc', 'paid', 'retargeting'],
+    recommendedSources: SOURCE_CATEGORIES.SOURCE_CATEGORY_SOCIAL
+  },
+  {
+    name: 'Paid Video',
+    description: 'Paid Video is the channel by which users arrive at your site/app via ads on video sites like TikTok, Vimeo, and YouTube.',
+    condition: 'Source matches a list of video sites AND Medium matches regex ^(.*cp.*|ppc|retargeting|paid.*)$',
+    recommendedMediums: ['cpc', 'ppc', 'paid', 'retargeting'],
+    recommendedSources: SOURCE_CATEGORIES.SOURCE_CATEGORY_VIDEO
   },
   {
     name: 'Referral',
     description: 'Referral is the channel by which users arrive at your site via non-ad links on other sites/apps (e.g., blogs, news sites).',
     condition: 'Medium is one of ("referral", "app", or "link")',
     recommendedMediums: ['referral', 'app', 'link'],
-    recommendedSources: [] // GA4 documentation specifies NO source requirements for Referral channel
-  },
-  {
-    name: 'Email',
-    description: 'Email is the channel by which users arrive at your site/app via links in email.',
-    condition: 'Source = email|e-mail|e_mail|e mail OR Medium = email|e-mail|e_mail|e mail',
-    recommendedMediums: ['email', 'e-mail', 'e_mail', 'e mail'],
-    recommendedSources: ['email', 'e-mail', 'e_mail', 'e mail'] // ONLY the 4 official email variations
-  },
-  {
-    name: 'Affiliates',
-    description: 'Affiliates is the channel by which users arrive at your site/app via links on affiliate sites.',
-    condition: 'Medium = affiliate',
-    recommendedMediums: ['affiliate'],
-    recommendedSources: [] // GA4 documentation specifies NO source requirements for Affiliates channel
-  },
-  {
-    name: 'Audio',
-    description: 'Audio is the channel by which users arrive at your site/app via ads on audio platforms (e.g., podcast platforms).',
-    condition: 'Medium exactly matches audio',
-    recommendedMediums: ['audio'],
-    recommendedSources: [] // GA4 documentation specifies NO source requirements for Audio channel
+    recommendedSources: []
   },
   {
     name: 'SMS',
     description: 'SMS is the channel by which users arrive at your site/app via links from text messages.',
     condition: 'Source exactly matches sms OR Medium exactly matches sms',
     recommendedMediums: ['sms'],
-    recommendedSources: ['sms'] // ONLY 'sms' as per GA4 condition
-  },
-  {
-    name: 'Mobile Push Notifications',
-    description: 'Mobile Push Notifications is the channel by which users arrive at your site/app via links in mobile-device messages when they\'re not actively using the app.',
-    condition: 'Medium ends with "push" OR Medium contains "mobile" or "notification" OR Source exactly matches "firebase"',
-    recommendedMediums: ['push', 'mobile', 'notification', 'mobile_push', 'app_push'],
-    recommendedSources: ['firebase'] // ONLY 'firebase' as per GA4 condition
+    recommendedSources: ['sms']
   }
 ];
 

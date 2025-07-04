@@ -366,25 +366,9 @@ const GA4Builder: React.FC = () => {
     <div className="space-y-8">
       {/* 1. GA4 Channel Definitions (Always Visible) */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <img 
-            src="/google-analytics-4.svg/google-analytics-4.svg" 
-            alt="GA4" 
-            className="w-6 h-6"
-            onError={(e) => {
-              // Fallback if logo fails to load
-              const target = e.target as HTMLImageElement;
-              target.style.display = 'none';
-              const fallback = document.createElement('div');
-              fallback.className = 'w-6 h-6 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-xs';
-              fallback.textContent = 'GA4';
-              target.parentNode?.insertBefore(fallback, target);
-            }}
-          />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            GA4 Channel Definitions
-          </h3>
-        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          GA4 Channel Definitions
+        </h3>
         
         <div className="space-y-4">
           <div>
@@ -429,60 +413,7 @@ const GA4Builder: React.FC = () => {
         
         <div className="space-y-6">
           {/* Website URL */}
-          <Input
-            label="Website URL"
-            value={baseUrl}
-            onChange={(e) => setBaseUrl(e.target.value)}
-            onBlur={handleUrlBlur}
-            placeholder="https://example.com/page"
-            required
-            error={urlError}
-            helperText="The destination URL for your campaign"
-          />
-
-          {/* Space Encoding */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-              Space Encoding
-            </label>
-            <div className="flex gap-6">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="spaceEncoding"
-                  value="percent"
-                  checked={spaceEncoding === 'percent'}
-                  onChange={(e) => setSpaceEncoding(e.target.value as 'percent')}
-                  className="mr-2 text-blue-600 focus:ring-blue-500"
-                />
-                Percent (%20)
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="spaceEncoding"
-                  value="plus"
-                  checked={spaceEncoding === 'plus'}
-                  onChange={(e) => setSpaceEncoding(e.target.value as 'plus')}
-                  className="mr-2 text-blue-600 focus:ring-blue-500"
-                />
-                Plus (+)
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="spaceEncoding"
-                  value="underscore"
-                  checked={spaceEncoding === 'underscore'}
-                  onChange={(e) => setSpaceEncoding(e.target.value as 'underscore')}
-                  className="mr-2 text-blue-600 focus:ring-blue-500"
-                />
-                Underscore (_)
-              </label>
-            </div>
-          </div>
-
-          {/* Required UTM Parameters */}
+          {/* REQUIRED UTM PARAMETERS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -533,6 +464,7 @@ const GA4Builder: React.FC = () => {
               helperText="What campaign it's for"
             />
           </div>
+        </div>
         </div>
       </div>
 
@@ -589,6 +521,54 @@ const GA4Builder: React.FC = () => {
             placeholder="remarketing_dynamic"
             helperText="Targeting criteria (remarketing, prospecting, etc.)"
           />
+        </div>
+
+        {/* Custom Parameters - MOVED UNDER ACCORDION */}
+        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">
+              Custom Parameters
+            </h4>
+            <Button onClick={addCustomParam} icon={Plus} size="sm">
+              Add Parameter
+            </Button>
+          </div>
+          
+          {customParams.length === 0 ? (
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              <Settings className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>No custom parameters added. Click "Add Parameter" to add custom tracking parameters.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {customParams.map((param, index) => (
+                <div key={index} className="flex gap-3 items-end">
+                  <div className="flex-1">
+                    <Input
+                      label="Parameter Key"
+                      placeholder="e.g., custom_param"
+                      value={param.key}
+                      onChange={(e) => updateCustomParam(index, 'key', e.target.value)}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <Input
+                      label="Parameter Value"
+                      placeholder="e.g., custom_value"
+                      value={param.value}
+                      onChange={(e) => updateCustomParam(index, 'value', e.target.value)}
+                    />
+                  </div>
+                  <Button
+                    onClick={() => removeCustomParam(index)}
+                    variant="danger"
+                    icon={Trash2}
+                    size="sm"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Custom Parameters - MOVED UNDER ACCORDION */}
@@ -700,7 +680,7 @@ const GA4Builder: React.FC = () => {
         </div>
       </div>
 
-      {/* 7. Template Management (Accordion) */}
+      {/* Template Management (Accordion) */}
       <Accordion 
         title="Template Management" 
         icon={<Save className="w-5 h-5" />}
