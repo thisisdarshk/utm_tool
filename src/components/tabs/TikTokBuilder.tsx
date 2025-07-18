@@ -872,7 +872,7 @@ const TikTokBuilder: React.FC = () => {
         icon={<Save className="w-5 h-5" />}
         defaultOpen={false}
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-4">
             <h3 className="text-md font-medium text-gray-700 dark:text-gray-300">Save Template</h3>
             <Input
@@ -915,6 +915,78 @@ const TikTokBuilder: React.FC = () => {
               <Button onClick={resetFields} variant="secondary" icon={RefreshCw} size="sm">
                 Reset
               </Button>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <h3 className="text-md font-medium text-gray-700 dark:text-gray-300">Export/Import</h3>
+            <div className="space-y-2">
+              <Button 
+                onClick={() => {
+                  const exportData = {
+                    templates: savedTemplates,
+                    exportedAt: new Date().toISOString(),
+                    platform: 'tiktok',
+                    version: '1.0'
+                  };
+                  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `tiktok-ads-templates-${new Date().toISOString().split('T')[0]}.json`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                  success('Templates exported successfully!');
+                }}
+                icon={Download} 
+                size="sm"
+                disabled={Object.keys(savedTemplates).length === 0}
+                className="w-full"
+              >
+                Export Templates
+              </Button>
+              
+              <div>
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        try {
+                          const importData = JSON.parse(event.target?.result as string);
+                          if (importData.templates && typeof importData.templates === 'object') {
+                            const newTemplates = { ...savedTemplates, ...importData.templates };
+                            setSavedTemplates(newTemplates);
+                            localStorage.setItem('tiktok_ads_templates', JSON.stringify(newTemplates));
+                            success(`Templates imported successfully!`);
+                          } else {
+                            error('Invalid template file format');
+                          }
+                        } catch (err) {
+                          error('Failed to import templates. Please check the file format.');
+                        }
+                      };
+                      reader.readAsText(file);
+                    }
+                    // Reset the input
+                    e.target.value = '';
+                  }}
+                  className="hidden"
+                  id="import-templates-tiktok"
+                />
+                <Button
+                  onClick={() => document.getElementById('import-templates-tiktok')?.click()}
+                  icon={Upload}
+                  size="sm"
+                  variant="secondary"
+                  className="w-full"
+                >
+                  Import Templates
+                </Button>
+              </div>
             </div>
           </div>
         </div>
