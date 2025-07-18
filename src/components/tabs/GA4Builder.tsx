@@ -10,6 +10,7 @@ import { useToast } from '../../hooks/useToast';
 import { predictGA4Channel } from '../../utils/validation';
 import { SOURCE_CATEGORIES, getSourceCategory } from '../../data/sourceCategories';
 import { ga4Channels } from '../../data/ga4Config';
+import UrlAnalysisSection from '../features/UrlAnalysisSection';
 
 const GA4Builder: React.FC = () => {
   const [baseUrl, setBaseUrl] = useState('');
@@ -617,6 +618,19 @@ const GA4Builder: React.FC = () => {
         </h3>
         
         <div className="space-y-4">
+          {/* URL Analysis Section */}
+          <div className="border-b border-gray-200 dark:border-gray-600 pb-6 mb-6">
+            <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-3">
+              Analyze Existing URL
+            </h4>
+            <UrlAnalysisSection />
+          </div>
+          
+          {/* Current Parameters Prediction */}
+          <div>
+            <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-3">
+              Current Parameters Prediction
+            </h4>
           <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -642,6 +656,7 @@ const GA4Builder: React.FC = () => {
               </p>
             </div>
           )}
+          </div>
         </div>
       </div>
 
