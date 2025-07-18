@@ -226,12 +226,26 @@ export const analyzeUrl = (url: string): UrlAnalysisResult => {
 
     // Extract all parameters
     for (const [key, value] of params.entries()) {
-      analysis.parameters[key] = value;
+      // Properly decode parameter values to handle double-encoding
+      let decodedValue = value;
+      try {
+        // Try to decode multiple times to handle double-encoding
+        let previousValue = '';
+        while (decodedValue !== previousValue && decodedValue.includes('%')) {
+          previousValue = decodedValue;
+          decodedValue = decodeURIComponent(decodedValue);
+        }
+      } catch (e) {
+        // If decoding fails, use the original value
+        decodedValue = value;
+      }
+      
+      analysis.parameters[key] = decodedValue;
       
       if (key.startsWith('utm_')) {
-        analysis.utmParameters[key] = value;
+        analysis.utmParameters[key] = decodedValue;
       } else {
-        analysis.otherParameters[key] = value;
+        analysis.otherParameters[key] = decodedValue;
       }
     }
 
