@@ -38,6 +38,9 @@ const GA4Builder: React.FC = () => {
   const [urlError, setUrlError] = useState('');
   const [copiedUrl, setCopiedUrl] = useState(false);
   
+  // Video modal state
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  
   // Template management
   const [savedTemplates, setSavedTemplates] = useState<Record<string, any>>({});
   const [templateName, setTemplateName] = useState('');
@@ -365,6 +368,54 @@ const GA4Builder: React.FC = () => {
 
   return (
     <div className="space-y-8">
+      {/* Video Tutorial Section */}
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h3 className="text-base font-semibold text-blue-900 dark:text-blue-100 mb-1 flex items-center gap-2">
+              <Play className="w-4 h-4" />
+              GA4 UTM Parameter Tutorial
+            </h3>
+            <p className="text-blue-700 dark:text-blue-300 text-xs">
+              Master Google Analytics 4 UTM parameters and channel grouping
+            </p>
+          </div>
+          <Button
+            onClick={() => setShowVideoModal(true)}
+            icon={Play}
+            size="sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+          >
+            Tutorial
+          </Button>
+        </div>
+      </div>
+
+      {/* Video Modal */}
+      {showVideoModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+            <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold">GA4 UTM Parameter Tutorial</h3>
+              <Button onClick={() => setShowVideoModal(false)} variant="ghost" icon={X} size="sm" />
+            </div>
+            <div className="p-6">
+              <div className="aspect-video bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                <div className="text-center">
+                  <Play className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600 dark:text-gray-400 text-lg font-medium">
+                    GA4 UTM Parameter Tutorial Placeholder
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
+                    Replace with your GA4 UTM parameter tutorial video
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 1. GA4 Channel Definitions (Always Visible) */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center gap-3 mb-4">
