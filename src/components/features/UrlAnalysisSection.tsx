@@ -220,7 +220,7 @@ const UrlAnalysisSection: React.FC = () => {
           )}
 
           {/* Issues and Recommendations */}
-          {(analysisResult.issues.length > 0 || analysisResult.recommendations.length > 0) && (
+          {analysisResult.issues.length > 0 && (
             <div className="space-y-3">
               {analysisResult.issues.length > 0 && (
                 <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
@@ -231,22 +231,6 @@ const UrlAnalysisSection: React.FC = () => {
                       <ul className="text-sm text-red-800 dark:text-red-200 space-y-1">
                         {analysisResult.issues.map((issue, index) => (
                           <li key={index}>• {issue}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {analysisResult.recommendations.length > 0 && (
-                <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <h6 className="text-sm font-medium text-yellow-900 dark:text-yellow-100 mb-1">Recommendations:</h6>
-                      <ul className="text-sm text-yellow-800 dark:text-yellow-200 space-y-1">
-                        {analysisResult.recommendations.map((rec, index) => (
-                          <li key={index}>• {rec}</li>
                         ))}
                       </ul>
                     </div>
