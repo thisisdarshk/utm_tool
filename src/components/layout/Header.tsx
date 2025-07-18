@@ -6,7 +6,7 @@ const Header: React.FC = () => {
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-3">
           <img 
-            src="/Buxton Elevar logo.png" 
+            src="/elevar-audiense-logo.jpg" 
             alt="Elevar" 
             className="h-10 w-auto"
             onError={(e) => {
