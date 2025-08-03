@@ -605,7 +605,7 @@ const PinterestBuilder: React.FC = () => {
               Pinterest Ads Parameter Builder
             </h3>
             <p className="text-red-700 dark:text-red-300 text-xs">
-              Generate URL parameter strings using Pinterest's official tracking parameters
+              Generate individual parameter fields or URL strings using Pinterest's official tracking parameters
             </p>
           </div>
           <Button
@@ -643,6 +643,341 @@ const PinterestBuilder: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Pinterest Individual Parameter Fields - NEW SECTION */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Target className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Pinterest Individual Parameter Fields
+          </h3>
+          <Badge variant="success" size="sm">Pinterest Format</Badge>
+        </div>
+
+        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <div className="flex items-start gap-2">
+            <Settings className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-red-800 dark:text-red-200">Pinterest Parameter Format</p>
+              <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                Copy individual parameter values and paste them into Pinterest's "Edit URL Parameters" interface. 
+                Each parameter has its own field in Pinterest Ads Manager.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Individual Parameter Fields */}
+        <div className="space-y-6">
+          {/* Campaign Source */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Campaign source (utm_source)
+              </label>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                To identify the source of traffic, for example, Pinterest
+              </p>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={utmSource}
+                  readOnly
+                  className="w-full p-3 pr-12 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm"
+                />
+                <Button
+                  onClick={() => {
+                    navigator.clipboard.writeText(utmSource);
+                    success('Campaign source copied!');
+                  }}
+                  variant="ghost"
+                  size="sm"
+                  icon={Copy}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                />
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <Button
+                onClick={() => {
+                  navigator.clipboard.writeText(utmSource);
+                  success('Campaign source copied!');
+                }}
+                icon={Copy}
+                size="sm"
+                className="w-full lg:w-auto"
+              >
+                Copy Value
+              </Button>
+            </div>
+          </div>
+
+          {/* Campaign Medium */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Campaign medium (utm_medium)
+              </label>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                To identify the advertising medium, for example, PaidSocial
+              </p>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={utmMedium}
+                  readOnly
+                  className="w-full p-3 pr-12 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm"
+                />
+                <Button
+                  onClick={() => {
+                    navigator.clipboard.writeText(utmMedium);
+                    success('Campaign medium copied!');
+                  }}
+                  variant="ghost"
+                  size="sm"
+                  icon={Copy}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                />
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <Button
+                onClick={() => {
+                  navigator.clipboard.writeText(utmMedium);
+                  success('Campaign medium copied!');
+                }}
+                icon={Copy}
+                size="sm"
+                className="w-full lg:w-auto"
+              >
+                Copy Value
+              </Button>
+            </div>
+          </div>
+
+          {/* Campaign ID */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Campaign id (utm_campaign)
+              </label>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                To identify a specific campaign
+              </p>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={utmCampaign}
+                  readOnly
+                  className="w-full p-3 pr-12 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm"
+                />
+                <Button
+                  onClick={() => {
+                    navigator.clipboard.writeText(utmCampaign);
+                    success('Campaign ID copied!');
+                  }}
+                  variant="ghost"
+                  size="sm"
+                  icon={Copy}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                />
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <Button
+                onClick={() => {
+                  navigator.clipboard.writeText(utmCampaign);
+                  success('Campaign ID copied!');
+                }}
+                icon={Copy}
+                size="sm"
+                className="w-full lg:w-auto"
+              >
+                Copy Value
+              </Button>
+            </div>
+          </div>
+
+          {/* Campaign Content - Only if enabled */}
+          {includeUtmContent && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
+              <div className="lg:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Campaign content (utm_content)
+                </label>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                  To differentiate contents within a campaign that link to the same URL
+                </p>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={utmContent}
+                    readOnly
+                    className="w-full p-3 pr-12 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm"
+                  />
+                  <Button
+                    onClick={() => {
+                      navigator.clipboard.writeText(utmContent);
+                      success('Campaign content copied!');
+                    }}
+                    variant="ghost"
+                    size="sm"
+                    icon={Copy}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-center">
+                <Button
+                  onClick={() => {
+                    navigator.clipboard.writeText(utmContent);
+                    success('Campaign content copied!');
+                  }}
+                  icon={Copy}
+                  size="sm"
+                  className="w-full lg:w-auto"
+                >
+                  Copy Value
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Campaign Term - Only if enabled */}
+          {includeUtmTerm && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
+              <div className="lg:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Campaign term (utm_term)
+                </label>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                  To identify paid search keywords
+                </p>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={utmTerm}
+                    readOnly
+                    className="w-full p-3 pr-12 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm"
+                  />
+                  <Button
+                    onClick={() => {
+                      navigator.clipboard.writeText(utmTerm);
+                      success('Campaign term copied!');
+                    }}
+                    variant="ghost"
+                    size="sm"
+                    icon={Copy}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-center">
+                <Button
+                  onClick={() => {
+                    navigator.clipboard.writeText(utmTerm);
+                    success('Campaign term copied!');
+                  }}
+                  icon={Copy}
+                  size="sm"
+                  className="w-full lg:w-auto"
+                >
+                  Copy Value
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Custom Parameters Section */}
+        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">
+              Custom parameters
+            </h4>
+            <Button onClick={addCustomParam} icon={Plus} size="sm">
+              Add parameters
+            </Button>
+          </div>
+          
+          {customParams.length === 0 ? (
+            <div className="text-center py-6 text-gray-500 dark:text-gray-400">
+              <Settings className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">No custom parameters added. Click "Add parameters" to add custom tracking parameters.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {customParams.map((param, index) => (
+                <div key={index} className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
+                  <div className="lg:col-span-2">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Parameter Name
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g., custom_param"
+                          value={param.key}
+                          onChange={(e) => updateCustomParam(index, 'key', e.target.value)}
+                          className="w-full p-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-red-500 focus:ring-red-500/20 focus:outline-none focus:ring-4"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Value
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            placeholder="e.g., {custom_value}"
+                            value={param.value}
+                            onChange={(e) => updateCustomParam(index, 'value', e.target.value)}
+                            className="w-full p-3 pr-12 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-red-500 focus:ring-red-500/20 focus:outline-none focus:ring-4"
+                          />
+                          {param.key && param.value && (
+                            <Button
+                              onClick={() => {
+                                navigator.clipboard.writeText(param.value);
+                                success(`${param.key} value copied!`);
+                              }}
+                              variant="ghost"
+                              size="sm"
+                              icon={Copy}
+                              className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    {param.key && param.value && (
+                      <Button
+                        onClick={() => {
+                          navigator.clipboard.writeText(param.value);
+                          success(`${param.key} value copied!`);
+                        }}
+                        icon={Copy}
+                        size="sm"
+                        className="flex-1 lg:flex-none"
+                      >
+                        Copy Value
+                      </Button>
+                    )}
+                    <Button
+                      onClick={() => removeCustomParam(index)}
+                      variant="danger"
+                      icon={Trash2}
+                      size="sm"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Base URL Option */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
