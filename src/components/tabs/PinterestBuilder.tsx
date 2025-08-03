@@ -201,15 +201,6 @@ const PinterestBuilder: React.FC = () => {
       
       // Targeting Parameters
       { 
-        id: 'keyword', 
-        value: '{keyword}', 
-        label: 'Keyword', 
-        category: 'targeting', 
-        description: 'Keyword that triggered the ad',
-        availability: 'Search campaigns',
-        example: 'running shoes'
-      },
-      { 
         id: 'interest', 
         value: '{interest}', 
         label: 'Interest', 
