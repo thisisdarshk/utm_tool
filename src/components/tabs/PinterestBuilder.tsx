@@ -706,27 +706,27 @@ const PinterestBuilder: React.FC = () => {
           )}
 
           {/* Selected Pinterest Parameters */}
-          {Object.entries(selectedParams).some(([_, isSelected]) => isSelected) && (
+          {Object.entries(selectedParams).filter(([_, isSelected]) => isSelected).length > 0 && (
             <div className="border-t border-gray-200 dark:border-gray-600 pt-4 mt-4">
               <h5 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">
                 Selected Pinterest Parameters
               </h5>
-              <div className="space-y-4">
-                {Object.entries(selectedParams).map(([paramId, isSelected]) => {
-                  if (!isSelected) return null;
-                  
-                  const param = pinterestParams.find(p => p.id === paramId);
+              <div className="space-y-3">
+                {Object.entries(selectedParams)
+                  .filter(([_, isSelected]) => isSelected)
+                  .map(([paramId, isSelected]) => {
+                  const param = [...pinterestParams, ...filteredParams].find(p => p.id === paramId);
                   if (!param) return null;
 
                   return (
-                    <div key={paramId} className="grid grid-cols-12 gap-3 items-center">
+                    <div key={paramId} className="grid grid-cols-12 gap-3 items-center py-2">
                       <div className="col-span-12 md:col-span-4">
                         <div>
                           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{param.label}</p>
                           <p className="text-xs text-gray-500 dark:text-gray-400">{param.description}</p>
                         </div>
                       </div>
-                      <div className="col-span-6 md:col-span-3 flex items-center gap-2">
+                      <div className="col-span-6 md:col-span-4 flex items-center gap-2">
                         <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
                           {paramId}
                         </code>
@@ -740,7 +740,7 @@ const PinterestBuilder: React.FC = () => {
                           {copiedFields[`${paramId}_name`] ? '✓' : 'Copy'}
                         </Button>
                       </div>
-                      <div className="col-span-6 md:col-span-5 flex items-center gap-2">
+                      <div className="col-span-6 md:col-span-4 flex items-center gap-2">
                         <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
                           {param.value}
                         </code>
