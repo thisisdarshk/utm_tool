@@ -896,6 +896,406 @@ const PinterestBuilder: React.FC = () => {
             </div>
           )}
         </div>
+      {/* UTM Parameters Configuration */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Target className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            UTM Parameters Configuration
+          </h3>
+        </div>
+
+        {/* REQUIRED UTM PARAMETERS */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Campaign Source (utm_source) *
+            </label>
+            <Dropdown
+              options={sourceOptions}
+              value={utmSource}
+              onChange={setUtmSource}
+              placeholder="e.g., pinterest"
+              searchable
+              clearable
+              allowCustom
+              groupByCategory
+              className="w-full"
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Pinterest traffic source identifier
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Campaign Medium (utm_medium) *
+            </label>
+            <Dropdown
+              options={mediumOptions}
+              value={utmMedium}
+              onChange={setUtmMedium}
+              placeholder="e.g., PaidSocial"
+              searchable
+              clearable
+              allowCustom
+              groupByCategory
+              className="w-full"
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Pinterest recommended: PaidSocial
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Campaign ID (utm_campaign) *
+            </label>
+            <Dropdown
+              options={campaignOptions}
+              value={utmCampaign}
+              onChange={setUtmCampaign}
+              placeholder="e.g., {{campaign.name}}"
+              searchable
+              clearable
+              allowCustom
+              groupByCategory
+              className="w-full"
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Uses Pinterest's dynamic campaign values
+            </p>
+          </div>
+        </div>
+
+        {/* OPTIONAL UTM PARAMETERS */}
+        <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
+          <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            Optional UTM Parameters
+          </h4>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* UTM Content */}
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-2">
+                <input
+                  type="checkbox"
+                  id="include-utm-content"
+                  checked={includeUtmContent}
+                  onChange={(e) => handleUtmContentToggle(e.target.checked)}
+                  className="rounded border-gray-300 text-red-600 focus:ring-red-500"
+                />
+                <label htmlFor="include-utm-content" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                  Campaign Content (utm_content)
+                </label>
+              </div>
+              <Dropdown
+                options={contentOptions}
+                value={utmContent}
+                onChange={setUtmContent}
+                placeholder="e.g., {{ad.name}}"
+                searchable
+                clearable
+                allowCustom
+                groupByCategory
+                disabled={!includeUtmContent}
+                className={`w-full ${!includeUtmContent ? 'opacity-50' : ''}`}
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                To differentiate contents within a campaign that link to the same URL
+              </p>
+            </div>
+
+            {/* UTM Term */}
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-2">
+                <input
+                  type="checkbox"
+                  id="include-utm-term"
+                  checked={includeUtmTerm}
+                  onChange={(e) => handleUtmTermToggle(e.target.checked)}
+                  className="rounded border-gray-300 text-red-600 focus:ring-red-500"
+                />
+                <label htmlFor="include-utm-term" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                  Campaign Term (utm_term)
+                </label>
+              </div>
+              <Dropdown
+                options={termOptions}
+                value={utmTerm}
+                onChange={setUtmTerm}
+                placeholder="e.g., {{adgroup.name}}"
+                searchable
+                clearable
+                allowCustom
+                groupByCategory
+                disabled={!includeUtmTerm}
+                className={`w-full ${!includeUtmTerm ? 'opacity-50' : ''}`}
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                To identify paid search keywords
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Pinterest Individual Parameter Fields */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Settings className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Pinterest Individual Parameter Fields
+          </h3>
+          <Badge variant="info" size="sm">Pinterest Format</Badge>
+        </div>
+
+        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <div className="flex items-start gap-2">
+            <Settings className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-red-800 dark:text-red-200">Pinterest URL Parameters Format</p>
+              <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                Copy individual parameter names and values to paste into Pinterest's "Edit URL Parameters" interface.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Compact Parameter Fields */}
+        <div className="space-y-3">
+          {/* Campaign source */}
+          <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign source (utm_source)</span>
+                <Button
+                  onClick={() => copyField('name', 'utm_source', utmSource)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_source_name'] ? Check : Copy}
+                  className="text-xs px-2 py-1"
+                >
+                  {copiedFields['utm_source_name'] ? '✓' : 'Copy Name'}
+                </Button>
+              </div>
+              <code className="text-xs bg-white dark:bg-gray-800 px-2 py-1 rounded border">utm_source</code>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">To identify the source of traffic, for example, Pinterest</p>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Value</span>
+                <Button
+                  onClick={() => copyField('value', 'utm_source', utmSource)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_source_value'] ? Check : Copy}
+                  className="text-xs px-2 py-1"
+                >
+                  {copiedFields['utm_source_value'] ? '✓' : 'Copy Value'}
+                </Button>
+              </div>
+              <code className="text-xs bg-white dark:bg-gray-800 px-2 py-1 rounded border">{utmSource}</code>
+            </div>
+          </div>
+
+          {/* Campaign medium */}
+          <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign medium (utm_medium)</span>
+                <Button
+                  onClick={() => copyField('name', 'utm_medium', utmMedium)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_medium_name'] ? Check : Copy}
+                  className="text-xs px-2 py-1"
+                >
+                  {copiedFields['utm_medium_name'] ? '✓' : 'Copy Name'}
+                </Button>
+              </div>
+              <code className="text-xs bg-white dark:bg-gray-800 px-2 py-1 rounded border">utm_medium</code>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">To identify the advertising medium, for example, PaidSocial</p>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Value</span>
+                <Button
+                  onClick={() => copyField('value', 'utm_medium', utmMedium)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_medium_value'] ? Check : Copy}
+                  className="text-xs px-2 py-1"
+                >
+                  {copiedFields['utm_medium_value'] ? '✓' : 'Copy Value'}
+                </Button>
+              </div>
+              <code className="text-xs bg-white dark:bg-gray-800 px-2 py-1 rounded border">{utmMedium}</code>
+            </div>
+          </div>
+
+          {/* Campaign id */}
+          <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign id (utm_campaign)</span>
+                <Button
+                  onClick={() => copyField('name', 'utm_campaign', utmCampaign)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_campaign_name'] ? Check : Copy}
+                  className="text-xs px-2 py-1"
+                >
+                  {copiedFields['utm_campaign_name'] ? '✓' : 'Copy Name'}
+                </Button>
+              </div>
+              <code className="text-xs bg-white dark:bg-gray-800 px-2 py-1 rounded border">utm_campaign</code>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">To identify a specific campaign</p>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Value</span>
+                <Button
+                  onClick={() => copyField('value', 'utm_campaign', utmCampaign)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_campaign_value'] ? Check : Copy}
+                  className="text-xs px-2 py-1"
+                >
+                  {copiedFields['utm_campaign_value'] ? '✓' : 'Copy Value'}
+                </Button>
+              </div>
+              <code className="text-xs bg-white dark:bg-gray-800 px-2 py-1 rounded border">{utmCampaign}</code>
+            </div>
+          </div>
+
+          {/* Campaign content - Only show if enabled */}
+          {includeUtmContent && (
+            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign content (utm_content)</span>
+                  <Button
+                    onClick={() => copyField('name', 'utm_content', utmContent)}
+                    variant="ghost"
+                    size="sm"
+                    icon={copiedFields['utm_content_name'] ? Check : Copy}
+                    className="text-xs px-2 py-1"
+                  >
+                    {copiedFields['utm_content_name'] ? '✓' : 'Copy Name'}
+                  </Button>
+                </div>
+                <code className="text-xs bg-white dark:bg-gray-800 px-2 py-1 rounded border">utm_content</code>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">To differentiate contents within a campaign that link to the same URL</p>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Value</span>
+                  <Button
+                    onClick={() => copyField('value', 'utm_content', utmContent)}
+                    variant="ghost"
+                    size="sm"
+                    icon={copiedFields['utm_content_value'] ? Check : Copy}
+                    className="text-xs px-2 py-1"
+                  >
+                    {copiedFields['utm_content_value'] ? '✓' : 'Copy Value'}
+                  </Button>
+                </div>
+                <code className="text-xs bg-white dark:bg-gray-800 px-2 py-1 rounded border">{utmContent}</code>
+              </div>
+            </div>
+          )}
+
+          {/* Campaign term - Only show if enabled */}
+          {includeUtmTerm && (
+            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign term (utm_term)</span>
+                  <Button
+                    onClick={() => copyField('name', 'utm_term', utmTerm)}
+                    variant="ghost"
+                    size="sm"
+                    icon={copiedFields['utm_term_name'] ? Check : Copy}
+                    className="text-xs px-2 py-1"
+                  >
+                    {copiedFields['utm_term_name'] ? '✓' : 'Copy Name'}
+                  </Button>
+                </div>
+                <code className="text-xs bg-white dark:bg-gray-800 px-2 py-1 rounded border">utm_term</code>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">To identify paid search keywords</p>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Value</span>
+                  <Button
+                    onClick={() => copyField('value', 'utm_term', utmTerm)}
+                    variant="ghost"
+                    size="sm"
+                    icon={copiedFields['utm_term_value'] ? Check : Copy}
+                    className="text-xs px-2 py-1"
+                  >
+                    {copiedFields['utm_term_value'] ? '✓' : 'Copy Value'}
+                  </Button>
+                </div>
+                <code className="text-xs bg-white dark:bg-gray-800 px-2 py-1 rounded border">{utmTerm}</code>
+              </div>
+            </div>
+          )}
+
+          {/* Selected Pinterest Parameters */}
+          {Object.entries(selectedParams).some(([_, isSelected]) => isSelected) && (
+            <div className="border-t border-gray-200 dark:border-gray-600 pt-4 mt-4">
+              <h5 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                Selected Pinterest Parameters
+              </h5>
+              <div className="space-y-3">
+                {Object.entries(selectedParams).map(([paramId, isSelected]) => {
+                  if (!isSelected) return null;
+                  
+                  const param = pinterestParams.find(p => p.id === paramId);
+                  if (!param) return null;
+
+                  return (
+                    <div key={paramId} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{param.label}</span>
+                          <Button
+                            onClick={() => copyField('name', paramId, param.value)}
+                            variant="ghost"
+                            size="sm"
+                            icon={copiedFields[`${paramId}_name`] ? Check : Copy}
+                            className="text-xs px-2 py-1"
+                          >
+                            {copiedFields[`${paramId}_name`] ? '✓' : 'Copy Name'}
+                          </Button>
+                        </div>
+                        <code className="text-xs bg-white dark:bg-gray-800 px-2 py-1 rounded border">{paramId}</code>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{param.description}</p>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Value</span>
+                          <Button
+                            onClick={() => copyField('value', paramId, param.value)}
+                            variant="ghost"
+                            size="sm"
+                            icon={copiedFields[`${paramId}_value`] ? Check : Copy}
+                            className="text-xs px-2 py-1"
+                          >
+                            {copiedFields[`${paramId}_value`] ? '✓' : 'Copy Value'}
+                          </Button>
+                        </div>
+                        <code className="text-xs bg-white dark:bg-gray-800 px-2 py-1 rounded border">{param.value}</code>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Pinterest Parameters Selection */}
