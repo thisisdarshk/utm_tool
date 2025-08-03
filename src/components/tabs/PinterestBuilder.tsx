@@ -61,6 +61,18 @@ const PinterestBuilder: React.FC = () => {
       label: '{campaignid}', 
       category: 'Pinterest Documented',
       description: 'Pinterest documented macro for campaign ID'
+    },
+    { 
+      value: '{campaign_name}', 
+      label: '{campaign_name}', 
+      category: 'Pinterest Documented',
+      description: 'Campaign name - Pinterest documented macro'
+    },
+    { 
+      value: '{campaignname}', 
+      label: '{campaignname}', 
+      category: 'Pinterest Documented',
+      description: 'Alternate syntax for campaign name - Pinterest documented macro'
     }
   ], []);
 
@@ -71,27 +83,61 @@ const PinterestBuilder: React.FC = () => {
       label: '{adgroupid}', 
       category: 'Pinterest Documented',
       description: 'Pinterest documented macro for ad group ID'
+    },
+    { 
+      value: '{ad_group_name}', 
+      label: '{ad_group_name}', 
+      category: 'Pinterest Documented',
+      description: 'Ad group name - Pinterest documented macro'
+    },
+    { 
+      value: '{adgroupname}', 
+      label: '{adgroupname}', 
+      category: 'Pinterest Documented',
+      description: 'Alternate syntax for ad group name - Pinterest documented macro'
+    },
+    { 
+      value: '{creative_id}', 
+      label: '{creative_id}', 
+      category: 'Pinterest Documented',
+      description: 'Pin promotion ID (creative ID) - Pinterest documented macro'
+    },
+    { 
+      value: '{adid}', 
+      label: '{adid}', 
+      category: 'Pinterest Documented',
+      description: 'Pin promotion ID (same as creative_id) - Pinterest documented macro'
     }
   ], []);
 
   // Pinterest documented macros only
   const pinterestParams = useMemo(() => {
-    const allParams = [
+    // Standard Ad Destination URL Parameters (supported across most Pinterest ad types)
+    const standardParams = [
       { 
         id: 'campaignid', 
         value: '{campaignid}', 
         label: 'Campaign ID', 
-        category: 'campaign', 
-        description: 'Pinterest documented macro for campaign ID',
+        category: 'standard', 
+        description: 'Pinterest campaign ID',
         availability: 'All Pinterest campaigns',
         example: '626736533506'
       },
       { 
+        id: 'campaign_name', 
+        value: '{campaign_name}', 
+        label: 'Campaign Name', 
+        category: 'standard', 
+        description: 'Campaign name',
+        availability: 'All Pinterest campaigns',
+        example: 'Spring_Collection_2025'
+      },
+      { 
         id: 'campaignname', 
         value: '{campaignname}', 
-        label: 'Campaign Name', 
-        category: 'campaign', 
-        description: 'Pinterest documented macro for campaign name',
+        label: 'Campaign Name (Alternate)', 
+        category: 'standard', 
+        description: 'Alternate syntax for campaign name',
         availability: 'All Pinterest campaigns',
         example: 'Spring_Collection_2025'
       },
@@ -99,68 +145,148 @@ const PinterestBuilder: React.FC = () => {
         id: 'adgroupid', 
         value: '{adgroupid}', 
         label: 'Ad Group ID', 
-        category: 'adgroup', 
-        description: 'Pinterest documented macro for ad group ID',
+        category: 'standard', 
+        description: 'Pinterest ad group ID',
         availability: 'All Pinterest campaigns',
         example: '626736533507'
       },
       { 
-        id: 'adgroupname', 
-        value: '{adgroupname}', 
+        id: 'ad_group_name', 
+        value: '{ad_group_name}', 
         label: 'Ad Group Name', 
-        category: 'adgroup', 
-        description: 'Pinterest documented macro for ad group name',
+        category: 'standard', 
+        description: 'Ad group name',
         availability: 'All Pinterest campaigns',
         example: 'Women_Shoes_Interest'
       },
       { 
-        id: 'adid', 
-        value: '{adid}', 
-        label: 'Ad ID', 
-        category: 'ad', 
-        description: 'Pinterest documented macro for ad ID',
+        id: 'adgroupname', 
+        value: '{adgroupname}', 
+        label: 'Ad Group Name (Alternate)', 
+        category: 'standard', 
+        description: 'Alternate syntax for ad group name',
+        availability: 'All Pinterest campaigns',
+        example: 'Women_Shoes_Interest'
+      },
+      { 
+        id: 'creative_id', 
+        value: '{creative_id}', 
+        label: 'Creative ID', 
+        category: 'standard', 
+        description: 'Pin promotion ID (also known as creative ID)',
         availability: 'All Pinterest campaigns',
         example: '626736533508'
       },
       { 
-        id: 'adname', 
-        value: '{adname}', 
-        label: 'Ad Name', 
-        category: 'ad', 
-        description: 'Pinterest documented macro for ad name',
+        id: 'adid', 
+        value: '{adid}', 
+        label: 'Ad ID (Pin Promotion ID)', 
+        category: 'standard', 
+        description: 'Pin promotion ID (same as creative_id)',
         availability: 'All Pinterest campaigns',
-        example: 'Spring_Shoes_Video_A'
+        example: '626736533508'
       },
       { 
-        id: 'interest', 
-        value: '{interest}', 
-        label: 'Interest', 
-        category: 'targeting', 
-        description: 'Pinterest documented macro for interest targeting',
-        availability: 'Interest targeting campaigns',
-        example: 'fitness'
-      },
-      { 
-        id: 'creativetype', 
-        value: '{creativetype}', 
-        label: 'Creative Type', 
-        category: 'creative', 
-        description: 'Pinterest documented macro for creative type',
+        id: 'device', 
+        value: '{device}', 
+        label: 'Device Type', 
+        category: 'standard', 
+        description: 'Device type: m (mobile), t (tablet), c (computer)',
         availability: 'All Pinterest campaigns',
-        example: 'video, image, carousel'
-      },
-      { 
-        id: 'pinid', 
-        value: '{pinid}', 
-        label: 'Pin ID', 
-        category: 'creative', 
-        description: 'Pinterest documented macro for pin ID',
-        availability: 'All Pinterest campaigns',
-        example: '626736533509'
+        example: 'm, t, c'
       }
     ];
 
-    return allParams;
+    // Shopping Campaign-Specific Parameters
+    const shoppingParams = [
+      { 
+        id: 'product_name', 
+        value: '{product_name}', 
+        label: 'Product Name', 
+        category: 'shopping', 
+        description: 'Product name from feed',
+        availability: 'Shopping campaigns only',
+        example: 'Nike Air Max 270'
+      },
+      { 
+        id: 'product_id', 
+        value: '{product_id}', 
+        label: 'Product ID', 
+        category: 'shopping', 
+        description: 'Product ID from feed',
+        availability: 'Shopping campaigns only',
+        example: 'PROD123456'
+      },
+      { 
+        id: 'product_partition_id', 
+        value: '{product_partition_id}', 
+        label: 'Product Partition ID', 
+        category: 'shopping', 
+        description: 'Product group ID',
+        availability: 'Shopping campaigns only',
+        example: 'PG789012'
+      },
+      { 
+        id: 'promoted_product_group_id', 
+        value: '{promoted_product_group_id}', 
+        label: 'Promoted Product Group ID', 
+        category: 'shopping', 
+        description: 'Product group ID within Ads Manager',
+        availability: 'Shopping campaigns only',
+        example: 'PPG345678'
+      },
+      { 
+        id: 'unescapedlpurl', 
+        value: '{unescapedlpurl}', 
+        label: 'Unescaped Landing Page URL', 
+        category: 'shopping', 
+        description: 'Unencoded landing page URL',
+        availability: 'Shopping campaigns only',
+        example: 'https://example.com/product?id=123'
+      },
+      { 
+        id: 'lpurl', 
+        value: '{lpurl}', 
+        label: 'Landing Page URL', 
+        category: 'shopping', 
+        description: 'Encoded landing page URL (depending on placement in the tracking URL)',
+        availability: 'Shopping campaigns only',
+        example: 'https%3A//example.com/product%3Fid%3D123'
+      }
+    ];
+
+    // Note: Shopping campaigns also support campaignid, adgroupid, and device from standard params
+    const shoppingCampaignRepeats = [
+      { 
+        id: 'campaignid_shopping', 
+        value: '{campaignid}', 
+        label: 'Campaign ID (Shopping)', 
+        category: 'shopping', 
+        description: 'Pinterest campaign ID (repeated here for clarity)',
+        availability: 'Shopping campaigns',
+        example: '626736533506'
+      },
+      { 
+        id: 'adgroupid_shopping', 
+        value: '{adgroupid}', 
+        label: 'Ad Group ID (Shopping)', 
+        category: 'shopping', 
+        description: 'Pinterest ad group ID',
+        availability: 'Shopping campaigns',
+        example: '626736533507'
+      },
+      { 
+        id: 'device_shopping', 
+        value: '{device}', 
+        label: 'Device Type (Shopping)', 
+        category: 'shopping', 
+        description: 'Device type: m, t, or c',
+        availability: 'Shopping campaigns',
+        example: 'm, t, c'
+      }
+    ];
+
+    return [...standardParams, ...shoppingParams, ...shoppingCampaignRepeats];
   }, []);
 
   // Filter parameters based on search and category
@@ -295,21 +421,15 @@ const PinterestBuilder: React.FC = () => {
   // Categories for filtering
   const categories = [
     { value: 'all', label: 'All Parameters' },
-    { value: 'campaign', label: 'Campaign Level' },
-    { value: 'adgroup', label: 'Ad Group Level' },
-    { value: 'ad', label: 'Ad Level' },
-    { value: 'targeting', label: 'Targeting' },
-    { value: 'creative', label: 'Creative' }
+    { value: 'standard', label: 'Standard Ad Parameters' },
+    { value: 'shopping', label: 'Shopping Campaign Parameters' }
   ];
 
   // Get category badge color
   const getCategoryBadge = (category: string) => {
     const badges = {
-      campaign: { variant: 'info' as const, label: 'Campaign' },
-      adgroup: { variant: 'success' as const, label: 'Ad Group' },
-      ad: { variant: 'warning' as const, label: 'Ad' },
-      targeting: { variant: 'default' as const, label: 'Targeting' },
-      creative: { variant: 'info' as const, label: 'Creative' }
+      standard: { variant: 'info' as const, label: 'Standard' },
+      shopping: { variant: 'success' as const, label: 'Shopping' }
     };
     
     const badge = badges[category as keyof typeof badges];
