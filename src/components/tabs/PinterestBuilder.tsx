@@ -79,12 +79,6 @@ const PinterestBuilder: React.FC = () => {
     
     // Organic Traffic Mediums - GA4 Compliant
     { 
-      value: 'organic', 
-      label: 'organic', 
-      category: 'Organic Mediums',
-      description: 'Organic search traffic - GA4 compliant'
-    },
-    { 
       value: 'social', 
       label: 'social', 
       category: 'Organic Mediums',
