@@ -39,14 +39,8 @@ const PinterestBuilder: React.FC = () => {
     { 
       value: 'pinterest', 
       label: 'pinterest', 
-      category: 'Static Sources',
-      description: 'Pinterest platform traffic - Use for static source tracking'
-    },
-    { 
-      value: '{{campaign.name}}', 
-      label: '{{campaign.name}}', 
-      category: 'Dynamic Sources',
-      description: 'Dynamic campaign name - Automatically populated by Pinterest'
+      category: 'Pinterest Documented',
+      description: 'Pinterest platform - Static value'
     }
   ], []);
 
@@ -55,46 +49,8 @@ const PinterestBuilder: React.FC = () => {
     { 
       value: 'PaidSocial', 
       label: 'PaidSocial', 
-      category: 'Standard Mediums',
-      description: 'Paid social media traffic - Pinterest recommended value'
-    },
-    { 
-      value: 'paid_social', 
-      label: 'paid_social', 
-      category: 'Alternative Mediums',
-      description: 'Paid social media traffic - Alternative format'
-    },
-    { 
-      value: 'paid', 
-      label: 'paid', 
-      category: 'Alternative Mediums',
-      description: 'General paid traffic - Alternative option'
-    },
-    { 
-      value: 'cpc', 
-      label: 'cpc', 
-      category: 'Alternative Mediums',
-      description: 'Cost per click campaigns - Alternative option'
-    },
-    
-    // Organic Traffic Mediums - GA4 Compliant
-    { 
-      value: 'social', 
-      label: 'social', 
-      category: 'Organic Mediums',
-      description: 'Organic social media traffic - GA4 compliant'
-    },
-    { 
-      value: 'social-network', 
-      label: 'social-network', 
-      category: 'Organic Mediums',
-      description: 'Organic social network traffic - GA4 compliant'
-    },
-    { 
-      value: 'social-media', 
-      label: 'social-media', 
-      category: 'Organic Mediums',
-      description: 'Organic social media traffic - GA4 compliant'
+      category: 'Pinterest Documented',
+      description: 'Pinterest documented medium for paid social traffic'
     }
   ], []);
 
@@ -103,14 +59,8 @@ const PinterestBuilder: React.FC = () => {
     { 
       value: '{campaignid}', 
       label: '{campaignid}', 
-      category: 'Campaign Info',
-      description: 'Campaign ID from Pinterest - Default option'
-    },
-    { 
-      value: '{campaignname}', 
-      label: '{campaignname}', 
-      category: 'Campaign Info',
-      description: 'Campaign name from Pinterest - Alternative option'
+      category: 'Pinterest Documented',
+      description: 'Pinterest documented macro for campaign ID'
     }
   ], []);
 
@@ -119,121 +69,98 @@ const PinterestBuilder: React.FC = () => {
     { 
       value: '{adgroupid}', 
       label: '{adgroupid}', 
-      category: 'Ad Group Level',
-      description: 'Ad group ID from Pinterest - Default option'
-    },
-    { 
-      value: '{creative_id}', 
-      label: '{creative_id}', 
-      category: 'Creative Level',
-      description: 'Creative ID from Pinterest - Alternative option'
-    },
-    { 
-      value: '{adid}', 
-      label: '{adid}', 
-      category: 'Ad Level',
-      description: 'Ad ID from Pinterest - Alternative option'
+      category: 'Pinterest Documented',
+      description: 'Pinterest documented macro for ad group ID'
     }
   ], []);
 
-  // Pinterest official parameters - FILTERED TO EXCLUDE SELECTED ONES
+  // Pinterest documented macros only
   const pinterestParams = useMemo(() => {
     const allParams = [
-      // Campaign Level Parameters
       { 
-        id: 'campaign_id', 
+        id: 'campaignid', 
         value: '{campaignid}', 
         label: 'Campaign ID', 
         category: 'campaign', 
-        description: 'Unique campaign identifier from Pinterest',
+        description: 'Pinterest documented macro for campaign ID',
         availability: 'All Pinterest campaigns',
         example: '626736533506'
       },
       { 
-        id: 'campaign_name', 
+        id: 'campaignname', 
         value: '{campaignname}', 
         label: 'Campaign Name', 
         category: 'campaign', 
-        description: 'Campaign name from Pinterest',
+        description: 'Pinterest documented macro for campaign name',
         availability: 'All Pinterest campaigns',
         example: 'Spring_Collection_2025'
       },
-      
-      // Ad Group Level Parameters
       { 
-        id: 'adgroup_id', 
+        id: 'adgroupid', 
         value: '{adgroupid}', 
         label: 'Ad Group ID', 
         category: 'adgroup', 
-        description: 'Unique ad group identifier from Pinterest',
+        description: 'Pinterest documented macro for ad group ID',
         availability: 'All Pinterest campaigns',
         example: '626736533507'
       },
       { 
-        id: 'adgroup_name', 
+        id: 'adgroupname', 
         value: '{adgroupname}', 
         label: 'Ad Group Name', 
         category: 'adgroup', 
-        description: 'Ad group name from Pinterest',
+        description: 'Pinterest documented macro for ad group name',
         availability: 'All Pinterest campaigns',
         example: 'Women_Shoes_Interest'
       },
-      
-      // Ad Level Parameters
       { 
-        id: 'ad_id', 
+        id: 'adid', 
         value: '{adid}', 
         label: 'Ad ID', 
         category: 'ad', 
-        description: 'Unique ad identifier from Pinterest',
+        description: 'Pinterest documented macro for ad ID',
         availability: 'All Pinterest campaigns',
         example: '626736533508'
       },
       { 
-        id: 'ad_name', 
+        id: 'adname', 
         value: '{adname}', 
         label: 'Ad Name', 
         category: 'ad', 
-        description: 'Ad name from Pinterest',
+        description: 'Pinterest documented macro for ad name',
         availability: 'All Pinterest campaigns',
         example: 'Spring_Shoes_Video_A'
       },
-      
-      // Targeting Parameters
       { 
         id: 'interest', 
         value: '{interest}', 
         label: 'Interest', 
         category: 'targeting', 
-        description: 'Interest category that triggered the ad',
+        description: 'Pinterest documented macro for interest targeting',
         availability: 'Interest targeting campaigns',
         example: 'fitness'
       },
-      
-      // Creative Parameters
       { 
-        id: 'creative_type', 
+        id: 'creativetype', 
         value: '{creativetype}', 
         label: 'Creative Type', 
         category: 'creative', 
-        description: 'Type of creative used',
+        description: 'Pinterest documented macro for creative type',
         availability: 'All Pinterest campaigns',
         example: 'video, image, carousel'
       },
       { 
-        id: 'pin_id', 
+        id: 'pinid', 
         value: '{pinid}', 
         label: 'Pin ID', 
         category: 'creative', 
-        description: 'ID of the promoted pin',
+        description: 'Pinterest documented macro for pin ID',
         availability: 'All Pinterest campaigns',
         example: '626736533509'
       }
     ];
 
-    // Return all parameters - filtering will be done in the display logic
     return allParams;
-  }, [selectedParams]);
 
   // Filter parameters based on search and category
   const filteredParams = useMemo(() => {
