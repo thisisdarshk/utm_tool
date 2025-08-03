@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Copy, Check, Search, X, Save, Download, Upload, Play, RefreshCw, Plus, Trash2, Zap, Globe, Settings, Target } from 'lucide-react';
+import { Copy, Check, Search, X, Play, Zap, Globe, Settings, Target } from 'lucide-react';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import Dropdown from '../common/Dropdown';
@@ -24,10 +24,6 @@ const PinterestBuilder: React.FC = () => {
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [savedTemplates, setSavedTemplates] = useState<Record<string, any>>({});
-  const [templateName, setTemplateName] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState('');
-  const [loadedTemplateName, setLoadedTemplateName] = useState('');
   
   // Copy states for individual fields
   const [copiedFields, setCopiedFields] = useState<Record<string, boolean>>({});
@@ -235,24 +231,6 @@ const PinterestBuilder: React.FC = () => {
         availability: 'Shopping campaigns only',
         example: 'PPG345678'
       },
-      { 
-        id: 'unescapedlpurl', 
-        value: '{unescapedlpurl}', 
-        label: 'Unescaped Landing Page URL', 
-        category: 'shopping', 
-        description: 'Unencoded landing page URL',
-        availability: 'Shopping campaigns only',
-        example: 'https://example.com/product?id=123'
-      },
-      { 
-        id: 'lpurl', 
-        value: '{lpurl}', 
-        label: 'Landing Page URL', 
-        category: 'shopping', 
-        description: 'Encoded landing page URL (depending on placement in the tracking URL)',
-        availability: 'Shopping campaigns only',
-        example: 'https%3A//example.com/product%3Fid%3D123'
-      }
     ];
 
     // Note: Shopping campaigns also support campaignid, adgroupid, and device from standard params
@@ -326,97 +304,6 @@ const PinterestBuilder: React.FC = () => {
       error(`Failed to copy ${fieldType}`);
     }
   };
-
-  // Template management
-  const saveTemplate = useCallback(() => {
-    if (!templateName.trim()) {
-      error('Please enter a template name');
-      return;
-    }
-    
-    const template = {
-      utmSource, utmMedium, utmCampaign, utmContent,
-      utmTerm,
-      includeUtmContent,
-      includeUtmTerm,
-      selectedParams, timestamp: Date.now()
-    };
-    
-    const newTemplates = { ...savedTemplates, [templateName]: template };
-    setSavedTemplates(newTemplates);
-    localStorage.setItem('pinterest_ads_templates', JSON.stringify(newTemplates));
-    
-    success(`Template "${templateName}" saved successfully!`);
-    setTemplateName('');
-  }, [templateName, utmSource, utmMedium, utmCampaign, utmContent, utmTerm, includeUtmContent, includeUtmTerm, selectedParams, savedTemplates, success, error]);
-
-  const loadTemplate = useCallback(() => {
-    if (!selectedTemplate || !savedTemplates[selectedTemplate]) {
-      error('Please select a template to load');
-      return;
-    }
-    
-    const template = savedTemplates[selectedTemplate];
-    setUtmSource(template.utmSource);
-    setUtmMedium(template.utmMedium);
-    setUtmCampaign(template.utmCampaign);
-    setUtmContent(template.utmContent);
-    setUtmTerm(template.utmTerm || '');
-    
-    setIncludeUtmContent(template.includeUtmContent ?? true);
-    setIncludeUtmTerm(template.includeUtmTerm ?? false);
-    
-    setSelectedParams(template.selectedParams || {});
-    setLoadedTemplateName(selectedTemplate);
-    
-    success(`Template "${selectedTemplate}" loaded successfully!`);
-  }, [selectedTemplate, savedTemplates, success, error]);
-
-  const deleteTemplate = useCallback(() => {
-    if (!selectedTemplate || !savedTemplates[selectedTemplate]) {
-      error('Please select a template to delete');
-      return;
-    }
-    
-    const templateToDelete = selectedTemplate;
-    const newTemplates = { ...savedTemplates };
-    delete newTemplates[templateToDelete];
-    
-    setSavedTemplates(newTemplates);
-    localStorage.setItem('pinterest_ads_templates', JSON.stringify(newTemplates));
-    
-    setSelectedTemplate('');
-    if (loadedTemplateName === templateToDelete) {
-      setLoadedTemplateName('');
-    }
-    
-    success(`Template "${templateToDelete}" deleted successfully!`);
-  }, [selectedTemplate, savedTemplates, loadedTemplateName, success, error]);
-
-  const resetFields = useCallback(() => {
-    setUtmSource('pinterest');
-    setUtmMedium('PaidSocial');
-    setUtmCampaign('{campaignid}');
-    setUtmContent('{adgroupid}');
-    setUtmTerm('');
-    setIncludeUtmContent(true);
-    setIncludeUtmTerm(false);
-    setSelectedParams({});
-    setLoadedTemplateName('');
-    success('Form reset successfully!');
-  }, [success]);
-
-  // Load saved templates on mount
-  React.useEffect(() => {
-    const saved = localStorage.getItem('pinterest_ads_templates');
-    if (saved) {
-      try {
-        setSavedTemplates(JSON.parse(saved));
-      } catch (error) {
-        console.error('Failed to load saved templates:', error);
-      }
-    }
-  }, []);
 
   // Categories for filtering
   const categories = [
@@ -913,16 +800,6 @@ const PinterestBuilder: React.FC = () => {
                     [param.id]: e.target.checked
                   }));
                   
-                  // Special handling for keyword parameter - assign to utm_term
-                  if (param.id === 'keyword') {
-                    if (e.target.checked) {
-                      setUtmTerm(param.value);
-                      setIncludeUtmTerm(true);
-                    } else {
-                      setUtmTerm('');
-                      setIncludeUtmTerm(false);
-                    }
-                  }
                 }}
                 className="mt-1 rounded border-gray-300 text-red-600 focus:ring-red-500"
               />
@@ -956,144 +833,6 @@ const PinterestBuilder: React.FC = () => {
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             <Search className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p>No parameters found matching your search criteria</p>
-          </div>
-        )}
-      </Accordion>
-
-      {/* Template Management */}
-      <Accordion 
-        title="Template Management" 
-        icon={<Save className="w-5 h-5" />}
-        defaultOpen={false}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="space-y-4">
-            <h3 className="text-md font-medium text-gray-700 dark:text-gray-300">Save Template</h3>
-            <Input
-              placeholder="Template name (e.g., 'My Campaign Template')"
-              value={templateName}
-              onChange={(e) => setTemplateName(e.target.value)}
-              helperText="Give your template a descriptive name"
-            />
-            <Button onClick={saveTemplate} icon={Save} disabled={!templateName.trim()}>
-              Save Template
-            </Button>
-          </div>
-          
-          <div className="space-y-4">
-            <h3 className="text-md font-medium text-gray-700 dark:text-gray-300">Manage Templates</h3>
-            <select
-              value={selectedTemplate}
-              onChange={(e) => setSelectedTemplate(e.target.value)}
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
-            >
-              <option value="">Select template...</option>
-              {Object.keys(savedTemplates).map(name => (
-                <option key={name} value={name}>{name}</option>
-              ))}
-            </select>
-            <div className="flex gap-2">
-              <Button onClick={loadTemplate} disabled={!selectedTemplate} size="sm">
-                Load
-              </Button>
-              <Button 
-                onClick={deleteTemplate} 
-                disabled={!selectedTemplate} 
-                variant="danger" 
-                icon={Trash2} 
-                size="sm"
-                tooltip="Delete selected template"
-              >
-                Delete
-              </Button>
-              <Button onClick={resetFields} variant="secondary" icon={RefreshCw} size="sm">
-                Reset
-              </Button>
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            <h3 className="text-md font-medium text-gray-700 dark:text-gray-300">Export/Import</h3>
-            <div className="space-y-2">
-              <Button 
-                onClick={() => {
-                  const exportData = {
-                    templates: savedTemplates,
-                    exportedAt: new Date().toISOString(),
-                    platform: 'pinterest',
-                    version: '1.0'
-                  };
-                  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = `pinterest-ads-templates-${new Date().toISOString().split('T')[0]}.json`;
-                  a.click();
-                  URL.revokeObjectURL(url);
-                  success('Templates exported successfully!');
-                }}
-                icon={Download} 
-                size="sm"
-                disabled={Object.keys(savedTemplates).length === 0}
-                className="w-full"
-              >
-                Export Templates
-              </Button>
-              
-              <div>
-                <input
-                  type="file"
-                  accept=".json"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      const reader = new FileReader();
-                      reader.onload = (event) => {
-                        try {
-                          const importData = JSON.parse(event.target?.result as string);
-                          if (importData.templates && typeof importData.templates === 'object') {
-                            const newTemplates = { ...savedTemplates, ...importData.templates };
-                            setSavedTemplates(newTemplates);
-                            localStorage.setItem('pinterest_ads_templates', JSON.stringify(newTemplates));
-                            success(`Templates imported successfully!`);
-                          } else {
-                            error('Invalid template file format');
-                          }
-                        } catch (err) {
-                          error('Failed to import templates. Please check the file format.');
-                        }
-                      };
-                      reader.readAsText(file);
-                    }
-                    // Reset the input
-                    e.target.value = '';
-                  }}
-                  className="hidden"
-                  id="import-templates-pinterest"
-                />
-                <Button
-                  onClick={() => document.getElementById('import-templates-pinterest')?.click()}
-                  icon={Upload}
-                  size="sm"
-                  variant="secondary"
-                  className="w-full"
-                >
-                  Import Templates
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Loaded Template Preview */}
-        {loadedTemplateName && (
-          <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <h4 className="text-sm font-semibold text-red-900 dark:text-red-100 mb-2">
-              📋 Loaded Template: "{loadedTemplateName}"
-            </h4>
-            <p className="text-xs text-red-700 dark:text-red-300">
-              ✅ Template loaded successfully! Individual parameter fields above have been updated.
-            </p>
           </div>
         )}
       </Accordion>
