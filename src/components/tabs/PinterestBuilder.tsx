@@ -8,24 +8,19 @@ import Badge from '../common/Badge';
 import { useToast } from '../../hooks/useToast';
 
 const PinterestBuilder: React.FC = () => {
-  const [baseUrl, setBaseUrl] = useState('{unescapedlpurl}');
   const [utmSource, setUtmSource] = useState('pinterest');
-  const [utmMedium, setUtmMedium] = useState('paid_social');
-  const [utmCampaign, setUtmCampaign] = useState('{campaignname}');
-  const [utmTerm, setUtmTerm] = useState('{adgroupname}');
-  const [utmContent, setUtmContent] = useState('{adid}');
+  const [utmMedium, setUtmMedium] = useState('PaidSocial');
+  const [utmCampaign, setUtmCampaign] = useState('{{campaign.name}}');
+  const [utmContent, setUtmContent] = useState('{{ad.name}}');
+  const [utmTerm, setUtmTerm] = useState('{{adgroup.name}}');
   
   // Individual optional parameter toggles
-  const [includeUtmTerm, setIncludeUtmTerm] = useState(true);
   const [includeUtmContent, setIncludeUtmContent] = useState(true);
+  const [includeUtmTerm, setIncludeUtmTerm] = useState(true);
   
   // Pinterest-specific parameters
   const [selectedParams, setSelectedParams] = useState<Record<string, boolean>>({});
   
-  const [customParams, setCustomParams] = useState<Array<{key: string, value: string}>>([]);
-  const [generatedString, setGeneratedString] = useState('');
-  const [copiedString, setCopiedString] = useState(false);
-  const [useLpurl, setUseLpurl] = useState(true);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -33,6 +28,10 @@ const PinterestBuilder: React.FC = () => {
   const [templateName, setTemplateName] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [loadedTemplateName, setLoadedTemplateName] = useState('');
+  
+  // Copy states for individual fields
+  const [copiedFields, setCopiedFields] = useState<Record<string, boolean>>({});
+  
   const { success, error } = useToast();
 
   // Pinterest-specific source options
@@ -44,326 +43,189 @@ const PinterestBuilder: React.FC = () => {
       description: 'Pinterest platform traffic - Use for static source tracking'
     },
     { 
-      value: '{publisher}', 
-      label: '{publisher}', 
+      value: '{{campaign.name}}', 
+      label: '{{campaign.name}}', 
       category: 'Dynamic Sources',
-      description: 'Returns static value: "Pinterest" - Useful for multi-channel attribution'
+      description: 'Dynamic campaign name - Automatically populated by Pinterest'
     }
   ], []);
 
   // Pinterest-specific medium options
   const mediumOptions = useMemo(() => [
     { 
-      value: 'paid_social', 
-      label: 'paid_social', 
+      value: 'PaidSocial', 
+      label: 'PaidSocial', 
       category: 'Standard Mediums',
-      description: 'Paid social media traffic - Recommended for Pinterest ads'
+      description: 'Paid social media traffic - Pinterest recommended value'
     },
     { 
-      value: 'cpc', 
-      label: 'cpc', 
-      category: 'Standard Mediums',
-      description: 'Cost per click campaigns - Traditional PPC tracking'
+      value: 'paid_social', 
+      label: 'paid_social', 
+      category: 'Alternative Mediums',
+      description: 'Paid social media traffic - Alternative format'
     },
     { 
       value: 'paid', 
       label: 'paid', 
-      category: 'Standard Mediums',
-      description: 'General paid traffic - Common for Pinterest ads'
+      category: 'Alternative Mediums',
+      description: 'General paid traffic - Alternative option'
     },
     { 
-      value: 'social', 
-      label: 'social', 
-      category: 'Standard Mediums',
-      description: 'Social media traffic - Organic social classification'
+      value: 'cpc', 
+      label: 'cpc', 
+      category: 'Alternative Mediums',
+      description: 'Cost per click campaigns - Alternative option'
     }
   ], []);
 
   // Pinterest-specific campaign options
   const campaignOptions = useMemo(() => [
     { 
-      value: '{campaignname}', 
-      label: '{campaignname}', 
+      value: '{{campaign.name}}', 
+      label: '{{campaign.name}}', 
       category: 'Campaign Info',
-      description: 'Campaign name (human-readable) - For utm_campaign'
+      description: 'Dynamic campaign name from Pinterest'
     },
     { 
-      value: '{campaignid}', 
-      label: '{campaignid}', 
+      value: '{{campaign.id}}', 
+      label: '{{campaign.id}}', 
       category: 'Campaign Info',
-      description: 'Numeric campaign ID - Use if ID-based grouping is preferred'
+      description: 'Dynamic campaign ID from Pinterest'
+    }
+  ], []);
+
+  // Pinterest-specific content options
+  const contentOptions = useMemo(() => [
+    { 
+      value: '{{ad.name}}', 
+      label: '{{ad.name}}', 
+      category: 'Ad Level',
+      description: 'Dynamic ad name from Pinterest'
+    },
+    { 
+      value: '{{ad.id}}', 
+      label: '{{ad.id}}', 
+      category: 'Ad Level',
+      description: 'Dynamic ad ID from Pinterest'
     }
   ], []);
 
   // Pinterest-specific term options
   const termOptions = useMemo(() => [
     { 
-      value: '{adgroupname}', 
-      label: '{adgroupname}', 
+      value: '{{adgroup.name}}', 
+      label: '{{adgroup.name}}', 
       category: 'Ad Group Level',
-      description: 'Ad group name - For utm_term'
+      description: 'Dynamic ad group name from Pinterest'
     },
     { 
-      value: '{keyword}', 
-      label: '{keyword}', 
-      category: 'Keyword Level',
-      description: 'Matched search keyword (percent-encoded) - For utm_term or additional segmentation'
-    }
-  ], []);
-    
-  // Pinterest-specific content options
-  const contentOptions = useMemo(() => [
-    { 
-      value: '{adid}', 
-      label: '{adid}', 
-      category: 'Ad Level',
-      description: 'Creative ID (Promoted Pin ID) - For utm_content'
-    },
-    { 
-      value: '{creative_id}', 
-      label: '{creative_id}', 
-      category: 'Ad Level',
-      description: 'Same as {adid} - Alias – use either'
-    },
-    { 
-      value: '{product_name}', 
-      label: '{product_name}', 
-      category: 'Product Level',
-      description: 'Product title (from feed) - Useful in catalog/collection ads'
+      value: '{{adgroup.id}}', 
+      label: '{{adgroup.id}}', 
+      category: 'Ad Group Level',
+      description: 'Dynamic ad group ID from Pinterest'
     }
   ], []);
 
-  // Handle individual optional parameter toggles with default value restoration
-  const handleUtmTermToggle = useCallback((enabled: boolean) => {
-    setIncludeUtmTerm(enabled);
-    
-    // If enabling and field is empty, restore default
-    if (enabled && !utmTerm.trim()) {
-      setUtmTerm('{adgroupname}');
-    }
-  }, [utmTerm]);
-
-  const handleUtmContentToggle = useCallback((enabled: boolean) => {
-    setIncludeUtmContent(enabled);
-    
-    // If enabling and field is empty, restore default
-    if (enabled && !utmContent.trim()) {
-      setUtmContent('{adid}');
-    }
-  }, [utmContent]);
-
-  // Base URL options
-  const baseUrlOptions = useMemo(() => [
-    { 
-      value: '{unescapedlpurl}', 
-      label: '{unescapedlpurl}', 
-      category: 'URL Parameters',
-      description: 'Landing page URL (unencoded/clean) - Preferred in UTM builders'
-    },
-    { 
-      value: '{lpurl}', 
-      label: '{lpurl}', 
-      category: 'URL Parameters',
-      description: 'Landing page URL (escaped) - For redirect-based tracking tools'
-    }
-  ], []);
-
-  // Complete Pinterest parameters based on the provided list
+  // Pinterest official parameters
   const pinterestParams = useMemo(() => [
     // Campaign Level Parameters
     { 
-      id: 'campaignid', 
-      value: '{campaignid}', 
+      id: 'campaign_id', 
+      value: '{{campaign.id}}', 
       label: 'Campaign ID', 
       category: 'campaign', 
-      description: 'Numeric campaign ID',
+      description: 'Unique campaign identifier from Pinterest',
       availability: 'All Pinterest campaigns',
-      example: '12345678',
-      useCase: 'Use if ID-based grouping is preferred'
+      example: '626736533506'
     },
     { 
-      id: 'campaignname', 
-      value: '{campaignname}', 
+      id: 'campaign_name', 
+      value: '{{campaign.name}}', 
       label: 'Campaign Name', 
       category: 'campaign', 
-      description: 'Campaign name (human-readable)',
+      description: 'Campaign name from Pinterest',
       availability: 'All Pinterest campaigns',
-      example: 'Summer_Sale_2025',
-      useCase: 'For utm_campaign'
+      example: 'Spring_Collection_2025'
     },
     
     // Ad Group Level Parameters
     { 
-      id: 'adgroupid', 
-      value: '{adgroupid}', 
+      id: 'adgroup_id', 
+      value: '{{adgroup.id}}', 
       label: 'Ad Group ID', 
       category: 'adgroup', 
-      description: 'Numeric ad group ID',
+      description: 'Unique ad group identifier from Pinterest',
       availability: 'All Pinterest campaigns',
-      example: '87654321',
-      useCase: 'Alternate for deeper analytics'
+      example: '626736533507'
     },
     { 
-      id: 'adgroupname', 
-      value: '{adgroupname}', 
+      id: 'adgroup_name', 
+      value: '{{adgroup.name}}', 
       label: 'Ad Group Name', 
       category: 'adgroup', 
-      description: 'Ad group name',
+      description: 'Ad group name from Pinterest',
       availability: 'All Pinterest campaigns',
-      example: 'US_Women_25_34',
-      useCase: 'For utm_term'
+      example: 'Women_Shoes_Interest'
     },
     
     // Ad Level Parameters
     { 
-      id: 'adid', 
-      value: '{adid}', 
+      id: 'ad_id', 
+      value: '{{ad.id}}', 
       label: 'Ad ID', 
       category: 'ad', 
-      description: 'Creative ID (Promoted Pin ID)',
+      description: 'Unique ad identifier from Pinterest',
       availability: 'All Pinterest campaigns',
-      example: '687123456789',
-      useCase: 'For utm_content'
+      example: '626736533508'
     },
     { 
-      id: 'creative_id', 
-      value: '{creative_id}', 
-      label: 'Creative ID', 
+      id: 'ad_name', 
+      value: '{{ad.name}}', 
+      label: 'Ad Name', 
       category: 'ad', 
-      description: 'Same as {adid}',
+      description: 'Ad name from Pinterest',
       availability: 'All Pinterest campaigns',
-      example: '687123456789',
-      useCase: 'Alias – use either'
+      example: 'Spring_Shoes_Video_A'
     },
     
-    // Keyword Parameters
+    // Targeting Parameters
     { 
       id: 'keyword', 
-      value: '{keyword}', 
+      value: '{{keyword}}', 
       label: 'Keyword', 
-      category: 'keyword', 
-      description: 'Matched search keyword (percent-encoded)',
+      category: 'targeting', 
+      description: 'Keyword that triggered the ad',
       availability: 'Search campaigns',
-      example: 'summer%20fashion',
-      useCase: 'For utm_term or additional segmentation'
+      example: 'running shoes'
     },
     { 
-      id: 'keyword_id', 
-      value: '{keyword_id}', 
-      label: 'Keyword ID', 
-      category: 'keyword', 
-      description: 'ID of matched keyword',
-      availability: 'Search campaigns',
-      example: '12345',
-      useCase: 'Optional – for advanced performance mapping'
+      id: 'interest', 
+      value: '{{interest}}', 
+      label: 'Interest', 
+      category: 'targeting', 
+      description: 'Interest category that triggered the ad',
+      availability: 'Interest targeting campaigns',
+      example: 'fitness'
     },
     
-    // Product Parameters
+    // Creative Parameters
     { 
-      id: 'product_name', 
-      value: '{product_name}', 
-      label: 'Product Name', 
-      category: 'product', 
-      description: 'Product title (from feed)',
-      availability: 'Catalog/collection ads',
-      example: 'Blue Denim Jacket',
-      useCase: 'Useful in catalog/collection ads'
-    },
-    { 
-      id: 'product_id', 
-      value: '{product_id}', 
-      label: 'Product ID', 
-      category: 'product', 
-      description: 'Product ID or SKU',
-      availability: 'Catalog/collection ads',
-      example: 'SKU12345',
-      useCase: 'Track product-level performance'
-    },
-    { 
-      id: 'product_partition_id', 
-      value: '{product_partition_id}', 
-      label: 'Product Partition ID', 
-      category: 'product', 
-      description: 'Product group/partition ID',
-      availability: 'Catalog ads',
-      example: '45678',
-      useCase: 'For catalog feed analytics'
-    },
-    { 
-      id: 'promoted_product_group_id', 
-      value: '{promoted_product_group_id}', 
-      label: 'Promoted Product Group ID', 
-      category: 'product', 
-      description: 'Promoted product group ID',
-      availability: 'Catalog/collection ads',
-      example: '98765',
-      useCase: 'Used in catalog and collection ads'
-    },
-    
-    // Device Parameters
-    { 
-      id: 'device', 
-      value: '{device}', 
-      label: 'Device Type', 
-      category: 'device', 
-      description: 'Device type: c (Computer), m (Mobile), t (Tablet)',
+      id: 'creative_type', 
+      value: '{{creative.type}}', 
+      label: 'Creative Type', 
+      category: 'creative', 
+      description: 'Type of creative used',
       availability: 'All Pinterest campaigns',
-      example: 'c, m, t',
-      useCase: 'For segmentation by device in analytics'
+      example: 'video, image, carousel'
     },
     { 
-      id: 'device_platform', 
-      value: '{device_platform}', 
-      label: 'Device Platform', 
-      category: 'device', 
-      description: 'Device platform (e.g., Android, iOS)',
-      availability: 'Mobile campaigns',
-      example: 'Android, iOS',
-      useCase: 'Optional for mobile-specific campaigns'
-    },
-    
-    // URL Parameters
-    { 
-      id: 'lpurl', 
-      value: '{lpurl}', 
-      label: 'Landing Page URL (escaped)', 
-      category: 'url', 
-      description: 'Landing page URL (escaped)',
+      id: 'pin_id', 
+      value: '{{pin.id}}', 
+      label: 'Pin ID', 
+      category: 'creative', 
+      description: 'ID of the promoted pin',
       availability: 'All Pinterest campaigns',
-      example: 'https%3A%2F%2Fexample.com',
-      useCase: 'For redirect-based tracking tools'
-    },
-    { 
-      id: 'unescapedlpurl', 
-      value: '{unescapedlpurl}', 
-      label: 'Unescaped Landing Page URL', 
-      category: 'url', 
-      description: 'Landing page URL (unencoded/clean)',
-      availability: 'All Pinterest campaigns',
-      example: 'https://example.com',
-      useCase: 'Preferred in UTM builders'
-    },
-    { 
-      id: 'organic_url', 
-      value: '{organic_url}', 
-      label: 'Organic URL', 
-      category: 'url', 
-      description: 'Original URL (used in collection ads)',
-      availability: 'Collection ads',
-      example: 'https://example.com/products',
-      useCase: 'Collection ad-specific'
-    },
-    
-    // Publisher Parameter
-    { 
-      id: 'publisher', 
-      value: '{publisher}', 
-      label: 'Publisher', 
-      category: 'publisher', 
-      description: 'Returns static value: "Pinterest"',
-      availability: 'All Pinterest campaigns',
-      example: 'Pinterest',
-      useCase: 'Useful for multi-channel attribution'
+      example: '626736533509'
     }
   ], []);
 
@@ -378,91 +240,40 @@ const PinterestBuilder: React.FC = () => {
     });
   }, [pinterestParams, searchTerm, selectedCategory]);
 
-  // Generate parameter string (no URL needed)
-  const generateParameterString = useCallback(() => {
-    const params = [];
-    
-    // Add UTM parameters - REQUIRED FIELDS ALWAYS INCLUDED
-    if (utmSource) params.push(`utm_source=${utmSource}`);
-    if (utmMedium) params.push(`utm_medium=${utmMedium}`);
-    if (utmCampaign) params.push(`utm_campaign=${utmCampaign}`);
-    
-    // Add optional UTM parameters only if individually enabled
-    if (includeUtmTerm && utmTerm) params.push(`utm_term=${utmTerm}`);
-    if (includeUtmContent && utmContent) params.push(`utm_content=${utmContent}`);
-
-    // Add selected Pinterest parameters
-    Object.entries(selectedParams).forEach(([paramId, isSelected]) => {
-      if (isSelected) {
-        const param = pinterestParams.find(p => p.id === paramId);
-        if (param) {
-          params.push(`${paramId}=${param.value}`);
-        }
-      }
-    });
-
-    // Add custom parameters
-    customParams.forEach(param => {
-      if (param.key && param.value) {
-        params.push(`${param.key}=${param.value}`);
-      }
-    });
-
-    let finalString;
-    
-    if (useLpurl && baseUrl) {
-      finalString = `${baseUrl}?${params.join('&')}`;
-    } else {
-      finalString = params.join('&');
+  // Handle individual optional parameter toggles with default value restoration
+  const handleUtmContentToggle = useCallback((enabled: boolean) => {
+    setIncludeUtmContent(enabled);
+    if (enabled && !utmContent.trim()) {
+      setUtmContent('{{ad.name}}');
     }
-    
-    setGeneratedString(finalString);
-  }, [utmSource, utmMedium, utmCampaign, utmTerm, utmContent, includeUtmTerm, includeUtmContent, selectedParams, customParams, pinterestParams, useLpurl, baseUrl]);
+  }, [utmContent]);
 
-  // Auto-generate when parameters change
-  React.useEffect(() => {
-    generateParameterString();
-  }, [generateParameterString]);
+  const handleUtmTermToggle = useCallback((enabled: boolean) => {
+    setIncludeUtmTerm(enabled);
+    if (enabled && !utmTerm.trim()) {
+      setUtmTerm('{{adgroup.name}}');
+    }
+  }, [utmTerm]);
 
-  // Copy to clipboard
-  const copyToClipboard = async () => {
+  // Copy individual field (parameter name or value)
+  const copyField = async (fieldType: 'name' | 'value', paramName: string, value: string) => {
     try {
-      await navigator.clipboard.writeText(generatedString);
-      setCopiedString(true);
-      setTimeout(() => setCopiedString(false), 2000);
-      success('Parameter string copied to clipboard!');
+      const textToCopy = fieldType === 'name' ? paramName : value;
+      await navigator.clipboard.writeText(textToCopy);
+      
+      const fieldKey = `${paramName}_${fieldType}`;
+      setCopiedFields(prev => ({ ...prev, [fieldKey]: true }));
+      setTimeout(() => {
+        setCopiedFields(prev => ({ ...prev, [fieldKey]: false }));
+      }, 2000);
+      
+      success(`${fieldType === 'name' ? 'Parameter name' : 'Parameter value'} copied!`);
     } catch (err) {
-      error('Failed to copy parameter string');
-      console.error('Failed to copy:', err);
+      error(`Failed to copy ${fieldType}`);
     }
   };
 
-  // Copy current generated string (for loaded template preview)
-  const copyCurrentTemplate = async () => {
-    try {
-      await navigator.clipboard.writeText(generatedString);
-      success('Current parameter string copied to clipboard!');
-    } catch (err) {
-      error('Failed to copy parameter string');
-    }
-  };
-
-  // Custom parameter management
-  const addCustomParam = () => {
-    setCustomParams(prev => [...prev, { key: '', value: '' }]);
-  };
-
-  const updateCustomParam = (index: number, field: 'key' | 'value', value: string) => {
-    setCustomParams(prev => prev.map((param, i) => 
-      i === index ? { ...param, [field]: value } : param
-    ));
-  };
-
-  const removeCustomParam = (index: number) => {
-    setCustomParams(prev => prev.filter((_, i) => i !== index));
-  };
-
-  // Template management with toast notifications
+  // Template management
   const saveTemplate = useCallback(() => {
     if (!templateName.trim()) {
       error('Please enter a template name');
@@ -470,10 +281,9 @@ const PinterestBuilder: React.FC = () => {
     }
     
     const template = {
-      utmSource, utmMedium, utmCampaign, utmTerm, utmContent,
-      baseUrl, useLpurl,
-      includeUtmTerm, includeUtmContent,
-      selectedParams, customParams, timestamp: Date.now()
+      utmSource, utmMedium, utmCampaign, utmContent, utmTerm,
+      includeUtmContent, includeUtmTerm,
+      selectedParams, timestamp: Date.now()
     };
     
     const newTemplates = { ...savedTemplates, [templateName]: template };
@@ -482,7 +292,7 @@ const PinterestBuilder: React.FC = () => {
     
     success(`Template "${templateName}" saved successfully!`);
     setTemplateName('');
-  }, [templateName, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, baseUrl, useLpurl, includeUtmTerm, includeUtmContent, selectedParams, customParams, savedTemplates, success, error]);
+  }, [templateName, utmSource, utmMedium, utmCampaign, utmContent, utmTerm, includeUtmContent, includeUtmTerm, selectedParams, savedTemplates, success, error]);
 
   const loadTemplate = useCallback(() => {
     if (!selectedTemplate || !savedTemplates[selectedTemplate]) {
@@ -494,25 +304,18 @@ const PinterestBuilder: React.FC = () => {
     setUtmSource(template.utmSource);
     setUtmMedium(template.utmMedium);
     setUtmCampaign(template.utmCampaign);
-    setUtmTerm(template.utmTerm);
     setUtmContent(template.utmContent);
-    setBaseUrl(template.baseUrl || '{unescapedlpurl}');
-    setUseLpurl(template.useLpurl ?? true);
+    setUtmTerm(template.utmTerm);
     
-    // Load individual toggles (with fallback for old templates)
-    setIncludeUtmTerm(template.includeUtmTerm ?? true);
     setIncludeUtmContent(template.includeUtmContent ?? true);
+    setIncludeUtmTerm(template.includeUtmTerm ?? true);
     
     setSelectedParams(template.selectedParams || {});
-    setCustomParams(template.customParams || []);
-    
-    // Set loaded template name for preview
     setLoadedTemplateName(selectedTemplate);
     
     success(`Template "${selectedTemplate}" loaded successfully!`);
   }, [selectedTemplate, savedTemplates, success, error]);
 
-  // Delete template functionality
   const deleteTemplate = useCallback(() => {
     if (!selectedTemplate || !savedTemplates[selectedTemplate]) {
       error('Please select a template to delete');
@@ -526,7 +329,6 @@ const PinterestBuilder: React.FC = () => {
     setSavedTemplates(newTemplates);
     localStorage.setItem('pinterest_ads_templates', JSON.stringify(newTemplates));
     
-    // Clear selection and loaded template if it was the deleted one
     setSelectedTemplate('');
     if (loadedTemplateName === templateToDelete) {
       setLoadedTemplateName('');
@@ -535,19 +337,15 @@ const PinterestBuilder: React.FC = () => {
     success(`Template "${templateToDelete}" deleted successfully!`);
   }, [selectedTemplate, savedTemplates, loadedTemplateName, success, error]);
 
-  // Reset all fields
   const resetFields = useCallback(() => {
     setUtmSource('pinterest');
-    setUtmMedium('paid_social');
-    setUtmCampaign('{campaignname}');
-    setUtmTerm('{adgroupname}');
-    setUtmContent('{adid}');
-    setBaseUrl('{unescapedlpurl}');
-    setUseLpurl(true);
-    setIncludeUtmTerm(true);
+    setUtmMedium('PaidSocial');
+    setUtmCampaign('{{campaign.name}}');
+    setUtmContent('{{ad.name}}');
+    setUtmTerm('{{adgroup.name}}');
     setIncludeUtmContent(true);
+    setIncludeUtmTerm(true);
     setSelectedParams({});
-    setCustomParams([]);
     setLoadedTemplateName('');
     success('Form reset successfully!');
   }, [success]);
@@ -570,11 +368,8 @@ const PinterestBuilder: React.FC = () => {
     { value: 'campaign', label: 'Campaign Level' },
     { value: 'adgroup', label: 'Ad Group Level' },
     { value: 'ad', label: 'Ad Level' },
-    { value: 'keyword', label: 'Keyword' },
-    { value: 'product', label: 'Product' },
-    { value: 'device', label: 'Device' },
-    { value: 'url', label: 'URL' },
-    { value: 'publisher', label: 'Publisher' }
+    { value: 'targeting', label: 'Targeting' },
+    { value: 'creative', label: 'Creative' }
   ];
 
   // Get category badge color
@@ -583,11 +378,8 @@ const PinterestBuilder: React.FC = () => {
       campaign: { variant: 'info' as const, label: 'Campaign' },
       adgroup: { variant: 'success' as const, label: 'Ad Group' },
       ad: { variant: 'warning' as const, label: 'Ad' },
-      keyword: { variant: 'default' as const, label: 'Keyword' },
-      product: { variant: 'info' as const, label: 'Product' },
-      device: { variant: 'success' as const, label: 'Device' },
-      url: { variant: 'warning' as const, label: 'URL' },
-      publisher: { variant: 'default' as const, label: 'Publisher' }
+      targeting: { variant: 'default' as const, label: 'Targeting' },
+      creative: { variant: 'info' as const, label: 'Creative' }
     };
     
     const badge = badges[category as keyof typeof badges];
@@ -605,7 +397,7 @@ const PinterestBuilder: React.FC = () => {
               Pinterest Ads Parameter Builder
             </h3>
             <p className="text-red-700 dark:text-red-300 text-xs">
-              Generate individual parameter fields or URL strings using Pinterest's official tracking parameters
+              Generate individual UTM parameters for Pinterest's URL parameter fields
             </p>
           </div>
           <Button
@@ -644,388 +436,12 @@ const PinterestBuilder: React.FC = () => {
         </div>
       )}
 
-      {/* Pinterest Individual Parameter Fields - NEW SECTION */}
+      {/* UTM Parameters Configuration */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center gap-3 mb-6">
           <Target className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Pinterest Individual Parameter Fields
-          </h3>
-          <Badge variant="success" size="sm">Pinterest Format</Badge>
-        </div>
-
-        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <div className="flex items-start gap-2">
-            <Settings className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-medium text-red-800 dark:text-red-200">Pinterest Parameter Format</p>
-              <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-                Copy individual parameter values and paste them into Pinterest's "Edit URL Parameters" interface. 
-                Each parameter has its own field in Pinterest Ads Manager.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Individual Parameter Fields */}
-        <div className="space-y-6">
-          {/* Campaign Source */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
-            <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Campaign source (utm_source)
-              </label>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                To identify the source of traffic, for example, Pinterest
-              </p>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={utmSource}
-                  readOnly
-                  className="w-full p-3 pr-12 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm"
-                />
-                <Button
-                  onClick={() => {
-                    navigator.clipboard.writeText(utmSource);
-                    success('Campaign source copied!');
-                  }}
-                  variant="ghost"
-                  size="sm"
-                  icon={Copy}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                />
-              </div>
-            </div>
-            <div className="flex justify-center">
-              <Button
-                onClick={() => {
-                  navigator.clipboard.writeText(utmSource);
-                  success('Campaign source copied!');
-                }}
-                icon={Copy}
-                size="sm"
-                className="w-full lg:w-auto"
-              >
-                Copy Value
-              </Button>
-            </div>
-          </div>
-
-          {/* Campaign Medium */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
-            <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Campaign medium (utm_medium)
-              </label>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                To identify the advertising medium, for example, PaidSocial
-              </p>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={utmMedium}
-                  readOnly
-                  className="w-full p-3 pr-12 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm"
-                />
-                <Button
-                  onClick={() => {
-                    navigator.clipboard.writeText(utmMedium);
-                    success('Campaign medium copied!');
-                  }}
-                  variant="ghost"
-                  size="sm"
-                  icon={Copy}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                />
-              </div>
-            </div>
-            <div className="flex justify-center">
-              <Button
-                onClick={() => {
-                  navigator.clipboard.writeText(utmMedium);
-                  success('Campaign medium copied!');
-                }}
-                icon={Copy}
-                size="sm"
-                className="w-full lg:w-auto"
-              >
-                Copy Value
-              </Button>
-            </div>
-          </div>
-
-          {/* Campaign ID */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
-            <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Campaign id (utm_campaign)
-              </label>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                To identify a specific campaign
-              </p>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={utmCampaign}
-                  readOnly
-                  className="w-full p-3 pr-12 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm"
-                />
-                <Button
-                  onClick={() => {
-                    navigator.clipboard.writeText(utmCampaign);
-                    success('Campaign ID copied!');
-                  }}
-                  variant="ghost"
-                  size="sm"
-                  icon={Copy}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                />
-              </div>
-            </div>
-            <div className="flex justify-center">
-              <Button
-                onClick={() => {
-                  navigator.clipboard.writeText(utmCampaign);
-                  success('Campaign ID copied!');
-                }}
-                icon={Copy}
-                size="sm"
-                className="w-full lg:w-auto"
-              >
-                Copy Value
-              </Button>
-            </div>
-          </div>
-
-          {/* Campaign Content - Only if enabled */}
-          {includeUtmContent && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
-              <div className="lg:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Campaign content (utm_content)
-                </label>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                  To differentiate contents within a campaign that link to the same URL
-                </p>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={utmContent}
-                    readOnly
-                    className="w-full p-3 pr-12 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm"
-                  />
-                  <Button
-                    onClick={() => {
-                      navigator.clipboard.writeText(utmContent);
-                      success('Campaign content copied!');
-                    }}
-                    variant="ghost"
-                    size="sm"
-                    icon={Copy}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                  />
-                </div>
-              </div>
-              <div className="flex justify-center">
-                <Button
-                  onClick={() => {
-                    navigator.clipboard.writeText(utmContent);
-                    success('Campaign content copied!');
-                  }}
-                  icon={Copy}
-                  size="sm"
-                  className="w-full lg:w-auto"
-                >
-                  Copy Value
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Campaign Term - Only if enabled */}
-          {includeUtmTerm && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
-              <div className="lg:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Campaign term (utm_term)
-                </label>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                  To identify paid search keywords
-                </p>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={utmTerm}
-                    readOnly
-                    className="w-full p-3 pr-12 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm"
-                  />
-                  <Button
-                    onClick={() => {
-                      navigator.clipboard.writeText(utmTerm);
-                      success('Campaign term copied!');
-                    }}
-                    variant="ghost"
-                    size="sm"
-                    icon={Copy}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                  />
-                </div>
-              </div>
-              <div className="flex justify-center">
-                <Button
-                  onClick={() => {
-                    navigator.clipboard.writeText(utmTerm);
-                    success('Campaign term copied!');
-                  }}
-                  icon={Copy}
-                  size="sm"
-                  className="w-full lg:w-auto"
-                >
-                  Copy Value
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Custom Parameters Section */}
-        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">
-              Custom parameters
-            </h4>
-            <Button onClick={addCustomParam} icon={Plus} size="sm">
-              Add parameters
-            </Button>
-          </div>
-          
-          {customParams.length === 0 ? (
-            <div className="text-center py-6 text-gray-500 dark:text-gray-400">
-              <Settings className="w-8 h-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No custom parameters added. Click "Add parameters" to add custom tracking parameters.</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {customParams.map((param, index) => (
-                <div key={index} className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
-                  <div className="lg:col-span-2">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Parameter Name
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="e.g., custom_param"
-                          value={param.key}
-                          onChange={(e) => updateCustomParam(index, 'key', e.target.value)}
-                          className="w-full p-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-red-500 focus:ring-red-500/20 focus:outline-none focus:ring-4"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Value
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            placeholder="e.g., {custom_value}"
-                            value={param.value}
-                            onChange={(e) => updateCustomParam(index, 'value', e.target.value)}
-                            className="w-full p-3 pr-12 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-red-500 focus:ring-red-500/20 focus:outline-none focus:ring-4"
-                          />
-                          {param.key && param.value && (
-                            <Button
-                              onClick={() => {
-                                navigator.clipboard.writeText(param.value);
-                                success(`${param.key} value copied!`);
-                              }}
-                              variant="ghost"
-                              size="sm"
-                              icon={Copy}
-                              className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                            />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    {param.key && param.value && (
-                      <Button
-                        onClick={() => {
-                          navigator.clipboard.writeText(param.value);
-                          success(`${param.key} value copied!`);
-                        }}
-                        icon={Copy}
-                        size="sm"
-                        className="flex-1 lg:flex-none"
-                      >
-                        Copy Value
-                      </Button>
-                    )}
-                    <Button
-                      onClick={() => removeCustomParam(index)}
-                      variant="danger"
-                      icon={Trash2}
-                      size="sm"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Base URL Option */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <Globe className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Base URL Options
-          </h3>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 mb-2">
-            <input
-              type="checkbox"
-              id="use-lpurl"
-              checked={useLpurl}
-              onChange={(e) => setUseLpurl(e.target.checked)}
-              className="rounded border-gray-300 text-red-600 focus:ring-red-500"
-            />
-            <label htmlFor="use-lpurl" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-              Include Base URL in generated string
-            </label>
-          </div>
-          {useLpurl && (
-            <Dropdown
-              options={baseUrlOptions}
-              value={baseUrl}
-              onChange={setBaseUrl}
-              placeholder="Select base URL parameter"
-              searchable
-              clearable
-              allowCustom
-              groupByCategory
-              className="w-full"
-            />
-          )}
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            When enabled, the parameter string will include the base URL. This is useful for tracking templates.
-          </p>
-        </div>
-      </div>
-
-      {/* UTM Parameters */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <Target className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            UTM Parameters
+            UTM Parameters Configuration
           </h3>
         </div>
 
@@ -1059,7 +475,7 @@ const PinterestBuilder: React.FC = () => {
               options={mediumOptions}
               value={utmMedium}
               onChange={setUtmMedium}
-              placeholder="e.g., paid_social"
+              placeholder="e.g., PaidSocial"
               searchable
               clearable
               allowCustom
@@ -1067,19 +483,19 @@ const PinterestBuilder: React.FC = () => {
               className="w-full"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Recommended: paid_social for Pinterest ads
+              Pinterest recommended: PaidSocial
             </p>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Campaign Name (utm_campaign) *
+              Campaign ID (utm_campaign) *
             </label>
             <Dropdown
               options={campaignOptions}
               value={utmCampaign}
               onChange={setUtmCampaign}
-              placeholder="e.g., {campaignname}"
+              placeholder="e.g., {{campaign.name}}"
               searchable
               clearable
               allowCustom
@@ -1087,7 +503,7 @@ const PinterestBuilder: React.FC = () => {
               className="w-full"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Uses Pinterest's {'{campaignname}'} parameter
+              Uses Pinterest's dynamic campaign values
             </p>
           </div>
         </div>
@@ -1099,37 +515,6 @@ const PinterestBuilder: React.FC = () => {
           </h4>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* UTM Term */}
-            <div className="relative">
-              <div className="flex items-center gap-2 mb-2">
-                <input
-                  type="checkbox"
-                  id="include-utm-term"
-                  checked={includeUtmTerm}
-                  onChange={(e) => handleUtmTermToggle(e.target.checked)}
-                  className="rounded border-gray-300 text-red-600 focus:ring-red-500"
-                />
-                <label htmlFor="include-utm-term" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                  Campaign Term (utm_term)
-                </label>
-              </div>
-              <Dropdown
-                options={termOptions}
-                value={utmTerm}
-                onChange={setUtmTerm}
-                placeholder="e.g., {adgroupname}"
-                searchable
-                clearable
-                allowCustom
-                groupByCategory
-                disabled={!includeUtmTerm}
-                className={`w-full ${!includeUtmTerm ? 'opacity-50' : ''}`}
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Typically used for ad group name or keywords
-              </p>
-            </div>
-
             {/* UTM Content */}
             <div className="relative">
               <div className="flex items-center gap-2 mb-2">
@@ -1148,7 +533,7 @@ const PinterestBuilder: React.FC = () => {
                 options={contentOptions}
                 value={utmContent}
                 onChange={setUtmContent}
-                placeholder="e.g., {adid}"
+                placeholder="e.g., {{ad.name}}"
                 searchable
                 clearable
                 allowCustom
@@ -1157,66 +542,367 @@ const PinterestBuilder: React.FC = () => {
                 className={`w-full ${!includeUtmContent ? 'opacity-50' : ''}`}
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Typically used for creative ID or product information
+                To differentiate contents within a campaign that link to the same URL
+              </p>
+            </div>
+
+            {/* UTM Term */}
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-2">
+                <input
+                  type="checkbox"
+                  id="include-utm-term"
+                  checked={includeUtmTerm}
+                  onChange={(e) => handleUtmTermToggle(e.target.checked)}
+                  className="rounded border-gray-300 text-red-600 focus:ring-red-500"
+                />
+                <label htmlFor="include-utm-term" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                  Campaign Term (utm_term)
+                </label>
+              </div>
+              <Dropdown
+                options={termOptions}
+                value={utmTerm}
+                onChange={setUtmTerm}
+                placeholder="e.g., {{adgroup.name}}"
+                searchable
+                clearable
+                allowCustom
+                groupByCategory
+                disabled={!includeUtmTerm}
+                className={`w-full ${!includeUtmTerm ? 'opacity-50' : ''}`}
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                To identify paid search keywords
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Generated Parameter String */}
-      <div className="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-xl p-6 border-2 border-red-200 dark:border-red-800 shadow-lg">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-red-900 dark:text-red-100 flex items-center gap-2">
-            <Zap className="w-6 h-6" />
-            Generated Pinterest Ads Parameter String
-          </h2>
-          <Button
-            onClick={copyToClipboard}
-            disabled={!generatedString}
-            icon={copiedString ? Check : Copy}
-            variant={copiedString ? 'success' : 'primary'}
-            size="lg"
-          >
-            {copiedString ? 'Copied!' : 'Copy Parameters'}
-          </Button>
+      {/* Pinterest Individual Parameter Fields */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Settings className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Pinterest Individual Parameter Fields
+          </h3>
+          <Badge variant="info" size="sm">Pinterest Format</Badge>
         </div>
-        
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border-2 border-red-200 dark:border-red-700 shadow-inner">
-          <code className="text-sm break-all text-gray-800 dark:text-gray-200 font-mono leading-relaxed">
-            {generatedString || 'Configure parameters to generate string...'}
-          </code>
-        </div>
-        
-        <div className="mt-4 p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+
+        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
           <div className="flex items-start gap-2">
             <Settings className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-            {useLpurl ? (
-              <div>
-                <p className="text-sm font-medium text-red-800 dark:text-red-200">Pinterest Tracking Template</p>
-                <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-                  Copy this tracking template and paste it into Pinterest's tracking template field in your ad campaign setup.
-                  Pinterest will automatically replace the parameters with actual values.
-                </p>
-              </div>
-            ) : (
-              <div>
-                <p className="text-sm font-medium text-red-800 dark:text-red-200">Pinterest Parameter Usage</p>
-                <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-                  Copy this parameter string and paste it into Pinterest's URL parameters field in your ad campaign setup. 
-                  Pinterest will automatically replace the parameters with actual values.
-                </p>
-              </div>
-            )}
+            <div>
+              <p className="text-sm font-medium text-red-800 dark:text-red-200">Pinterest URL Parameters Format</p>
+              <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                Copy individual parameter names and values to paste into Pinterest's "Edit URL Parameters" interface.
+              </p>
+            </div>
           </div>
+        </div>
+
+        {/* Core UTM Parameters */}
+        <div className="space-y-4">
+          {/* Campaign source */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Campaign source (utm_source)
+                </label>
+                <Button
+                  onClick={() => copyField('name', 'utm_source', utmSource)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_source_name'] ? Check : Copy}
+                  className="text-xs"
+                >
+                  {copiedFields['utm_source_name'] ? 'Copied!' : 'Copy Name'}
+                </Button>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
+                <code className="text-sm text-gray-800 dark:text-gray-200">utm_source</code>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                To identify the source of traffic, for example, Pinterest
+              </p>
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Value
+                </label>
+                <Button
+                  onClick={() => copyField('value', 'utm_source', utmSource)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_source_value'] ? Check : Copy}
+                  className="text-xs"
+                >
+                  {copiedFields['utm_source_value'] ? 'Copied!' : 'Copy Value'}
+                </Button>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
+                <code className="text-sm text-gray-800 dark:text-gray-200">{utmSource}</code>
+              </div>
+            </div>
+          </div>
+
+          {/* Campaign medium */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Campaign medium (utm_medium)
+                </label>
+                <Button
+                  onClick={() => copyField('name', 'utm_medium', utmMedium)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_medium_name'] ? Check : Copy}
+                  className="text-xs"
+                >
+                  {copiedFields['utm_medium_name'] ? 'Copied!' : 'Copy Name'}
+                </Button>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
+                <code className="text-sm text-gray-800 dark:text-gray-200">utm_medium</code>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                To identify the advertising medium, for example, PaidSocial
+              </p>
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Value
+                </label>
+                <Button
+                  onClick={() => copyField('value', 'utm_medium', utmMedium)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_medium_value'] ? Check : Copy}
+                  className="text-xs"
+                >
+                  {copiedFields['utm_medium_value'] ? 'Copied!' : 'Copy Value'}
+                </Button>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
+                <code className="text-sm text-gray-800 dark:text-gray-200">{utmMedium}</code>
+              </div>
+            </div>
+          </div>
+
+          {/* Campaign id */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Campaign id (utm_campaign)
+                </label>
+                <Button
+                  onClick={() => copyField('name', 'utm_campaign', utmCampaign)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_campaign_name'] ? Check : Copy}
+                  className="text-xs"
+                >
+                  {copiedFields['utm_campaign_name'] ? 'Copied!' : 'Copy Name'}
+                </Button>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
+                <code className="text-sm text-gray-800 dark:text-gray-200">utm_campaign</code>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                To identify a specific campaign
+              </p>
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Value
+                </label>
+                <Button
+                  onClick={() => copyField('value', 'utm_campaign', utmCampaign)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_campaign_value'] ? Check : Copy}
+                  className="text-xs"
+                >
+                  {copiedFields['utm_campaign_value'] ? 'Copied!' : 'Copy Value'}
+                </Button>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
+                <code className="text-sm text-gray-800 dark:text-gray-200">{utmCampaign}</code>
+              </div>
+            </div>
+          </div>
+
+          {/* Campaign content - Only show if enabled */}
+          {includeUtmContent && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Campaign content (utm_content)
+                  </label>
+                  <Button
+                    onClick={() => copyField('name', 'utm_content', utmContent)}
+                    variant="ghost"
+                    size="sm"
+                    icon={copiedFields['utm_content_name'] ? Check : Copy}
+                    className="text-xs"
+                  >
+                    {copiedFields['utm_content_name'] ? 'Copied!' : 'Copy Name'}
+                  </Button>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
+                  <code className="text-sm text-gray-800 dark:text-gray-200">utm_content</code>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  To differentiate contents within a campaign that link to the same URL
+                </p>
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Value
+                  </label>
+                  <Button
+                    onClick={() => copyField('value', 'utm_content', utmContent)}
+                    variant="ghost"
+                    size="sm"
+                    icon={copiedFields['utm_content_value'] ? Check : Copy}
+                    className="text-xs"
+                  >
+                    {copiedFields['utm_content_value'] ? 'Copied!' : 'Copy Value'}
+                  </Button>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
+                  <code className="text-sm text-gray-800 dark:text-gray-200">{utmContent}</code>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Campaign term - Only show if enabled */}
+          {includeUtmTerm && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Campaign term (utm_term)
+                  </label>
+                  <Button
+                    onClick={() => copyField('name', 'utm_term', utmTerm)}
+                    variant="ghost"
+                    size="sm"
+                    icon={copiedFields['utm_term_name'] ? Check : Copy}
+                    className="text-xs"
+                  >
+                    {copiedFields['utm_term_name'] ? 'Copied!' : 'Copy Name'}
+                  </Button>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
+                  <code className="text-sm text-gray-800 dark:text-gray-200">utm_term</code>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  To identify paid search keywords
+                </p>
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Value
+                  </label>
+                  <Button
+                    onClick={() => copyField('value', 'utm_term', utmTerm)}
+                    variant="ghost"
+                    size="sm"
+                    icon={copiedFields['utm_term_value'] ? Check : Copy}
+                    className="text-xs"
+                  >
+                    {copiedFields['utm_term_value'] ? 'Copied!' : 'Copy Value'}
+                  </Button>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
+                  <code className="text-sm text-gray-800 dark:text-gray-200">{utmTerm}</code>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Selected Pinterest Parameters */}
+          {Object.entries(selectedParams).some(([_, isSelected]) => isSelected) && (
+            <div className="border-t border-gray-200 dark:border-gray-600 pt-4 mt-4">
+              <h5 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                Selected Pinterest Parameters
+              </h5>
+              <div className="space-y-4">
+                {Object.entries(selectedParams).map(([paramId, isSelected]) => {
+                  if (!isSelected) return null;
+                  
+                  const param = pinterestParams.find(p => p.id === paramId);
+                  if (!param) return null;
+
+                  return (
+                    <div key={paramId} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            {param.label}
+                          </label>
+                          <Button
+                            onClick={() => copyField('name', paramId, param.value)}
+                            variant="ghost"
+                            size="sm"
+                            icon={copiedFields[`${paramId}_name`] ? Check : Copy}
+                            className="text-xs"
+                          >
+                            {copiedFields[`${paramId}_name`] ? 'Copied!' : 'Copy Name'}
+                          </Button>
+                        </div>
+                        <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
+                          <code className="text-sm text-gray-800 dark:text-gray-200">{paramId}</code>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {param.description}
+                        </p>
+                      </div>
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Value
+                          </label>
+                          <Button
+                            onClick={() => copyField('value', paramId, param.value)}
+                            variant="ghost"
+                            size="sm"
+                            icon={copiedFields[`${paramId}_value`] ? Check : Copy}
+                            className="text-xs"
+                          >
+                            {copiedFields[`${paramId}_value`] ? 'Copied!' : 'Copy Value'}
+                          </Button>
+                        </div>
+                        <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
+                          <code className="text-sm text-gray-800 dark:text-gray-200">{param.value}</code>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Pinterest Parameters */}
+      {/* Pinterest Parameters Selection */}
       <Accordion 
-        title="Pinterest Parameters" 
+        title="Pinterest Dynamic Parameters" 
         icon={<Target className="w-5 h-5" />}
-        defaultOpen={true}
+        defaultOpen={false}
       >
         {/* Search and Filter */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -1244,7 +930,7 @@ const PinterestBuilder: React.FC = () => {
         {/* Parameters Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredParams.map(param => (
-            <div key={param.id} className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+            <div key={param.id} className="flex items-start space-x-3 p-4 border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
               <input
                 type="checkbox"
                 id={param.id}
@@ -1275,10 +961,7 @@ const PinterestBuilder: React.FC = () => {
                     {param.availability}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">
-                    <strong>Use Case:</strong> {param.useCase}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    <strong>Example:</strong> {param.example}
+                    Example: {param.example}
                   </div>
                 </div>
               </div>
@@ -1290,58 +973,6 @@ const PinterestBuilder: React.FC = () => {
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             <Search className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p>No parameters found matching your search criteria</p>
-          </div>
-        )}
-      </Accordion>
-
-      {/* Custom Parameters */}
-      <Accordion 
-        title="Additional Custom Parameters" 
-        icon={<Settings className="w-5 h-5" />}
-        defaultOpen={false}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Add custom tracking parameters for advanced analytics
-          </p>
-          <Button onClick={addCustomParam} icon={Plus} size="sm">
-            Add Parameter
-          </Button>
-        </div>
-        
-        {customParams.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            <Settings className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>No custom parameters added. Click "Add Parameter" to add custom tracking parameters.</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {customParams.map((param, index) => (
-              <div key={index} className="flex gap-3 items-end">
-                <div className="flex-1">
-                  <Input
-                    label="Parameter Key"
-                    placeholder="e.g., custom_param"
-                    value={param.key}
-                    onChange={(e) => updateCustomParam(index, 'key', e.target.value)}
-                  />
-                </div>
-                <div className="flex-1">
-                  <Input
-                    label="Parameter Value"
-                    placeholder="e.g., {custom_value}"
-                    value={param.value}
-                    onChange={(e) => updateCustomParam(index, 'value', e.target.value)}
-                  />
-                </div>
-                <Button
-                  onClick={() => removeCustomParam(index)}
-                  variant="danger"
-                  icon={Trash2}
-                  size="sm"
-                />
-              </div>
-            ))}
           </div>
         )}
       </Accordion>
@@ -1471,30 +1102,14 @@ const PinterestBuilder: React.FC = () => {
           </div>
         </div>
 
-        {/* LOADED TEMPLATE PREVIEW */}
-        {loadedTemplateName && generatedString && (
+        {/* Loaded Template Preview */}
+        {loadedTemplateName && (
           <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-semibold text-red-900 dark:text-red-100">
-                📋 Loaded Template: "{loadedTemplateName}"
-              </h4>
-              <Button
-                onClick={copyCurrentTemplate}
-                variant="secondary"
-                size="sm"
-                icon={Copy}
-                className="text-red-600 hover:text-red-700"
-              >
-                Copy String
-              </Button>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-red-200 dark:border-red-700">
-              <code className="text-sm break-all text-gray-800 dark:text-gray-200 font-mono leading-relaxed">
-                {generatedString}
-              </code>
-            </div>
-            <p className="text-xs text-red-700 dark:text-red-300 mt-2">
-              ✅ Template loaded successfully! This shows the current generated parameter string.
+            <h4 className="text-sm font-semibold text-red-900 dark:text-red-100 mb-2">
+              📋 Loaded Template: "{loadedTemplateName}"
+            </h4>
+            <p className="text-xs text-red-700 dark:text-red-300">
+              ✅ Template loaded successfully! Individual parameter fields above have been updated.
             </p>
           </div>
         )}
@@ -1521,23 +1136,6 @@ const PinterestBuilder: React.FC = () => {
             <a href="https://help.pinterest.com/en/business/article/ads-manager" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
               <span>⚙️</span> Ads Manager Setup
             </a>
-          </div>
-        </div>
-
-        {/* Pinterest UTM Mapping Reference */}
-        <div className="mt-6 p-4 bg-red-100 dark:bg-red-900/30 rounded-lg">
-          <h4 className="text-sm font-semibold text-red-900 dark:text-red-100 mb-3">Pinterest → UTM Mapping Reference</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-red-800 dark:text-red-200">
-            <div><strong>utm_campaign:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{campaignname}'}</code> - Use readable campaign name</div>
-            <div><strong>Base URL:</strong>
-              <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{unescapedlpurl}'}</code>
-              or
-              <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{lpurl}'}</code></div>
-            <div><strong>utm_term:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{adgroupname}'}</code> - Identifies ad group</div>
-            <div><strong>utm_content:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{adid}'}</code> - Pin or creative ID</div>
-            <div><strong>device:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{device}'}</code> - c, m, t (Computer, Mobile, Tablet)</div>
-            <div><strong>keyword:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{keyword}'}</code> - Matched keyword (percent-encoded)</div>
-            <div><strong>product_name:</strong> <code className="bg-red-200 dark:bg-red-800/30 px-1 rounded">{'{product_name}'}</code> - Product-level creative differentiation</div>
           </div>
         </div>
       </div>
