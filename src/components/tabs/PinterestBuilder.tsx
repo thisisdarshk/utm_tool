@@ -507,14 +507,15 @@ const PinterestBuilder: React.FC = () => {
         {/* COMPACT ALIGNED PARAMETER FIELDS */}
         <div className="space-y-4">
           {/* Campaign source */}
-          <div className="grid grid-cols-12 gap-3 items-center">
-            <div className="col-span-12 md:col-span-4">
+          <div className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0">
+            <div className="md:col-span-4">
               <div>
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign source (utm_source)</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">To identify the source of traffic, for example, Pinterest</p>
               </div>
             </div>
-            <div className="col-span-6 md:col-span-3 flex items-center gap-2">
+            <div className="flex items-center gap-2 md:col-span-3">
+              <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
               <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
                 utm_source
               </code>
@@ -523,12 +524,13 @@ const PinterestBuilder: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 icon={copiedFields['utm_source_name'] ? Check : Copy}
-                className="text-xs px-2"
+                className="text-xs px-2 flex-shrink-0"
               >
                 {copiedFields['utm_source_name'] ? '✓' : 'Copy'}
               </Button>
             </div>
-            <div className="col-span-6 md:col-span-5 flex items-center gap-2">
+            <div className="flex items-center gap-2 md:col-span-5">
+              <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
               <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
                 {utmSource}
               </code>
@@ -537,7 +539,7 @@ const PinterestBuilder: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 icon={copiedFields['utm_source_value'] ? Check : Copy}
-                className="text-xs px-2"
+                className="text-xs px-2 flex-shrink-0"
               >
                 {copiedFields['utm_source_value'] ? '✓' : 'Copy'}
               </Button>
@@ -545,14 +547,15 @@ const PinterestBuilder: React.FC = () => {
           </div>
 
           {/* Campaign medium */}
-          <div className="grid grid-cols-12 gap-3 items-center">
-            <div className="col-span-12 md:col-span-4">
+          <div className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0">
+            <div className="md:col-span-4">
               <div>
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign medium (utm_medium)</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">To identify the advertising medium, for example, PaidSocial</p>
               </div>
             </div>
-            <div className="col-span-6 md:col-span-3 flex items-center gap-2">
+            <div className="flex items-center gap-2 md:col-span-3">
+              <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
               <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
                 utm_medium
               </code>
@@ -561,12 +564,13 @@ const PinterestBuilder: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 icon={copiedFields['utm_medium_name'] ? Check : Copy}
-                className="text-xs px-2"
+                className="text-xs px-2 flex-shrink-0"
               >
                 {copiedFields['utm_medium_name'] ? '✓' : 'Copy'}
               </Button>
             </div>
-            <div className="col-span-6 md:col-span-5 flex items-center gap-2">
+            <div className="flex items-center gap-2 md:col-span-5">
+              <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
               <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
                 {utmMedium}
               </code>
@@ -575,7 +579,7 @@ const PinterestBuilder: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 icon={copiedFields['utm_medium_value'] ? Check : Copy}
-                className="text-xs px-2"
+                className="text-xs px-2 flex-shrink-0"
               >
                 {copiedFields['utm_medium_value'] ? '✓' : 'Copy'}
               </Button>
@@ -583,14 +587,15 @@ const PinterestBuilder: React.FC = () => {
           </div>
 
           {/* Campaign id */}
-          <div className="grid grid-cols-12 gap-3 items-center">
-            <div className="col-span-12 md:col-span-4">
+          <div className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0">
+            <div className="md:col-span-4">
               <div>
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign id (utm_campaign)</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">To identify a specific campaign</p>
               </div>
             </div>
-            <div className="col-span-6 md:col-span-3 flex items-center gap-2">
+            <div className="flex items-center gap-2 md:col-span-3">
+              <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
               <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
                 utm_campaign
               </code>
@@ -599,12 +604,13 @@ const PinterestBuilder: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 icon={copiedFields['utm_campaign_name'] ? Check : Copy}
-                className="text-xs px-2"
+                className="text-xs px-2 flex-shrink-0"
               >
                 {copiedFields['utm_campaign_name'] ? '✓' : 'Copy'}
               </Button>
             </div>
-            <div className="col-span-6 md:col-span-5 flex items-center gap-2">
+            <div className="flex items-center gap-2 md:col-span-5">
+              <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
               <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
                 {utmCampaign}
               </code>
@@ -613,7 +619,7 @@ const PinterestBuilder: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 icon={copiedFields['utm_campaign_value'] ? Check : Copy}
-                className="text-xs px-2"
+                className="text-xs px-2 flex-shrink-0"
               >
                 {copiedFields['utm_campaign_value'] ? '✓' : 'Copy'}
               </Button>
@@ -622,14 +628,15 @@ const PinterestBuilder: React.FC = () => {
 
           {/* Campaign content - Only show if enabled */}
           {includeUtmContent && (
-            <div className="grid grid-cols-12 gap-3 items-center">
-              <div className="col-span-12 md:col-span-4">
+            <div className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0">
+              <div className="md:col-span-4">
                 <div>
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign content (utm_content)</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">To differentiate contents within a campaign that link to the same URL</p>
                 </div>
               </div>
-              <div className="col-span-6 md:col-span-3 flex items-center gap-2">
+              <div className="flex items-center gap-2 md:col-span-3">
+                <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
                 <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
                   utm_content
                 </code>
@@ -638,12 +645,13 @@ const PinterestBuilder: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   icon={copiedFields['utm_content_name'] ? Check : Copy}
-                  className="text-xs px-2"
+                  className="text-xs px-2 flex-shrink-0"
                 >
                   {copiedFields['utm_content_name'] ? '✓' : 'Copy'}
                 </Button>
               </div>
-              <div className="col-span-6 md:col-span-5 flex items-center gap-2">
+              <div className="flex items-center gap-2 md:col-span-5">
+                <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
                 <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
                   {utmContent}
                 </code>
@@ -652,7 +660,7 @@ const PinterestBuilder: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   icon={copiedFields['utm_content_value'] ? Check : Copy}
-                  className="text-xs px-2"
+                  className="text-xs px-2 flex-shrink-0"
                 >
                   {copiedFields['utm_content_value'] ? '✓' : 'Copy'}
                 </Button>
@@ -662,14 +670,15 @@ const PinterestBuilder: React.FC = () => {
 
           {/* Campaign term - Only show if enabled (when keyword is selected) */}
           {includeUtmTerm && (
-            <div className="grid grid-cols-12 gap-3 items-center">
-              <div className="col-span-12 md:col-span-4">
+            <div className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0">
+              <div className="md:col-span-4">
                 <div>
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign term (utm_term)</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">To identify paid search keywords</p>
                 </div>
               </div>
-              <div className="col-span-6 md:col-span-3 flex items-center gap-2">
+              <div className="flex items-center gap-2 md:col-span-3">
+                <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
                 <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
                   utm_term
                 </code>
@@ -678,12 +687,13 @@ const PinterestBuilder: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   icon={copiedFields['utm_term_name'] ? Check : Copy}
-                  className="text-xs px-2"
+                  className="text-xs px-2 flex-shrink-0"
                 >
                   {copiedFields['utm_term_name'] ? '✓' : 'Copy'}
                 </Button>
               </div>
-              <div className="col-span-6 md:col-span-5 flex items-center gap-2">
+              <div className="flex items-center gap-2 md:col-span-5">
+                <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
                 <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
                   {utmTerm}
                 </code>
@@ -692,7 +702,7 @@ const PinterestBuilder: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   icon={copiedFields['utm_term_value'] ? Check : Copy}
-                  className="text-xs px-2"
+                  className="text-xs px-2 flex-shrink-0"
                 >
                   {copiedFields['utm_term_value'] ? '✓' : 'Copy'}
                 </Button>
@@ -713,14 +723,15 @@ const PinterestBuilder: React.FC = () => {
                   if (!param) return null;
 
                   return (
-                    <div key={paramId} className="grid grid-cols-12 gap-3 items-center py-2">
-                      <div className="col-span-12 md:col-span-4">
+                    <div key={paramId} className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0 py-2">
+                      <div className="md:col-span-4">
                         <div>
                           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{param.label}</p>
                           <p className="text-xs text-gray-500 dark:text-gray-400">{param.description}</p>
                         </div>
                       </div>
-                      <div className="col-span-6 md:col-span-3 flex items-center gap-2">
+                      <div className="flex items-center gap-2 md:col-span-3">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
                         <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
                           {paramId}
                         </code>
@@ -729,12 +740,13 @@ const PinterestBuilder: React.FC = () => {
                           variant="ghost"
                           size="sm"
                           icon={copiedFields[`${paramId}_name`] ? Check : Copy}
-                          className="text-xs px-2"
+                          className="text-xs px-2 flex-shrink-0"
                         >
                           {copiedFields[`${paramId}_name`] ? '✓' : 'Copy'}
                         </Button>
                       </div>
-                      <div className="col-span-6 md:col-span-5 flex items-center gap-2">
+                      <div className="flex items-center gap-2 md:col-span-5">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
                         <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
                           {param.value}
                         </code>
@@ -743,7 +755,7 @@ const PinterestBuilder: React.FC = () => {
                           variant="ghost"
                           size="sm"
                           icon={copiedFields[`${paramId}_value`] ? Check : Copy}
-                          className="text-xs px-2"
+                          className="text-xs px-2 flex-shrink-0"
                         >
                           {copiedFields[`${paramId}_value`] ? '✓' : 'Copy'}
                         </Button>
