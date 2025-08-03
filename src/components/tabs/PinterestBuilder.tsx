@@ -10,8 +10,8 @@ import { useToast } from '../../hooks/useToast';
 const PinterestBuilder: React.FC = () => {
   const [utmSource, setUtmSource] = useState('pinterest');
   const [utmMedium, setUtmMedium] = useState('PaidSocial');
-  const [utmCampaign, setUtmCampaign] = useState('{{campaign.name}}');
-  const [utmContent, setUtmContent] = useState('{{ad.name}}');
+  const [utmCampaign, setUtmCampaign] = useState('{campaignid}');
+  const [utmContent, setUtmContent] = useState('{adgroupid}');
   const [utmTerm, setUtmTerm] = useState('{{adgroup.name}}');
   
   // Individual optional parameter toggles
@@ -244,7 +244,7 @@ const PinterestBuilder: React.FC = () => {
   const handleUtmContentToggle = useCallback((enabled: boolean) => {
     setIncludeUtmContent(enabled);
     if (enabled && !utmContent.trim()) {
-      setUtmContent('{{ad.name}}');
+      setUtmContent('{adgroupid}');
     }
   }, [utmContent]);
 
@@ -340,8 +340,8 @@ const PinterestBuilder: React.FC = () => {
   const resetFields = useCallback(() => {
     setUtmSource('pinterest');
     setUtmMedium('PaidSocial');
-    setUtmCampaign('{{campaign.name}}');
-    setUtmContent('{{ad.name}}');
+    setUtmCampaign('{campaignid}');
+    setUtmContent('{adgroupid}');
     setUtmTerm('{{adgroup.name}}');
     setIncludeUtmContent(true);
     setIncludeUtmTerm(true);
