@@ -624,8 +624,6 @@ const PinterestBuilder: React.FC = () => {
 
           {/* Campaign term - Only show if enabled */}
           {includeUtmTerm && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-              <div>
             <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
               <div className="flex-1">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
