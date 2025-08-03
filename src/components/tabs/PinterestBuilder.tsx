@@ -75,7 +75,7 @@ const PinterestBuilder: React.FC = () => {
       label: 'cpc', 
       category: 'Alternative Mediums',
       description: 'Cost per click campaigns - Alternative option'
-    }
+    },
     
     // Organic Traffic Mediums - GA4 Compliant
     { 
