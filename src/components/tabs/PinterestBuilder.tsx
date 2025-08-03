@@ -12,9 +12,11 @@ const PinterestBuilder: React.FC = () => {
   const [utmMedium, setUtmMedium] = useState('PaidSocial');
   const [utmCampaign, setUtmCampaign] = useState('{campaignid}');
   const [utmContent, setUtmContent] = useState('{adgroupid}');
+  const [utmTerm, setUtmTerm] = useState('');
   
   // Individual optional parameter toggles - REMOVED UTM_TERM
   const [includeUtmContent, setIncludeUtmContent] = useState(true);
+  const [includeUtmTerm, setIncludeUtmTerm] = useState(false);
   
   // Pinterest-specific parameters
   const [selectedParams, setSelectedParams] = useState<Record<string, boolean>>({});
@@ -269,7 +271,9 @@ const PinterestBuilder: React.FC = () => {
     
     const template = {
       utmSource, utmMedium, utmCampaign, utmContent,
+      utmTerm,
       includeUtmContent,
+      includeUtmTerm,
       selectedParams, timestamp: Date.now()
     };
     
@@ -292,8 +296,10 @@ const PinterestBuilder: React.FC = () => {
     setUtmMedium(template.utmMedium);
     setUtmCampaign(template.utmCampaign);
     setUtmContent(template.utmContent);
+    setUtmTerm(template.utmTerm || '');
     
     setIncludeUtmContent(template.includeUtmContent ?? true);
+    setIncludeUtmTerm(template.includeUtmTerm ?? false);
     
     setSelectedParams(template.selectedParams || {});
     setLoadedTemplateName(selectedTemplate);
@@ -327,7 +333,9 @@ const PinterestBuilder: React.FC = () => {
     setUtmMedium('PaidSocial');
     setUtmCampaign('{campaignid}');
     setUtmContent('{adgroupid}');
+    setUtmTerm('');
     setIncludeUtmContent(true);
+    setIncludeUtmTerm(false);
     setSelectedParams({});
     setLoadedTemplateName('');
     success('Form reset successfully!');
@@ -706,6 +714,45 @@ const PinterestBuilder: React.FC = () => {
             </div>
           )}
 
+          {/* Campaign term - Only show if enabled (when keyword is selected) */}
+          {includeUtmTerm && (
+            <div className="grid grid-cols-12 gap-3 items-center">
+              <div className="col-span-12 md:col-span-4">
+                <div>
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign term (utm_term)</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">To identify paid search keywords</p>
+                </div>
+              </div>
+              <div className="col-span-6 md:col-span-3 flex items-center gap-2">
+                <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
+                  utm_term
+                </code>
+                <Button
+                  onClick={() => copyField('name', 'utm_term', utmTerm)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_term_name'] ? Check : Copy}
+                  className="text-xs px-2"
+                >
+                  {copiedFields['utm_term_name'] ? '✓' : 'Copy'}
+                </Button>
+              </div>
+              <div className="col-span-6 md:col-span-5 flex items-center gap-2">
+                <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
+                  {utmTerm}
+                </code>
+                <Button
+                  onClick={() => copyField('value', 'utm_term', utmTerm)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_term_value'] ? Check : Copy}
+                  className="text-xs px-2"
+                >
+                  {copiedFields['utm_term_value'] ? '✓' : 'Copy'}
+                </Button>
+              </div>
+            </div>
+          )}
           {/* Selected Pinterest Parameters */}
           {Object.entries(selectedParams).some(([_, isSelected]) => isSelected) && (
             <div className="border-t border-gray-200 dark:border-gray-600 pt-4 mt-4">
@@ -806,6 +853,17 @@ const PinterestBuilder: React.FC = () => {
                     ...prev,
                     [param.id]: e.target.checked
                   }));
+                  
+                  // Special handling for keyword parameter - assign to utm_term
+                  if (param.id === 'keyword') {
+                    if (e.target.checked) {
+                      setUtmTerm(param.value);
+                      setIncludeUtmTerm(true);
+                    } else {
+                      setUtmTerm('');
+                      setIncludeUtmTerm(false);
+                    }
+                  }
                 }}
                 className="mt-1 rounded border-gray-300 text-red-600 focus:ring-red-500"
               />
