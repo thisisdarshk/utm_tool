@@ -76,6 +76,110 @@ const PinterestBuilder: React.FC = () => {
       category: 'Alternative Mediums',
       description: 'Cost per click campaigns - Alternative option'
     }
+    
+    // Organic Traffic Mediums - GA4 Compliant
+    { 
+      value: 'organic', 
+      label: 'organic', 
+      category: 'Organic Mediums',
+      description: 'Organic search traffic - GA4 compliant'
+    },
+    { 
+      value: 'referral', 
+      label: 'referral', 
+      category: 'Organic Mediums',
+      description: 'Referral traffic from other websites - GA4 compliant'
+    },
+    { 
+      value: 'social', 
+      label: 'social', 
+      category: 'Organic Mediums',
+      description: 'Organic social media traffic - GA4 compliant'
+    },
+    { 
+      value: 'social-network', 
+      label: 'social-network', 
+      category: 'Organic Mediums',
+      description: 'Organic social network traffic - GA4 compliant'
+    },
+    { 
+      value: 'social-media', 
+      label: 'social-media', 
+      category: 'Organic Mediums',
+      description: 'Organic social media traffic - GA4 compliant'
+    },
+    { 
+      value: 'email', 
+      label: 'email', 
+      category: 'Email Mediums',
+      description: 'Email marketing traffic - GA4 compliant'
+    },
+    { 
+      value: 'e-mail', 
+      label: 'e-mail', 
+      category: 'Email Mediums',
+      description: 'Email marketing traffic (alternative format) - GA4 compliant'
+    },
+    { 
+      value: 'newsletter', 
+      label: 'newsletter', 
+      category: 'Email Mediums',
+      description: 'Newsletter traffic - GA4 compliant'
+    },
+    { 
+      value: 'affiliate', 
+      label: 'affiliate', 
+      category: 'Other Mediums',
+      description: 'Affiliate marketing traffic - GA4 compliant'
+    },
+    { 
+      value: 'video', 
+      label: 'video', 
+      category: 'Other Mediums',
+      description: 'Video platform traffic - GA4 compliant'
+    },
+    { 
+      value: 'audio', 
+      label: 'audio', 
+      category: 'Other Mediums',
+      description: 'Audio platform traffic (podcasts) - GA4 compliant'
+    },
+    { 
+      value: 'sms', 
+      label: 'sms', 
+      category: 'Other Mediums',
+      description: 'SMS marketing traffic - GA4 compliant'
+    },
+    { 
+      value: 'push', 
+      label: 'push', 
+      category: 'Other Mediums',
+      description: 'Push notification traffic - GA4 compliant'
+    },
+    { 
+      value: 'display', 
+      label: 'display', 
+      category: 'Display Mediums',
+      description: 'Display advertising - GA4 compliant'
+    },
+    { 
+      value: 'banner', 
+      label: 'banner', 
+      category: 'Display Mediums',
+      description: 'Banner advertising - GA4 compliant'
+    },
+    { 
+      value: 'retargeting', 
+      label: 'retargeting', 
+      category: 'Retargeting Mediums',
+      description: 'Retargeting campaigns - GA4 compliant'
+    },
+    { 
+      value: 'remarketing', 
+      label: 'remarketing', 
+      category: 'Retargeting Mediums',
+      description: 'Remarketing campaigns - GA4 compliant'
+    }
   ], []);
 
   // Pinterest-specific campaign options - NEW DROPDOWN OPTIONS
