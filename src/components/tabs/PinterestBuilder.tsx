@@ -224,8 +224,8 @@ const PinterestBuilder: React.FC = () => {
 
   // Filter parameters based on search and category
   const filteredParams = useMemo(() => {
-    // First filter out already selected parameters, then apply search/category filters
-    return pinterestParams.filter(param => !selectedParams[param.id]).filter(param => {
+    // Apply search/category filters but keep all parameters visible (don't filter out selected ones)
+    return pinterestParams.filter(param => {
       const matchesSearch = param.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            param.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            param.availability.toLowerCase().includes(searchTerm.toLowerCase());
