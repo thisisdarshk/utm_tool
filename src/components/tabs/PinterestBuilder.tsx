@@ -161,6 +161,7 @@ const PinterestBuilder: React.FC = () => {
     ];
 
     return allParams;
+  }, []);
 
   // Filter parameters based on search and category
   const filteredParams = useMemo(() => {
@@ -221,7 +222,7 @@ const PinterestBuilder: React.FC = () => {
     
     success(`Template "${templateName}" saved successfully!`);
     setTemplateName('');
-  }, [templateName, utmSource, utmMedium, utmCampaign, utmContent, includeUtmContent, selectedParams, savedTemplates, success, error]);
+  }, [templateName, utmSource, utmMedium, utmCampaign, utmContent, utmTerm, includeUtmContent, includeUtmTerm, selectedParams, savedTemplates, success, error]);
 
   const loadTemplate = useCallback(() => {
     if (!selectedTemplate || !savedTemplates[selectedTemplate]) {
