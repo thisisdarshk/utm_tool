@@ -153,83 +153,39 @@ const TikTokBuilder: React.FC = () => {
 
   // TikTok official macro parameters (the 7 key macros you mentioned)
   const tiktokParams = useMemo(() => [
-    // Official TikTok Macros - The 7 key ones you specified
+    // Official TikTok Custom Parameters - From your mapping table
     { 
-      id: 'atAdId', 
-      value: '__CID__', 
-      label: 'Creative ID (atAdId)', 
-      category: 'official', 
-      description: 'Creative ID - Official TikTok macro (__CID__)',
-      availability: 'All TikTok campaigns',
-      example: '1234567890123456789',
-      isOfficial: true
-    },
-    { 
-      id: 'atAdSet', 
-      value: '__AID__', 
-      label: 'Ad Set ID (atAdSet)', 
-      category: 'official', 
-      description: 'Ad Set ID - Official TikTok macro (__AID__)',
-      availability: 'All TikTok campaigns',
-      example: '9876543210987654321',
-      isOfficial: true
-    },
-    { 
-      id: 'atPlacement', 
+      id: 'at_placement', 
       value: '__PLACEMENT__', 
-      label: 'Placement (atPlacement)', 
-      category: 'official', 
-      description: 'Placement - Official TikTok macro (__PLACEMENT__)',
+      label: 'Placement (at_placement)', 
+      category: 'custom', 
+      description: 'Tracks the ad placement - Requires a custom dimension in your analytics platform',
       availability: 'All TikTok campaigns',
       example: 'tiktok_feed, pangle_network',
-      isOfficial: true
-    },
-    
-    // Additional TikTok Parameters for enhanced tracking
-    { 
-      id: 'campaign_objective', 
-      value: '__CAMPAIGN_OBJECTIVE__', 
-      label: 'Campaign Objective', 
-      category: 'campaign', 
-      description: 'Campaign objective type',
-      availability: 'All TikTok campaigns',
-      example: 'TRAFFIC, CONVERSIONS, APP_INSTALL'
+      isOfficial: true,
+      rationale: 'Recommended - Tracks the ad placement'
     },
     { 
-      id: 'ad_format', 
-      value: '__AD_FORMAT__', 
-      label: 'Ad Format', 
-      category: 'creative', 
-      description: 'Format of the TikTok ad',
+      id: 'at_ad_id', 
+      value: '__CID__', 
+      label: 'Creative ID (at_ad_id)', 
+      category: 'custom', 
+      description: 'Provides the unique creative ID - A good alternative to mapping the ID to utm_content',
       availability: 'All TikTok campaigns',
-      example: 'single_video, spark_ad, collection'
+      example: '1234567890123456789',
+      isOfficial: true,
+      rationale: 'Optional - Provides the unique creative ID'
     },
     { 
-      id: 'audience_type', 
-      value: '__AUDIENCE_TYPE__', 
-      label: 'Audience Type', 
-      category: 'targeting', 
-      description: 'Type of audience targeting used',
+      id: 'at_ad_set_id', 
+      value: '__AID__', 
+      label: 'Ad Set ID (at_ad_set_id)', 
+      category: 'custom', 
+      description: 'Provides the unique ad group ID - A good alternative to mapping the ID to utm_term',
       availability: 'All TikTok campaigns',
-      example: 'lookalike, custom, interest'
-    },
-    { 
-      id: 'device_type', 
-      value: '__DEVICE_TYPE__', 
-      label: 'Device Type', 
-      category: 'device', 
-      description: 'Device type where ad was clicked',
-      availability: 'All TikTok campaigns',
-      example: 'mobile, tablet'
-    },
-    { 
-      id: 'bid_strategy', 
-      value: '__BID_STRATEGY__', 
-      label: 'Bid Strategy', 
-      category: 'performance', 
-      description: 'Bidding strategy used for the campaign',
-      availability: 'All TikTok campaigns',
-      example: 'LOWEST_COST, COST_CAP, BID_CAP'
+      example: '9876543210987654321',
+      isOfficial: true,
+      rationale: 'Optional - Provides the unique ad group ID'
     }
   ], []);
 
@@ -448,23 +404,13 @@ const TikTokBuilder: React.FC = () => {
   // Categories for filtering
   const categories = [
     { value: 'all', label: 'All Parameters' },
-    { value: 'official', label: 'Official TikTok Macros' },
-    { value: 'campaign', label: 'Campaign Level' },
-    { value: 'creative', label: 'Creative Level' },
-    { value: 'targeting', label: 'Targeting' },
-    { value: 'device', label: 'Device & Platform' },
-    { value: 'performance', label: 'Performance' }
+    { value: 'custom', label: 'Custom Parameters' }
   ];
 
   // Get category badge color
   const getCategoryBadge = (category: string) => {
     const badges = {
-      official: { variant: 'success' as const, label: 'Official' },
-      campaign: { variant: 'info' as const, label: 'Campaign' },
-      creative: { variant: 'warning' as const, label: 'Creative' },
-      targeting: { variant: 'default' as const, label: 'Targeting' },
-      device: { variant: 'info' as const, label: 'Device' },
-      performance: { variant: 'warning' as const, label: 'Performance' }
+      custom: { variant: 'info' as const, label: 'Custom' }
     };
     
     const badge = badges[category as keyof typeof badges];
@@ -736,7 +682,7 @@ const TikTokBuilder: React.FC = () => {
 
       {/* TikTok Official Macro Parameters */}
       <Accordion 
-        title="Additional TikTok Parameters" 
+        title="TikTok Custom Parameters" 
         icon={<Target className="w-5 h-5" />}
         defaultOpen={false}
       >
@@ -786,12 +732,17 @@ const TikTokBuilder: React.FC = () => {
                   </label>
                   {getCategoryBadge(param.category)}
                   {param.isOfficial && (
-                    <Badge variant="success" size="sm">Official Macro</Badge>
+                    <Badge variant="success" size="sm">Official</Badge>
                   )}
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                   {param.description}
                 </p>
+                {param.rationale && (
+                  <p className="text-xs text-pink-600 dark:text-pink-400 mb-2 font-medium">
+                    {param.rationale}
+                  </p>
+                )}
                 <div className="space-y-1">
                   <code className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded block">
                     {param.value}
@@ -1048,15 +999,18 @@ const TikTokBuilder: React.FC = () => {
         
         {/* TikTok Official Macros Reference */}
         <div className="mt-6 p-4 bg-pink-900/30 rounded-lg">
-          <h4 className="text-sm font-semibold text-pink-100 mb-3">TikTok Official Parameter Mapping</h4>
+          <h4 className="text-sm font-semibold text-pink-100 mb-3">TikTok Official Parameter Mapping (From Your Table)</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-pink-200">
-            <div><strong>utm_source:</strong> <code className="bg-black/30 px-1 rounded">tiktok</code> (Hardcoded)</div>
-            <div><strong>utm_medium:</strong> <code className="bg-black/30 px-1 rounded">paid</code> (Hardcoded)</div>
-            <div><strong>utm_campaign:</strong> <code className="bg-black/30 px-1 rounded">__CAMPAIGN_NAME__</code> (Best Practice)</div>
-            <div><strong>utm_id:</strong> <code className="bg-black/30 px-1 rounded">__CAMPAIGN_ID__</code> (Recommended)</div>
-            <div><strong>utm_term:</strong> <code className="bg-black/30 px-1 rounded">__AID_NAME__</code> (Optional)</div>
-            <div><strong>utm_content:</strong> <code className="bg-black/30 px-1 rounded">__CID_NAME__</code> (Optional)</div>
-            <div><strong>ttclid:</strong> <code className="bg-black/30 px-1 rounded">__CLICKID__</code> (Highly Recommended)</div>
+            <div><strong>utm_source:</strong> <code className="bg-black/30 px-1 rounded">tiktok</code> - Mandatory</div>
+            <div><strong>utm_medium:</strong> <code className="bg-black/30 px-1 rounded">paid</code> - Mandatory</div>
+            <div><strong>utm_campaign:</strong> <code className="bg-black/30 px-1 rounded">__CAMPAIGN_NAME__</code> - Best Practice</div>
+            <div><strong>utm_id:</strong> <code className="bg-black/30 px-1 rounded">__CAMPAIGN_ID__</code> - Recommended</div>
+            <div><strong>utm_content:</strong> <code className="bg-black/30 px-1 rounded">__CID_NAME__</code> - Optional/Recommended</div>
+            <div><strong>utm_term:</strong> <code className="bg-black/30 px-1 rounded">__AID_NAME__</code> - Optional/Recommended</div>
+            <div><strong>ttclid:</strong> <code className="bg-black/30 px-1 rounded">__CLICKID__</code> - Highly Recommended</div>
+            <div><strong>at_placement:</strong> <code className="bg-black/30 px-1 rounded">__PLACEMENT__</code> - Custom (Recommended)</div>
+            <div><strong>at_ad_id:</strong> <code className="bg-black/30 px-1 rounded">__CID__</code> - Custom (Optional)</div>
+            <div><strong>at_ad_set_id:</strong> <code className="bg-black/30 px-1 rounded">__AID__</code> - Custom (Optional)</div>
           </div>
         </div>
       </div>
