@@ -9,16 +9,18 @@ import { useToast } from '../../hooks/useToast';
 
 const TikTokBuilder: React.FC = () => {
   const [utmSource, setUtmSource] = useState('tiktok');
-  const [utmMedium, setUtmMedium] = useState('paid_social');
+  const [utmMedium, setUtmMedium] = useState('paid');
   const [utmCampaign, setUtmCampaign] = useState('__CAMPAIGN_NAME__');
   const [utmId, setUtmId] = useState('__CAMPAIGN_ID__');
-  const [utmTerm, setUtmTerm] = useState('__CID_NAME__');
-  const [utmContent, setUtmContent] = useState('__AID_NAME__');
+  const [utmTerm, setUtmTerm] = useState('__AID_NAME__');
+  const [utmContent, setUtmContent] = useState('__CID_NAME__');
+  const [ttclid, setTtclid] = useState('__CLICKID__');
   
   // Individual optional parameter toggles
   const [includeUtmId, setIncludeUtmId] = useState(true);
   const [includeUtmTerm, setIncludeUtmTerm] = useState(true);
   const [includeUtmContent, setIncludeUtmContent] = useState(true);
+  const [includeTtclid, setIncludeTtclid] = useState(true);
   
   // TikTok-specific parameters (using official macros)
   const [selectedParams, setSelectedParams] = useState<Record<string, boolean>>({});
@@ -722,10 +724,10 @@ const TikTokBuilder: React.FC = () => {
           <div className="flex items-start gap-2">
             <Settings className="w-5 h-5 text-pink-600 dark:text-pink-400 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-pink-800 dark:text-pink-200">TikTok Official Macros</p>
+              <p className="text-sm font-medium text-pink-800 dark:text-pink-200">TikTok Official Parameter Mapping</p>
               <p className="text-sm text-pink-700 dark:text-pink-300 mt-1">
-                This string uses TikTok's official 7 key macros: __CAMPAIGN_NAME__, __CAMPAIGN_ID__, __AID_NAME__, __AID__, __CID_NAME__, __CID__, and __PLACEMENT__. 
-                Copy and paste into TikTok's URL parameters field.
+                This configuration follows TikTok's official parameter mapping with proper UTM structure and essential tracking parameters. 
+                Copy and paste into TikTok's URL parameters field for optimal tracking.
               </p>
             </div>
           </div>
@@ -734,9 +736,9 @@ const TikTokBuilder: React.FC = () => {
 
       {/* TikTok Official Macro Parameters */}
       <Accordion 
-        title="TikTok Official Macro Parameters" 
+        title="Additional TikTok Parameters" 
         icon={<Target className="w-5 h-5" />}
-        defaultOpen={true}
+        defaultOpen={false}
       >
         {/* Search and Filter */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -1046,15 +1048,15 @@ const TikTokBuilder: React.FC = () => {
         
         {/* TikTok Official Macros Reference */}
         <div className="mt-6 p-4 bg-pink-900/30 rounded-lg">
-          <h4 className="text-sm font-semibold text-pink-100 mb-3">TikTok's 7 Official Macros</h4>
+          <h4 className="text-sm font-semibold text-pink-100 mb-3">TikTok Official Parameter Mapping</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-pink-200">
-            <div><code className="bg-black/30 px-2 py-1 rounded">__CAMPAIGN_NAME__</code> - Campaign Name</div>
-            <div><code className="bg-black/30 px-2 py-1 rounded">__CAMPAIGN_ID__</code> - Campaign ID</div>
-            <div><code className="bg-black/30 px-2 py-1 rounded">__AID_NAME__</code> - Ad Name</div>
-            <div><code className="bg-black/30 px-2 py-1 rounded">__AID__</code> - Ad ID</div>
-            <div><code className="bg-black/30 px-2 py-1 rounded">__CID_NAME__</code> - Creative Name</div>
-            <div><code className="bg-black/30 px-2 py-1 rounded">__CID__</code> - Creative ID</div>
-            <div><code className="bg-black/30 px-2 py-1 rounded">__PLACEMENT__</code> - Placement</div>
+            <div><strong>utm_source:</strong> <code className="bg-black/30 px-1 rounded">tiktok</code> (Hardcoded)</div>
+            <div><strong>utm_medium:</strong> <code className="bg-black/30 px-1 rounded">paid</code> (Hardcoded)</div>
+            <div><strong>utm_campaign:</strong> <code className="bg-black/30 px-1 rounded">__CAMPAIGN_NAME__</code> (Best Practice)</div>
+            <div><strong>utm_id:</strong> <code className="bg-black/30 px-1 rounded">__CAMPAIGN_ID__</code> (Recommended)</div>
+            <div><strong>utm_term:</strong> <code className="bg-black/30 px-1 rounded">__AID_NAME__</code> (Optional)</div>
+            <div><strong>utm_content:</strong> <code className="bg-black/30 px-1 rounded">__CID_NAME__</code> (Optional)</div>
+            <div><strong>ttclid:</strong> <code className="bg-black/30 px-1 rounded">__CLICKID__</code> (Highly Recommended)</div>
           </div>
         </div>
       </div>
