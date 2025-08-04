@@ -120,45 +120,26 @@ const TikTokBuilder: React.FC = () => {
   // TikTok-specific content options (using official macros)
   const contentOptions = useMemo(() => [
     { 
-      value: '__AID_NAME__', 
-      label: '__AID_NAME__', 
-      category: 'Ad Level',
-      description: 'Ad name - Official TikTok macro'
-    },
-    { 
       value: '__CID_NAME__', 
       label: '__CID_NAME__', 
-      category: 'Creative Level',
-      description: 'Creative name - Official TikTok macro'
+      category: 'Official TikTok Macros',
+      description: 'Name of the Creative - Official TikTok macro'
     },
     { 
-      value: 'video_ad', 
-      label: 'video_ad', 
-      category: 'Creative Variants',
-      description: 'Video advertisement - Use for video creative tracking'
-    },
-    { 
-      value: 'spark_ad', 
-      label: 'spark_ad', 
-      category: 'Creative Variants',
-      description: 'Spark advertisement - Use for Spark Ads tracking'
-    },
-    { 
-      value: 'collection_ad', 
-      label: 'collection_ad', 
-      category: 'Creative Variants',
-      description: 'Collection advertisement - Use for Collection Ads tracking'
+      value: '__CID__', 
+      label: '__CID__', 
+      category: 'Official TikTok Macros',
+      description: 'Creative ID - Official TikTok macro'
     }
   ], []);
 
   // TikTok official macro parameters (the 7 key macros you mentioned)
   const tiktokParams = useMemo(() => [
-    // Official TikTok Custom Parameters - From your mapping table
     { 
       id: 'at_placement', 
       value: '__PLACEMENT__', 
       label: 'Placement (at_placement)', 
-      category: 'custom', 
+      category: 'custom',
       description: 'Tracks the ad placement - Requires a custom dimension in your analytics platform',
       availability: 'All TikTok campaigns',
       example: 'tiktok_feed, pangle_network',
@@ -169,7 +150,7 @@ const TikTokBuilder: React.FC = () => {
       id: 'at_ad_id', 
       value: '__CID__', 
       label: 'Creative ID (at_ad_id)', 
-      category: 'custom', 
+      category: 'custom',
       description: 'Provides the unique creative ID - A good alternative to mapping the ID to utm_content',
       availability: 'All TikTok campaigns',
       example: '1234567890123456789',
@@ -180,7 +161,7 @@ const TikTokBuilder: React.FC = () => {
       id: 'at_ad_set_id', 
       value: '__AID__', 
       label: 'Ad Set ID (at_ad_set_id)', 
-      category: 'custom', 
+      category: 'custom',
       description: 'Provides the unique ad group ID - A good alternative to mapping the ID to utm_term',
       availability: 'All TikTok campaigns',
       example: '9876543210987654321',
@@ -375,11 +356,11 @@ const TikTokBuilder: React.FC = () => {
   // Reset all fields
   const resetFields = useCallback(() => {
     setUtmSource('tiktok');
-    setUtmMedium('paid_social');
+    setUtmMedium('paid');
     setUtmCampaign('__CAMPAIGN_NAME__');
     setUtmId('__CAMPAIGN_ID__');
-    setUtmTerm('__CID_NAME__');
-    setUtmContent('__AID_NAME__');
+    setUtmTerm('__AID_NAME__');
+    setUtmContent('__CID_NAME__');
     setIncludeUtmId(true);
     setIncludeUtmTerm(true);
     setIncludeUtmContent(true);
@@ -604,7 +585,7 @@ const TikTokBuilder: React.FC = () => {
                 className={`w-full ${!includeUtmTerm ? 'opacity-50' : ''}`}
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Uses TikTok's __CID_NAME__ macro
+                Uses TikTok's __AID_NAME__ macro (Ad Group Name)
               </p>
             </div>
 
@@ -635,7 +616,7 @@ const TikTokBuilder: React.FC = () => {
                 className={`w-full ${!includeUtmContent ? 'opacity-50' : ''}`}
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Uses TikTok's __AID_NAME__ macro
+                Uses TikTok's __CID_NAME__ macro (Creative Name)
               </p>
             </div>
           </div>
@@ -999,14 +980,14 @@ const TikTokBuilder: React.FC = () => {
         
         {/* TikTok Official Macros Reference */}
         <div className="mt-6 p-4 bg-pink-900/30 rounded-lg">
-          <h4 className="text-sm font-semibold text-pink-100 mb-3">TikTok Official Parameter Mapping (From Your Table)</h4>
+          <h4 className="text-sm font-semibold text-pink-100 mb-3">TikTok Official Parameter Mapping</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-pink-200">
             <div><strong>utm_source:</strong> <code className="bg-black/30 px-1 rounded">tiktok</code> - Mandatory</div>
             <div><strong>utm_medium:</strong> <code className="bg-black/30 px-1 rounded">paid</code> - Mandatory</div>
             <div><strong>utm_campaign:</strong> <code className="bg-black/30 px-1 rounded">__CAMPAIGN_NAME__</code> - Best Practice</div>
             <div><strong>utm_id:</strong> <code className="bg-black/30 px-1 rounded">__CAMPAIGN_ID__</code> - Recommended</div>
-            <div><strong>utm_content:</strong> <code className="bg-black/30 px-1 rounded">__CID_NAME__</code> - Optional/Recommended</div>
-            <div><strong>utm_term:</strong> <code className="bg-black/30 px-1 rounded">__AID_NAME__</code> - Optional/Recommended</div>
+            <div><strong>utm_content:</strong> <code className="bg-black/30 px-1 rounded">__CID_NAME__</code> - Optional/Recommended (Creative Name)</div>
+            <div><strong>utm_term:</strong> <code className="bg-black/30 px-1 rounded">__AID_NAME__</code> - Optional/Recommended (Ad Group Name)</div>
             <div><strong>ttclid:</strong> <code className="bg-black/30 px-1 rounded">__CLICKID__</code> - Highly Recommended</div>
             <div><strong>at_placement:</strong> <code className="bg-black/30 px-1 rounded">__PLACEMENT__</code> - Custom (Recommended)</div>
             <div><strong>at_ad_id:</strong> <code className="bg-black/30 px-1 rounded">__CID__</code> - Custom (Optional)</div>
