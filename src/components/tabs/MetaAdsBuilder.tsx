@@ -101,14 +101,6 @@ const MetaAdsBuilder: React.FC = () => {
       label: 'social', 
       category: 'Standard Mediums',
       description: 'Social media traffic - Organic social classification'
-    },
-    
-    // Dynamic Mediums - Meta's automatic population
-    { 
-      value: '{{placement}}', 
-      label: '{{placement}}', 
-      category: 'Dynamic Mediums',
-      description: 'Dynamic placement information - Automatically populated by Meta'
     }
   ], []);
 
