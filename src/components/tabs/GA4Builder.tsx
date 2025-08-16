@@ -835,6 +835,10 @@ const GA4Builder: React.FC = () => {
         {loadedTemplateName && generatedUrl && (
           <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
             <div className="flex items-center justify-between mb-3">
+            </div>
+          </div>
+        )}
+      </Accordion>
     </div>
   );
 };
