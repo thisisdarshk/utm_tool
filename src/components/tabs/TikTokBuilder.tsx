@@ -954,47 +954,6 @@ const TikTokBuilder: React.FC = () => {
         )}
       </Accordion>
 
-      {/* Help Section */}
-      <div className="bg-black rounded-xl p-6 border border-pink-200 dark:border-pink-800">
-        <h3 className="text-lg font-semibold text-white mb-3">
-          TikTok Ads Resources
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2 text-sm text-pink-200">
-            <a href="https://ads.tiktok.com/help/article?aid=10000357" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>📖</span> TikTok Ads Manager Guide
-            </a>
-            <a href="https://ads.tiktok.com/help/article?aid=10007891" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>🔗</span> Tracking & Attribution
-            </a>
-          </div>
-          <div className="space-y-2 text-sm text-pink-200">
-            <button onClick={() => setShowVideoModal(true)} className="flex items-center gap-2 hover:underline text-left">
-              <Play size={16} /> Watch Tutorial Video
-            </button>
-            <a href="https://ads.tiktok.com/help/article?aid=10007898" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>⚙️</span> Conversion Tracking Setup
-            </a>
-          </div>
-        </div>
-        
-        {/* TikTok Official Macros Reference */}
-        <div className="mt-6 p-4 bg-pink-900/30 rounded-lg">
-          <h4 className="text-sm font-semibold text-pink-100 mb-3">TikTok Official Parameter Mapping</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-pink-200">
-            <div><strong>utm_source:</strong> <code className="bg-black/30 px-1 rounded">tiktok</code> - Mandatory</div>
-            <div><strong>utm_medium:</strong> <code className="bg-black/30 px-1 rounded">paid</code> - Mandatory</div>
-            <div><strong>utm_campaign:</strong> <code className="bg-black/30 px-1 rounded">__CAMPAIGN_NAME__</code> - Best Practice</div>
-            <div><strong>utm_id:</strong> <code className="bg-black/30 px-1 rounded">__CAMPAIGN_ID__</code> - Recommended</div>
-            <div><strong>utm_content:</strong> <code className="bg-black/30 px-1 rounded">__CID_NAME__</code> - Optional/Recommended (Creative Name)</div>
-            <div><strong>utm_term:</strong> <code className="bg-black/30 px-1 rounded">__AID_NAME__</code> - Optional/Recommended (Ad Group Name)</div>
-            <div><strong>ttclid:</strong> <code className="bg-black/30 px-1 rounded">__CLICKID__</code> - Highly Recommended</div>
-            <div><strong>at_placement:</strong> <code className="bg-black/30 px-1 rounded">__PLACEMENT__</code> - Custom (Recommended)</div>
-            <div><strong>at_ad_id:</strong> <code className="bg-black/30 px-1 rounded">__CID__</code> - Custom (Optional)</div>
-            <div><strong>at_ad_set_id:</strong> <code className="bg-black/30 px-1 rounded">__AID__</code> - Custom (Optional)</div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

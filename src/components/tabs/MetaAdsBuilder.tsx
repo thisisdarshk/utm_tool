@@ -1008,30 +1008,6 @@ const MetaAdsBuilder: React.FC = () => {
         )}
       </Accordion>
 
-      {/* Help Section */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">
-          Meta Ads Resources
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
-            <a href="https://www.facebook.com/business/help/1016122818401732" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>📖</span> URL Parameters Guide
-            </a>
-            <a href="https://www.facebook.com/business/help/2040882842645560" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>🔗</span> Dynamic Parameters Documentation
-            </a>
-          </div>
-          <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
-            <button onClick={() => setShowVideoModal(true)} className="flex items-center gap-2 hover:underline text-left">
-              <Play size={16} /> Watch Tutorial Video
-            </button>
-            <a href="https://www.facebook.com/business/help/435189689870514" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>⚙️</span> Conversion Tracking Setup
-            </a>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

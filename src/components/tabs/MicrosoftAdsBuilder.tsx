@@ -769,30 +769,6 @@ const MicrosoftAdsBuilder: React.FC = () => {
         )}
       </Accordion>
 
-      {/* Help Section */}
-      <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100 mb-3">
-          Microsoft Advertising Resources
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2 text-sm text-purple-800 dark:text-purple-200">
-            <a href="https://help.ads.microsoft.com/apex/index/3/en/56799" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>📖</span> URL Tracking Parameters Guide
-            </a>
-            <a href="https://help.ads.microsoft.com/apex/index/3/en/56772" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>🔗</span> Tracking Templates Documentation
-            </a>
-          </div>
-          <div className="space-y-2 text-sm text-purple-800 dark:text-purple-200">
-            <button onClick={() => setShowVideoModal(true)} className="flex items-center gap-2 hover:underline text-left">
-              <Play size={16} /> Watch Tutorial Video
-            </button>
-            <a href="https://help.ads.microsoft.com/apex/index/3/en/56794" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>⚙️</span> Conversion Tracking Setup
-            </a>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

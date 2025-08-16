@@ -993,51 +993,6 @@ const SnapchatBuilder: React.FC = () => {
         )}
       </Accordion>
 
-      {/* Help Section */}
-      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-yellow-900 dark:text-yellow-100 mb-3">
-          Snapchat Ads Resources
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2 text-sm text-yellow-800 dark:text-yellow-200">
-            <a href="https://businesshelp.snapchat.com/s/article/snap-pixel-about" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>📖</span> Snap Pixel & Tracking
-            </a>
-            <a href="https://businesshelp.snapchat.com/s/article/conversion-tracking" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>🔗</span> Conversion Tracking Guide
-            </a>
-          </div>
-          <div className="space-y-2 text-sm text-yellow-800 dark:text-yellow-200">
-            <button onClick={() => setShowVideoModal(true)} className="flex items-center gap-2 hover:underline text-left">
-              <Play size={16} /> Watch Tutorial Video
-            </button>
-            <a href="https://businesshelp.snapchat.com/s/article/ads-manager" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>⚙️</span> Ads Manager Setup
-            </a>
-          </div>
-        </div>
-        
-        {/* Snapchat Official Macros Reference */}
-        <div className="mt-6 p-4 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-          <h4 className="text-sm font-semibold text-yellow-900 dark:text-yellow-100 mb-3">Snapchat's 14 Official Dynamic URL Macros</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-yellow-800 dark:text-yellow-200">
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{campaign.id}}'}</code> - Campaign ID</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{campaign.name}}'}</code> - Campaign Name</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{adSet.id}}'}</code> - Ad Set ID</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{adSet.name}}'}</code> - Ad Set Name</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{ad.id}}'}</code> - Ad ID</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{ad.name}}'}</code> - Ad Name</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{creative.id}}'}</code> - Creative ID</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{creative.name}}'}</code> - Creative Name</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{site_source_name}}'}</code> - Source Placement</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{device_os}}'}</code> - Device OS</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{device_type}}'}</code> - Device Type</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{country}}'}</code> - User Country</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{language}}'}</code> - Device Language</div>
-            <div><code className="bg-yellow-200 dark:bg-yellow-800/30 px-2 py-1 rounded">{'{{city}}'}</code> - User City</div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

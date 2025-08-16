@@ -835,30 +835,6 @@ const GA4Builder: React.FC = () => {
         {loadedTemplateName && generatedUrl && (
           <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-                📋 Loaded Template: "{loadedTemplateName}"
-              </h4>
-              <Button
-                onClick={copyToClipboard}
-                variant="secondary"
-                size="sm"
-                icon={Copy}
-                className="text-blue-600 hover:text-blue-700"
-              >
-                Copy URL
-              </Button>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-200 dark:border-blue-700">
-              <code className="text-sm break-all text-gray-800 dark:text-gray-200 font-mono leading-relaxed">
-                {generatedUrl}
-              </code>
-            </div>
-            <p className="text-xs text-blue-700 dark:text-blue-300 mt-2">
-              ✅ Template loaded successfully! This shows the current generated URL.
-            </p>
-          </div>
-        )}
-      </Accordion>
     </div>
   );
 };

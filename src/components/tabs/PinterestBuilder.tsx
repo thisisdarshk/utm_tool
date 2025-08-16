@@ -849,30 +849,6 @@ const PinterestBuilder: React.FC = () => {
         )}
       </Accordion>
 
-      {/* Help Section */}
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-red-900 dark:text-red-100 mb-3">
-          Pinterest Ads Resources
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2 text-sm text-red-800 dark:text-red-200">
-            <a href="https://help.pinterest.com/en/business/article/track-conversions-with-the-pinterest-tag" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>📖</span> Pinterest Tag & Tracking
-            </a>
-            <a href="https://help.pinterest.com/en/business/article/conversion-tracking" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>🔗</span> Conversion Tracking Guide
-            </a>
-          </div>
-          <div className="space-y-2 text-sm text-red-800 dark:text-red-200">
-            <button onClick={() => setShowVideoModal(true)} className="flex items-center gap-2 hover:underline text-left">
-              <Play size={16} /> Watch Tutorial Video
-            </button>
-            <a href="https://help.pinterest.com/en/business/article/ads-manager" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>⚙️</span> Ads Manager Setup
-            </a>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

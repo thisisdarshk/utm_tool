@@ -883,41 +883,6 @@ const RedditBuilder: React.FC = () => {
         )}
       </Accordion>
 
-      {/* Help Section */}
-      <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-orange-900 dark:text-orange-100 mb-3">
-          Reddit Ads Resources
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2 text-sm text-orange-800 dark:text-orange-200">
-            <a href="https://advertising.reddithelp.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>📖</span> Reddit Ads Help Center
-            </a>
-            <a href="https://advertising.reddithelp.com/en/categories/campaign-management/tracking-and-attribution" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>🔗</span> Tracking & Attribution
-            </a>
-          </div>
-          <div className="space-y-2 text-sm text-orange-800 dark:text-orange-200">
-            <button onClick={() => setShowVideoModal(true)} className="flex items-center gap-2 hover:underline text-left">
-              <Play size={16} /> Watch Tutorial Video
-            </button>
-            <a href="https://advertising.reddithelp.com/en/categories/campaign-management/conversion-tracking" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>⚙️</span> Conversion Tracking Setup
-            </a>
-          </div>
-        </div>
-
-        {/* Reddit UTM Mapping Reference */}
-        <div className="mt-6 p-4 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
-          <h4 className="text-sm font-semibold text-orange-900 dark:text-orange-100 mb-3">Reddit's Official UTM Parameter Mapping</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-orange-800 dark:text-orange-200">
-            <div><strong>utm_source:</strong> <code className="bg-orange-200 dark:bg-orange-800/30 px-1 rounded">reddit</code> - Identifies Reddit as traffic source</div>
-            <div><strong>utm_medium:</strong> <code className="bg-orange-200 dark:bg-orange-800/30 px-1 rounded">{'{{ADVERTISER_ID}}'}</code> - Represents the advertiser (ad account)</div>
-            <div><strong>utm_campaign:</strong> <code className="bg-orange-200 dark:bg-orange-800/30 px-1 rounded">{'{{CAMPAIGN_ID}}'}-{'{{ADGROUP_NAME}}'}</code> - Combines campaign ID with ad group name</div>
-            <div><strong>utm_content:</strong> <code className="bg-orange-200 dark:bg-orange-800/30 px-1 rounded">{'{{AD_ID}}'}-{'{{AD_NAME}}'}</code> - Combines ad ID with ad name to track creatives</div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

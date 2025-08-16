@@ -922,30 +922,6 @@ const GoogleAdsBuilder: React.FC = () => {
         )}
       </Accordion>
 
-      {/* Help Section */}
-      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-3">
-          Google Ads Resources
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2 text-sm text-green-800 dark:text-green-200">
-            <a href="https://support.google.com/google-ads/answer/6305348" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>📖</span> ValueTrack Parameters Guide
-            </a>
-            <a href="https://support.google.com/google-ads/answer/2375447" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>🔗</span> Tracking Templates Documentation
-            </a>
-          </div>
-          <div className="space-y-2 text-sm text-green-800 dark:text-green-200">
-            <button onClick={() => setShowVideoModal(true)} className="flex items-center gap-2 hover:underline text-left">
-              <Play size={16} /> Watch Tutorial Video
-            </button>
-            <a href="https://support.google.com/google-ads/answer/2382957" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-              <span>⚙️</span> Parallel Tracking Setup
-            </a>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
