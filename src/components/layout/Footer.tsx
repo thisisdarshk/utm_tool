@@ -5,7 +5,7 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
-    { icon: Linkedin, href: 'https://linkedin.com/company/elevar', label: 'LinkedIn' }
+    { icon: Linkedin, href: 'https://www.linkedin.com/company/getelevar/', label: 'LinkedIn' }
   ];
 
   return (
