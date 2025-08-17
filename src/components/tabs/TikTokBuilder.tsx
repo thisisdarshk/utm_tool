@@ -34,9 +34,6 @@ const TikTokBuilder: React.FC = () => {
   
   // Copy states for individual fields
   const [copiedFields, setCopiedFields] = useState<Record<string, boolean>>({});
-  
-  const { success, error } = useToast();
-
   // TikTok-specific source options
   const sourceOptions = useMemo(() => [
     { 
