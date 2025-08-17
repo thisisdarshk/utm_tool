@@ -1122,6 +1122,96 @@ const TikTokBuilder: React.FC = () => {
         </div>
       </Accordion>
 
+      {/* TikTok Parameters Selection */}
+      <Accordion 
+        title="TikTok Parameters Selection" 
+        icon={<Settings className="w-5 h-5" />}
+        defaultOpen={false}
+      >
+        <div className="space-y-4">
+          {/* Search and Filter */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Search parameters..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+            </div>
+            <div className="sm:w-48">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              >
+                {categories.map(category => (
+                  <option key={category.value} value={category.value}>
+                    {category.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Parameters Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredParams.map(param => (
+              <div key={param.id} className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/20 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900/30 transition-colors">
+                <input
+                  type="checkbox"
+                  id={param.id}
+                  checked={selectedParams[param.id] || false}
+                  onChange={(e) => {
+                    setSelectedParams(prev => ({
+                      ...prev,
+                      [param.id]: e.target.checked
+                    }));
+                  }}
+                  className="mt-1 rounded border-gray-300 text-gray-600 focus:ring-gray-500"
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <label htmlFor={param.id} className="block text-sm font-medium text-gray-900 dark:text-gray-100 cursor-pointer">
+                      {param.label}
+                    </label>
+                    {getCategoryBadge(param.category)}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                    {param.description}
+                  </p>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500 dark:text-gray-400">Value:</span>
+                      <code className="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded font-mono">
+                        {param.value}
+                      </code>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500 dark:text-gray-400">Example:</span>
+                      <code className="text-xs text-gray-600 dark:text-gray-400 font-mono">
+                        {param.example}
+                      </code>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {filteredParams.length === 0 && (
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              <Search className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>No parameters found matching your search criteria.</p>
+            </div>
+          )}
+        </div>
+      </Accordion>
+
       {/* Custom Parameters */}
       <Accordion 
         title="Additional Custom Parameters" 
