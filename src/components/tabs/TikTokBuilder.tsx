@@ -565,7 +565,6 @@ const TikTokBuilder: React.FC = () => {
           {/* UTM ID - ALWAYS INCLUDED - SPECIAL STYLING */}
           <div className="bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg p-3">
             <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Campaign ID (utm_id) *
             </label>
             <Dropdown
@@ -905,6 +904,99 @@ const TikTokBuilder: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 md:col-span-3">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
+                        <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
+                          {paramId}
+                        </code>
+                        <Button
+                          onClick={() => copyField('name', paramId, param.value)}
+                          variant="ghost"
+                          size="sm"
+                          icon={copiedFields[`${paramId}_name`] ? Check : Copy}
+                          className="text-xs px-2 flex-shrink-0"
+                        >
+                          {copiedFields[`${paramId}_name`] ? '✓' : 'Copy'}
+                        </Button>
+                      </div>
+                      <div className="flex items-center gap-2 md:col-span-5">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
+                        <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
+                          {param.value}
+                        </code>
+                        <Button
+                          onClick={() => copyField('value', paramId, param.value)}
+                          variant="ghost"
+                          size="sm"
+                          icon={copiedFields[`${paramId}_value`] ? Check : Copy}
+                          className="text-xs px-2 flex-shrink-0"
+                        >
+                          {copiedFields[`${paramId}_value`] ? '✓' : 'Copy'}
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Custom Parameters */}
+          {customParams.length > 0 && (
+            <div className="border-t border-gray-200 dark:border-gray-600 pt-4 mt-4">
+              <h5 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                Custom Parameters
+              </h5>
+              <div className="space-y-3">
+                {customParams.map((param, index) => {
+                  if (!param.key || !param.value) return null;
+                  
+                  return (
+                    <div key={index} className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0 py-2">
+                      <div className="md:col-span-4">
+                        <div>
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Custom: {param.key}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">User-defined parameter</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 md:col-span-3">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
+                        <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
+                          {param.key}
+                        </code>
+                        <Button
+                          onClick={() => copyField('name', param.key, param.value)}
+                          variant="ghost"
+                          size="sm"
+                          icon={copiedFields[`${param.key}_name`] ? Check : Copy}
+                          className="text-xs px-2 flex-shrink-0"
+                        >
+                          {copiedFields[`${param.key}_name`] ? '✓' : 'Copy'}
+                        </Button>
+                      </div>
+                      <div className="flex items-center gap-2 md:col-span-5">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
+                        <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
+                          {param.value}
+                        </code>
+                        <Button
+                          onClick={() => copyField('value', param.key, param.value)}
+                          variant="ghost"
+                          size="sm"
+                          icon={copiedFields[`${param.key}_value`] ? Check : Copy}
+                          className="text-xs px-2 flex-shrink-0"
+                        >
+                          {copiedFields[`${param.key}_value`] ? '✓' : 'Copy'}
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* TikTok Official Macros */}
       <Accordion 
         title="TikTok Official Macros" 
