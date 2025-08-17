@@ -279,6 +279,9 @@ const TikTokBuilder: React.FC = () => {
     }
   };
 
+  // Copy states for individual fields
+  const [copiedFields, setCopiedFields] = useState<Record<string, boolean>>({});
+
   // Custom parameter management
   const addCustomParam = () => {
     setCustomParams(prev => [...prev, { key: '', value: '' }]);
