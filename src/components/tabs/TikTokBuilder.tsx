@@ -578,7 +578,7 @@ const TikTokBuilder: React.FC = () => {
           {/* UTM ID - ALWAYS INCLUDED - SPECIAL STYLING */}
           <div className="bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg p-3">
             <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
-              Campaign ID (utm_id) * 
+              Campaign ID (utm_id)
               <Badge variant="success" size="sm" className="ml-2">Always included</Badge>
             </label>
             <Dropdown
@@ -593,7 +593,7 @@ const TikTokBuilder: React.FC = () => {
               className="w-full"
             />
             <p className="text-xs text-pink-600 dark:text-pink-400 mt-1">
-              TikTok tracks this by default
+              Uses TikTok's __CAMPAIGN_ID__ macro
             </p>
           </div>
         </div>
@@ -962,77 +962,123 @@ const TikTokBuilder: React.FC = () => {
         icon={<Target className="w-5 h-5" />}
         defaultOpen={false}
       >
-        {/* Search and Filter */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="flex-1">
-            <Input
-              placeholder="Search parameters..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              icon={<Search className="w-4 h-4" />}
-            />
+        <div className="space-y-4">
+          <div className="p-4 bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg">
+            <h4 className="text-sm font-semibold text-pink-900 dark:text-pink-100 mb-2">
+              TikTok Official Macros (7 Total)
+            </h4>
+            <p className="text-sm text-pink-800 dark:text-pink-200">
+              These are the only macros officially documented by TikTok for URL parameter tracking.
+            </p>
           </div>
-          <div className="sm:w-64">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
-            >
-              {categories.map(cat => (
-                <option key={cat.value} value={cat.value}>{cat.label}</option>
-              ))}
-            </select>
-          </div>
-        </div>
 
-        {/* Parameters Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredParams.map(param => (
-            <div key={param.id} className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-              <input
-                type="checkbox"
-                id={param.id}
-                checked={selectedParams[param.id] || false}
-                onChange={(e) => {
-                  setSelectedParams(prev => ({
-                    ...prev,
-                    [param.id]: e.target.checked
-                  }));
-                }}
-                className="mt-1 rounded border-gray-300 text-pink-600 focus:ring-pink-500"
-              />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <label htmlFor={param.id} className="block text-sm font-medium text-gray-900 dark:text-gray-100 cursor-pointer">
-                    {param.label}
-                  </label>
-                  {getCategoryBadge(param.category)}
+          {/* UTM Parameter Mapped Macros */}
+          <div>
+            <h5 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-3">
+              UTM Parameter Mapped Macros
+            </h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant="success" size="sm">UTM Campaign</Badge>
+                  <code className="text-sm font-mono">__CAMPAIGN_NAME__</code>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                  {param.description}
+                <p className="text-sm text-green-800 dark:text-green-200 mb-1">
+                  <strong>Expands to:</strong> Name of the Campaign
                 </p>
-                <div className="space-y-1">
-                  <code className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded block">
-                    {param.value}
-                  </code>
-                  <div className="text-xs text-pink-600 dark:text-pink-400 font-medium">
-                    {param.availability}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    Example: {param.example}
-                  </div>
+                <p className="text-xs text-green-700 dark:text-green-300">
+                  Maps to utm_campaign parameter
+                </p>
+              </div>
+
+              <div className="p-4 border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant="success" size="sm">UTM ID</Badge>
+                  <code className="text-sm font-mono">__CAMPAIGN_ID__</code>
                 </div>
+                <p className="text-sm text-green-800 dark:text-green-200 mb-1">
+                  <strong>Expands to:</strong> Campaign ID
+                </p>
+                <p className="text-xs text-green-700 dark:text-green-300">
+                  Maps to utm_id parameter
+                </p>
+              </div>
+
+              <div className="p-4 border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant="success" size="sm">UTM Content</Badge>
+                  <code className="text-sm font-mono">__CID_NAME__</code>
+                </div>
+                <p className="text-sm text-green-800 dark:text-green-200 mb-1">
+                  <strong>Expands to:</strong> Name of the Creative
+                </p>
+                <p className="text-xs text-green-700 dark:text-green-300">
+                  Maps to utm_content parameter (when enabled)
+                </p>
               </div>
             </div>
-          ))}
-        </div>
-
-        {filteredParams.length === 0 && (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            <Search className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>No parameters found matching your search criteria</p>
           </div>
-        )}
+
+          {/* Additional Official Macros (Not UTM Mapped) */}
+          <div>
+            <h5 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-3">
+              Additional Official Macros (Not UTM Mapped)
+            </h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant="info" size="sm">Ad Group Name</Badge>
+                  <code className="text-sm font-mono">__AID_NAME__</code>
+                </div>
+                <p className="text-sm text-gray-800 dark:text-gray-200 mb-1">
+                  <strong>Expands to:</strong> Name of the Ad Group
+                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Available for custom parameter tracking
+                </p>
+              </div>
+
+              <div className="p-4 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant="info" size="sm">Ad Group ID</Badge>
+                  <code className="text-sm font-mono">__AID__</code>
+                </div>
+                <p className="text-sm text-gray-800 dark:text-gray-200 mb-1">
+                  <strong>Expands to:</strong> Ad Group ID
+                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Available for custom parameter tracking
+                </p>
+              </div>
+
+              <div className="p-4 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant="info" size="sm">Creative ID</Badge>
+                  <code className="text-sm font-mono">__CID__</code>
+                </div>
+                <p className="text-sm text-gray-800 dark:text-gray-200 mb-1">
+                  <strong>Expands to:</strong> Creative ID
+                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Available for custom parameter tracking
+                </p>
+              </div>
+
+              <div className="p-4 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant="info" size="sm">Placement</Badge>
+                  <code className="text-sm font-mono">__PLACEMENT__</code>
+                </div>
+                <p className="text-sm text-gray-800 dark:text-gray-200 mb-1">
+                  <strong>Expands to:</strong> Placement type (TikTok, TikTok Pangle)
+                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Available for custom parameter tracking
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </Accordion>
 
       {/* Custom Parameters */}
