@@ -234,7 +234,7 @@ const TikTokBuilder: React.FC = () => {
       }
     });
 
-    const finalString = params.join('&');
+    const finalString = params.length > 0 ? `?${params.join('&')}` : '';
     setGeneratedString(finalString);
   }, [utmSource, utmMedium, utmCampaign, utmId, utmTerm, utmContent, includeUtmId, includeUtmTerm, includeUtmContent, selectedParams, customParams, tiktokParams]);
 
