@@ -259,6 +259,24 @@ const TikTokBuilder: React.FC = () => {
     }
   };
 
+  // Copy field function for individual parameter fields
+  const copyField = async (type: 'name' | 'value', paramName: string, value: string) => {
+    try {
+      const textToCopy = type === 'name' ? paramName : value;
+      await navigator.clipboard.writeText(textToCopy);
+      
+      const fieldKey = `${paramName}_${type}`;
+      setCopiedFields(prev => ({ ...prev, [fieldKey]: true }));
+      setTimeout(() => {
+        setCopiedFields(prev => ({ ...prev, [fieldKey]: false }));
+      }, 2000);
+      
+      success(`${type === 'name' ? 'Parameter name' : 'Parameter value'} copied!`);
+    } catch (err) {
+      error(`Failed to copy ${type === 'name' ? 'parameter name' : 'parameter value'}`);
+    }
+  };
+
   // Custom parameter management
   const addCustomParam = () => {
     setCustomParams(prev => [...prev, { key: '', value: '' }]);
@@ -370,24 +388,6 @@ const TikTokBuilder: React.FC = () => {
       }
     }
   }, []);
-
-  // Copy individual field (parameter name or value)
-  const copyField = async (fieldType: 'name' | 'value', paramName: string, value: string) => {
-    try {
-      const textToCopy = fieldType === 'name' ? paramName : value;
-      await navigator.clipboard.writeText(textToCopy);
-      
-      const fieldKey = `${paramName}_${fieldType}`;
-      setCopiedFields(prev => ({ ...prev, [fieldKey]: true }));
-      setTimeout(() => {
-        setCopiedFields(prev => ({ ...prev, [fieldKey]: false }));
-      }, 2000);
-      
-      success(`${fieldType === 'name' ? 'Parameter name' : 'Parameter value'} copied!`);
-    } catch (err) {
-      error(`Failed to copy ${fieldType}`);
-    }
-  };
 
   // Categories for filtering
   const categories = [
@@ -637,7 +637,288 @@ const TikTokBuilder: React.FC = () => {
         </div>
       </div>
 
-      {/* TikTok Official Macro Parameters */}
+      {/* TikTok Individual Parameter Fields - Similar to Pinterest */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Settings className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            TikTok URL Parameters Format
+          </h3>
+        </div>
+
+        <div className="mb-4 p-3 bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg">
+          <p className="text-sm text-pink-800 dark:text-pink-200">
+            Copy individual parameter names and values to paste into TikTok's "URL Parameters" interface.
+          </p>
+        </div>
+
+        {/* COMPACT ALIGNED PARAMETER FIELDS */}
+        <div className="space-y-4">
+          {/* Campaign source */}
+          <div className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0">
+            <div className="md:col-span-4">
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign source (utm_source)</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">TikTok traffic source identifier</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 md:col-span-3">
+              <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
+              <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
+                utm_source
+              </code>
+              <Button
+                onClick={() => copyField('name', 'utm_source', utmSource)}
+                variant="ghost"
+                size="sm"
+                icon={copiedFields['utm_source_name'] ? Check : Copy}
+                className="text-xs px-2 flex-shrink-0"
+              >
+                {copiedFields['utm_source_name'] ? '✓' : 'Copy'}
+              </Button>
+            </div>
+            <div className="flex items-center gap-2 md:col-span-5">
+              <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
+              <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
+                {utmSource}
+              </code>
+              <Button
+                onClick={() => copyField('value', 'utm_source', utmSource)}
+                variant="ghost"
+                size="sm"
+                icon={copiedFields['utm_source_value'] ? Check : Copy}
+                className="text-xs px-2 flex-shrink-0"
+              >
+                {copiedFields['utm_source_value'] ? '✓' : 'Copy'}
+              </Button>
+            </div>
+          </div>
+
+          {/* Campaign medium */}
+          <div className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0">
+            <div className="md:col-span-4">
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign medium (utm_medium)</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Recommended: paid for TikTok ads</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 md:col-span-3">
+              <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
+              <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
+                utm_medium
+              </code>
+              <Button
+                onClick={() => copyField('name', 'utm_medium', utmMedium)}
+                variant="ghost"
+                size="sm"
+                icon={copiedFields['utm_medium_name'] ? Check : Copy}
+                className="text-xs px-2 flex-shrink-0"
+              >
+                {copiedFields['utm_medium_name'] ? '✓' : 'Copy'}
+              </Button>
+            </div>
+            <div className="flex items-center gap-2 md:col-span-5">
+              <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
+              <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
+                {utmMedium}
+              </code>
+              <Button
+                onClick={() => copyField('value', 'utm_medium', utmMedium)}
+                variant="ghost"
+                size="sm"
+                icon={copiedFields['utm_medium_value'] ? Check : Copy}
+                className="text-xs px-2 flex-shrink-0"
+              >
+                {copiedFields['utm_medium_value'] ? '✓' : 'Copy'}
+              </Button>
+            </div>
+          </div>
+
+          {/* Campaign name */}
+          <div className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0">
+            <div className="md:col-span-4">
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign name (utm_campaign)</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Uses TikTok's __CAMPAIGN_NAME__ macro</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 md:col-span-3">
+              <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
+              <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
+                utm_campaign
+              </code>
+              <Button
+                onClick={() => copyField('name', 'utm_campaign', utmCampaign)}
+                variant="ghost"
+                size="sm"
+                icon={copiedFields['utm_campaign_name'] ? Check : Copy}
+                className="text-xs px-2 flex-shrink-0"
+              >
+                {copiedFields['utm_campaign_name'] ? '✓' : 'Copy'}
+              </Button>
+            </div>
+            <div className="flex items-center gap-2 md:col-span-5">
+              <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
+              <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
+                {utmCampaign}
+              </code>
+              <Button
+                onClick={() => copyField('value', 'utm_campaign', utmCampaign)}
+                variant="ghost"
+                size="sm"
+                icon={copiedFields['utm_campaign_value'] ? Check : Copy}
+                className="text-xs px-2 flex-shrink-0"
+              >
+                {copiedFields['utm_campaign_value'] ? '✓' : 'Copy'}
+              </Button>
+            </div>
+          </div>
+
+          {/* Campaign ID - Only show if enabled */}
+          {includeUtmId && (
+            <div className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0">
+              <div className="md:col-span-4">
+                <div>
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign ID (utm_id)</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Uses TikTok's __CAMPAIGN_ID__ macro</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 md:col-span-3">
+                <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
+                <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
+                  utm_id
+                </code>
+                <Button
+                  onClick={() => copyField('name', 'utm_id', utmId)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_id_name'] ? Check : Copy}
+                  className="text-xs px-2 flex-shrink-0"
+                >
+                  {copiedFields['utm_id_name'] ? '✓' : 'Copy'}
+                </Button>
+              </div>
+              <div className="flex items-center gap-2 md:col-span-5">
+                <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
+                <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
+                  {utmId}
+                </code>
+                <Button
+                  onClick={() => copyField('value', 'utm_id', utmId)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_id_value'] ? Check : Copy}
+                  className="text-xs px-2 flex-shrink-0"
+                >
+                  {copiedFields['utm_id_value'] ? '✓' : 'Copy'}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Campaign content - Only show if enabled */}
+          {includeUtmContent && (
+            <div className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0">
+              <div className="md:col-span-4">
+                <div>
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign content (utm_content)</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Uses TikTok's __CID_NAME__ (Creative Name) macro</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 md:col-span-3">
+                <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
+                <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
+                  utm_content
+                </code>
+                <Button
+                  onClick={() => copyField('name', 'utm_content', utmContent)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_content_name'] ? Check : Copy}
+                  className="text-xs px-2 flex-shrink-0"
+                >
+                  {copiedFields['utm_content_name'] ? '✓' : 'Copy'}
+                </Button>
+              </div>
+              <div className="flex items-center gap-2 md:col-span-5">
+                <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
+                <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
+                  {utmContent}
+                </code>
+                <Button
+                  onClick={() => copyField('value', 'utm_content', utmContent)}
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedFields['utm_content_value'] ? Check : Copy}
+                  className="text-xs px-2 flex-shrink-0"
+                >
+                  {copiedFields['utm_content_value'] ? '✓' : 'Copy'}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Selected TikTok Parameters */}
+          {Object.entries(selectedParams).some(([_, isSelected]) => isSelected) && (
+            <div className="border-t border-gray-200 dark:border-gray-600 pt-4 mt-4">
+              <h5 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                Selected TikTok Parameters
+              </h5>
+              <div className="space-y-3">
+                {Object.entries(selectedParams)
+                  .filter(([_, isSelected]) => isSelected)
+                  .map(([paramId, _]) => {
+                  const param = tiktokParams.find(p => p.id === paramId);
+                  if (!param) return null;
+
+                  return (
+                    <div key={paramId} className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0 py-2">
+                      <div className="md:col-span-4">
+                        <div>
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{param.label}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{param.description}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 md:col-span-3">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
+                        <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
+                          {paramId}
+                        </code>
+                        <Button
+                          onClick={() => copyField('name', paramId, param.value)}
+                          variant="ghost"
+                          size="sm"
+                          icon={copiedFields[`${paramId}_name`] ? Check : Copy}
+                          className="text-xs px-2 flex-shrink-0"
+                        >
+                          {copiedFields[`${paramId}_name`] ? '✓' : 'Copy'}
+                        </Button>
+                      </div>
+                      <div className="flex items-center gap-2 md:col-span-5">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
+                        <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
+                          {param.value}
+                        </code>
+                        <Button
+                          onClick={() => copyField('value', paramId, param.value)}
+                          variant="ghost"
+                          size="sm"
+                          icon={copiedFields[`${paramId}_value`] ? Check : Copy}
+                          className="text-xs px-2 flex-shrink-0"
+                        >
+                          {copiedFields[`${paramId}_value`] ? '✓' : 'Copy'}
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* TikTok Custom Parameters */}
       <Accordion 
         title="TikTok Custom Parameters" 
         icon={<Target className="w-5 h-5" />}
