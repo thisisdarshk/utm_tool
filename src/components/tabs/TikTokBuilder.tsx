@@ -28,6 +28,12 @@ const TikTokBuilder: React.FC = () => {
   // Copy states for individual fields
   const [copiedFields, setCopiedFields] = useState<Record<string, boolean>>({});
   
+  // Template management state variables
+  const [templateName, setTemplateName] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [savedTemplates, setSavedTemplates] = useState<Record<string, any>>({});
+  const [loadedTemplateName, setLoadedTemplateName] = useState('');
+  
   const { success, error } = useToast();
 
   // TikTok-specific source options
