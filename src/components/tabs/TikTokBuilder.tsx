@@ -500,19 +500,6 @@ const TikTokBuilder: React.FC = () => {
           </h3>
         </div>
 
-        {/* TikTok Auto-tracking Notice */}
-        <div className="mb-6 p-4 bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg">
-          <div className="flex items-start gap-2">
-            <Settings className="w-5 h-5 text-pink-600 dark:text-pink-400 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-medium text-pink-800 dark:text-pink-200">TikTok Auto-tracking Enabled</p>
-              <p className="text-sm text-pink-700 dark:text-pink-300 mt-1">
-                UTM ID is automatically tracked when "Automatically add URL parameters" is enabled in TikTok Ads Manager.
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* REQUIRED UTM PARAMETERS - 4 COLUMNS INCLUDING UTM ID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div>
@@ -578,8 +565,8 @@ const TikTokBuilder: React.FC = () => {
           {/* UTM ID - ALWAYS INCLUDED - SPECIAL STYLING */}
           <div className="bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg p-3">
             <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
-              Campaign ID (utm_id)
-              <Badge variant="success" size="sm" className="ml-2">Always included</Badge>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Campaign ID (utm_id) *
             </label>
             <Dropdown
               options={idOptions}
@@ -918,44 +905,6 @@ const TikTokBuilder: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 md:col-span-3">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
-                        <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
-                          {paramId}
-                        </code>
-                        <Button
-                          onClick={() => copyField('name', paramId, param.value)}
-                          variant="ghost"
-                          size="sm"
-                          icon={copiedFields[`${paramId}_name`] ? Check : Copy}
-                          className="text-xs px-2 flex-shrink-0"
-                        >
-                          {copiedFields[`${paramId}_name`] ? '✓' : 'Copy'}
-                        </Button>
-                      </div>
-                      <div className="flex items-center gap-2 md:col-span-5">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
-                        <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
-                          {param.value}
-                        </code>
-                        <Button
-                          onClick={() => copyField('value', paramId, param.value)}
-                          variant="ghost"
-                          size="sm"
-                          icon={copiedFields[`${paramId}_value`] ? Check : Copy}
-                          className="text-xs px-2 flex-shrink-0"
-                        >
-                          {copiedFields[`${paramId}_value`] ? '✓' : 'Copy'}
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
       {/* TikTok Official Macros */}
       <Accordion 
         title="TikTok Official Macros" 
