@@ -371,6 +371,24 @@ const TikTokBuilder: React.FC = () => {
     }
   }, []);
 
+  // Copy individual field (parameter name or value)
+  const copyField = async (fieldType: 'name' | 'value', paramName: string, value: string) => {
+    try {
+      const textToCopy = fieldType === 'name' ? paramName : value;
+      await navigator.clipboard.writeText(textToCopy);
+      
+      const fieldKey = `${paramName}_${fieldType}`;
+      setCopiedFields(prev => ({ ...prev, [fieldKey]: true }));
+      setTimeout(() => {
+        setCopiedFields(prev => ({ ...prev, [fieldKey]: false }));
+      }, 2000);
+      
+      success(`${fieldType === 'name' ? 'Parameter name' : 'Parameter value'} copied!`);
+    } catch (err) {
+      error(`Failed to copy ${fieldType}`);
+    }
+  };
+
   // Categories for filtering
   const categories = [
     { value: 'all', label: 'All Parameters' },
