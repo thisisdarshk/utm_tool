@@ -12,9 +12,10 @@ const TikTokBuilder: React.FC = () => {
   const [utmMedium, setUtmMedium] = useState('paid');
   const [utmCampaign, setUtmCampaign] = useState('__CAMPAIGN_NAME__');
   const [utmId, setUtmId] = useState('__CAMPAIGN_ID__');
+  const [utmId, setUtmId] = useState('__CAMPAIGN_ID__');
   const [utmContent, setUtmContent] = useState('__CID_NAME__');
   
-  // Individual optional parameter toggles
+  // Individual optional parameter toggles - UTM ID is always included
   const [includeUtmId, setIncludeUtmId] = useState(true);
   const [includeUtmContent, setIncludeUtmContent] = useState(true);
   
@@ -205,6 +206,7 @@ const TikTokBuilder: React.FC = () => {
     if (utmSource) params.push(`utm_source=${utmSource}`);
     if (utmMedium) params.push(`utm_medium=${utmMedium}`);
     if (utmCampaign) params.push(`utm_campaign=${utmCampaign}`);
+    if (utmId) params.push(`utm_id=${utmId}`); // Always included for TikTok
     
     // Add optional UTM parameters only if individually enabled
     if (includeUtmId && utmId) params.push(`utm_id=${utmId}`);
@@ -323,6 +325,7 @@ const TikTokBuilder: React.FC = () => {
     setUtmSource(template.utmSource);
     setUtmMedium(template.utmMedium);
     setUtmCampaign(template.utmCampaign);
+    setUtmId(template.utmId || '__CAMPAIGN_ID__'); // Fallback for old templates
     setUtmId(template.utmId);
     setUtmContent(template.utmContent);
     
@@ -367,6 +370,7 @@ const TikTokBuilder: React.FC = () => {
     setUtmSource('tiktok');
     setUtmMedium('paid');
     setUtmCampaign('__CAMPAIGN_NAME__');
+    setUtmId('__CAMPAIGN_ID__');
     setUtmId('__CAMPAIGN_ID__');
     setUtmContent('__CID_NAME__');
     setIncludeUtmId(true);
