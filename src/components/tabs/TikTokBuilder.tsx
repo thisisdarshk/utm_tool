@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Copy, Check, Search, X, Save, Download, Upload, Play, RefreshCw, Plus, Trash2, Zap, Globe, Settings, Target } from 'lucide-react';
+import { Copy, Check, Search, X, Save, Download, Upload, Play, RefreshCw, Plus, Trash2, Globe, Settings, Target } from 'lucide-react';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import Dropdown from '../common/Dropdown';
@@ -14,15 +14,13 @@ const TikTokBuilder: React.FC = () => {
   const [utmId, setUtmId] = useState('__CAMPAIGN_ID__');
   const [utmContent, setUtmContent] = useState('__CID_NAME__');
   
-  // Individual optional parameter toggles - UTM ID is always included
-  const [includeUtmContent, setIncludeUtmContent] = useState(false);
+  // Individual optional parameter toggles
+  const [includeUtmContent, setIncludeUtmContent] = useState(true);
   
   // TikTok-specific parameters
   const [selectedParams, setSelectedParams] = useState<Record<string, boolean>>({});
   
   const [customParams, setCustomParams] = useState<Array<{key: string, value: string}>>([]);
-  const [generatedString, setGeneratedString] = useState('');
-  const [copiedString, setCopiedString] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -45,10 +43,10 @@ const TikTokBuilder: React.FC = () => {
       description: 'TikTok platform traffic - Use for static source tracking'
     },
     { 
-      value: '__SITE_SOURCE_NAME__', 
-      label: '__SITE_SOURCE_NAME__', 
+      value: '__PLACEMENT__', 
+      label: '__PLACEMENT__', 
       category: 'Dynamic Sources',
-      description: 'Dynamic source name - TikTok macro'
+      description: 'Placement type (TikTok, TikTok Pangle) - Official TikTok macro'
     }
   ], []);
 
@@ -80,131 +78,88 @@ const TikTokBuilder: React.FC = () => {
     }
   ], []);
 
-  // TikTok-specific campaign options
+  // TikTok-specific campaign options (using official macros)
   const campaignOptions = useMemo(() => [
     { 
       value: '__CAMPAIGN_NAME__', 
       label: '__CAMPAIGN_NAME__', 
       category: 'Campaign Info',
-      description: 'Campaign name - TikTok macro'
+      description: 'Name of the Campaign - Official TikTok macro'
     },
     { 
       value: '__CAMPAIGN_ID__', 
       label: '__CAMPAIGN_ID__', 
       category: 'Campaign Info',
-      description: 'Unique identifier for the campaign - TikTok macro'
-    }
-  ], []);
-
-  // TikTok-specific ID options
-  const idOptions = useMemo(() => [
-    { 
-      value: '__CAMPAIGN_ID__', 
-      label: '__CAMPAIGN_ID__', 
-      category: 'Campaign Level',
-      description: 'Campaign ID - TikTok tracks this by default'
-    },
-    { 
-      value: '__ADGROUP_ID__', 
-      label: '__ADGROUP_ID__', 
-      category: 'Ad Group Level',
-      description: 'Ad group ID - TikTok macro'
+      description: 'Campaign ID - Official TikTok macro'
     }
   ], []);
     
-  // TikTok-specific content options
+  // TikTok-specific content options (using official macros)
   const contentOptions = useMemo(() => [
     { 
       value: '__CID_NAME__', 
       label: '__CID_NAME__', 
       category: 'Creative Level',
-      description: 'Creative name - TikTok macro'
+      description: 'Name of the Creative - Official TikTok macro'
     },
     { 
-      value: '__CID_ID__', 
-      label: '__CID_ID__', 
+      value: '__CID__', 
+      label: '__CID__', 
       category: 'Creative Level',
-      description: 'Creative ID - TikTok macro'
+      description: 'Creative ID - Official TikTok macro'
     },
     { 
-      value: '__ADGROUP_NAME__', 
-      label: '__ADGROUP_NAME__', 
+      value: '__AID_NAME__', 
+      label: '__AID_NAME__', 
       category: 'Ad Group Level',
-      description: 'Ad group name - TikTok macro'
+      description: 'Name of the Ad Group - Official TikTok macro'
+    },
+    { 
+      value: '__AID__', 
+      label: '__AID__', 
+      category: 'Ad Group Level',
+      description: 'Ad Group ID - Official TikTok macro'
     }
   ], []);
 
-  // TikTok official macros
+  // TikTok's Official Macros (excluding those mapped to UTM parameters)
   const tiktokParams = useMemo(() => [
-    // Campaign Level Parameters
+    // Only include macros NOT mapped to UTM parameters
     { 
-      id: 'campaign_id', 
-      value: '__CAMPAIGN_ID__', 
-      label: 'Campaign ID', 
-      category: 'campaign', 
-      description: 'Unique identifier for the campaign',
+      id: 'aid_name', 
+      value: '__AID_NAME__', 
+      label: 'Ad Group Name', 
+      category: 'adgroup', 
+      description: 'Name of the Ad Group',
+      availability: 'All TikTok campaigns',
+      example: 'Shoes_Interest_Group_A'
+    },
+    { 
+      id: 'aid', 
+      value: '__AID__', 
+      label: 'Ad Group ID', 
+      category: 'adgroup', 
+      description: 'Ad Group ID',
       availability: 'All TikTok campaigns',
       example: '1234567890123456789'
     },
     { 
-      id: 'campaign_name', 
-      value: '__CAMPAIGN_NAME__', 
-      label: 'Campaign Name', 
-      category: 'campaign', 
-      description: 'Campaign name',
-      availability: 'All TikTok campaigns',
-      example: 'Summer_Sale_2025'
-    },
-    
-    // Ad Group Level Parameters
-    { 
-      id: 'adgroup_id', 
-      value: '__ADGROUP_ID__', 
-      label: 'Ad Group ID', 
-      category: 'adgroup', 
-      description: 'Unique identifier for the ad group',
+      id: 'cid', 
+      value: '__CID__', 
+      label: 'Creative ID', 
+      category: 'creative', 
+      description: 'Creative ID',
       availability: 'All TikTok campaigns',
       example: '9876543210987654321'
     },
     { 
-      id: 'adgroup_name', 
-      value: '__ADGROUP_NAME__', 
-      label: 'Ad Group Name', 
-      category: 'adgroup', 
-      description: 'Ad group name',
-      availability: 'All TikTok campaigns',
-      example: 'Interest_Targeting_18-35'
-    },
-    
-    // Creative Level Parameters
-    { 
-      id: 'cid_id', 
-      value: '__CID_ID__', 
-      label: 'Creative ID', 
-      category: 'creative', 
-      description: 'Unique identifier for the creative',
-      availability: 'All TikTok campaigns',
-      example: '5555666677778888'
-    },
-    { 
-      id: 'cid_name', 
-      value: '__CID_NAME__', 
-      label: 'Creative Name', 
-      category: 'creative', 
-      description: 'Creative name',
-      availability: 'All TikTok campaigns',
-      example: 'Video_Creative_A'
-    },
-    
-    // Placement & Source Parameters
-    { 
-      id: 'site_source_name', 
-      value: '__SITE_SOURCE_NAME__', 
-      label: 'Site Source Name', 
+      id: 'placement', 
+      value: '__PLACEMENT__', 
+      label: 'Placement', 
       category: 'placement', 
-      description: 'Source placement name',
+      description: 'Placement type (TikTok, TikTok Pangle)',
       availability: 'All TikTok campaigns',
-      example: 'tiktok_feed, pangle_network'
+      example: 'TikTok, TikTok Pangle'
     }
   ], []);
 
@@ -228,68 +183,6 @@ const TikTokBuilder: React.FC = () => {
       setUtmContent('__CID_NAME__');
     }
   }, [utmContent]);
-
-  // Generate parameter string (no URL needed)
-  const generateParameterString = useCallback(() => {
-    const params = [];
-    
-    // Add UTM parameters - REQUIRED FIELDS ALWAYS INCLUDED (including UTM ID)
-    if (utmSource) params.push(`utm_source=${utmSource}`);
-    if (utmMedium) params.push(`utm_medium=${utmMedium}`);
-    if (utmCampaign) params.push(`utm_campaign=${utmCampaign}`);
-    if (utmId) params.push(`utm_id=${utmId}`); // Always included for TikTok
-    
-    // Add optional UTM parameters only if individually enabled
-    if (includeUtmContent && utmContent) params.push(`utm_content=${utmContent}`);
-
-    // Add selected TikTok parameters
-    Object.entries(selectedParams).forEach(([paramId, isSelected]) => {
-      if (isSelected) {
-        const param = tiktokParams.find(p => p.id === paramId);
-        if (param) {
-          params.push(`${paramId}=${param.value}`);
-        }
-      }
-    });
-
-    // Add custom parameters
-    customParams.forEach(param => {
-      if (param.key && param.value) {
-        params.push(`${param.key}=${param.value}`);
-      }
-    });
-
-    const finalString = params.join('&');
-    setGeneratedString(finalString);
-  }, [utmSource, utmMedium, utmCampaign, utmId, utmContent, includeUtmContent, selectedParams, customParams, tiktokParams]);
-
-  // Auto-generate when parameters change
-  React.useEffect(() => {
-    generateParameterString();
-  }, [generateParameterString]);
-
-  // Copy to clipboard
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(generatedString);
-      setCopiedString(true);
-      setTimeout(() => setCopiedString(false), 2000);
-      success('Parameter string copied to clipboard!');
-    } catch (err) {
-      error('Failed to copy parameter string');
-      console.error('Failed to copy:', err);
-    }
-  };
-
-  // Copy current generated string (for loaded template preview)
-  const copyCurrentTemplate = async () => {
-    try {
-      await navigator.clipboard.writeText(generatedString);
-      success('Current parameter string copied to clipboard!');
-    } catch (err) {
-      error('Failed to copy parameter string');
-    }
-  };
 
   // Copy individual field (parameter name or value)
   const copyField = async (fieldType: 'name' | 'value', paramName: string, value: string) => {
@@ -352,14 +245,14 @@ const TikTokBuilder: React.FC = () => {
     }
     
     const template = savedTemplates[selectedTemplate];
-    setUtmSource(template.utmSource || 'tiktok');
-    setUtmMedium(template.utmMedium || 'paid_social');
-    setUtmCampaign(template.utmCampaign || '__CAMPAIGN_NAME__');
-    setUtmId(template.utmId || '__CAMPAIGN_ID__');
-    setUtmContent(template.utmContent || '__CID_NAME__');
+    setUtmSource(template.utmSource);
+    setUtmMedium(template.utmMedium);
+    setUtmCampaign(template.utmCampaign);
+    setUtmId(template.utmId);
+    setUtmContent(template.utmContent);
     
     // Load individual toggles (with fallback for old templates)
-    setIncludeUtmContent(template.includeUtmContent ?? false);
+    setIncludeUtmContent(template.includeUtmContent ?? true);
     
     setSelectedParams(template.selectedParams || {});
     setCustomParams(template.customParams || []);
@@ -400,7 +293,7 @@ const TikTokBuilder: React.FC = () => {
     setUtmCampaign('__CAMPAIGN_NAME__');
     setUtmId('__CAMPAIGN_ID__');
     setUtmContent('__CID_NAME__');
-    setIncludeUtmContent(false);
+    setIncludeUtmContent(true);
     setSelectedParams({});
     setCustomParams([]);
     setLoadedTemplateName('');
@@ -422,19 +315,17 @@ const TikTokBuilder: React.FC = () => {
   // Categories for filtering
   const categories = [
     { value: 'all', label: 'All Parameters' },
-    { value: 'campaign', label: 'Campaign Level' },
     { value: 'adgroup', label: 'Ad Group Level' },
     { value: 'creative', label: 'Creative Level' },
-    { value: 'placement', label: 'Placement & Source' }
+    { value: 'placement', label: 'Placement' }
   ];
 
   // Get category badge color
   const getCategoryBadge = (category: string) => {
     const badges = {
-      campaign: { variant: 'info' as const, label: 'Campaign' },
       adgroup: { variant: 'success' as const, label: 'Ad Group' },
       creative: { variant: 'warning' as const, label: 'Creative' },
-      placement: { variant: 'default' as const, label: 'Placement' }
+      placement: { variant: 'info' as const, label: 'Placement' }
     };
     
     const badge = badges[category as keyof typeof badges];
@@ -451,8 +342,8 @@ const TikTokBuilder: React.FC = () => {
               <Play className="w-4 h-4" />
               TikTok Ads Parameter Builder
             </h3>
-            <p className="text-gray-300 dark:text-pink-300 text-xs">
-              Generate URL parameter strings using TikTok's official macros
+            <p className="text-gray-200 dark:text-pink-300 text-xs">
+              Generate individual UTM parameters for TikTok's URL parameter fields
             </p>
           </div>
           <Button
@@ -491,17 +382,30 @@ const TikTokBuilder: React.FC = () => {
         </div>
       )}
 
-      {/* UTM Parameters */}
+      {/* UTM Parameter Configuration */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center gap-3 mb-6">
-          <Target className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          <Settings className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             UTM Parameters (Using TikTok Official Macros)
           </h3>
+          <Badge variant="info" size="sm">TikTok Format</Badge>
         </div>
 
-        {/* REQUIRED UTM PARAMETERS - 4 COLUMNS INCLUDING UTM ID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-800 rounded-lg">
+          <div className="flex items-start gap-2">
+            <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-gray-800 dark:text-gray-200">TikTok URL Parameters Format</p>
+              <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
+                Configure your UTM parameters below. TikTok allows "Select a dynamic parameter or enter a value" for all UTM fields.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* UTM Parameter Configuration */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Campaign Source (utm_source) *
@@ -510,7 +414,7 @@ const TikTokBuilder: React.FC = () => {
               options={sourceOptions}
               value={utmSource}
               onChange={setUtmSource}
-              placeholder="e.g., tiktok"
+              placeholder="Select or enter value"
               searchable
               clearable
               allowCustom
@@ -518,7 +422,7 @@ const TikTokBuilder: React.FC = () => {
               className="w-full"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              TikTok traffic source identifier
+              To identify the source of traffic, for example, TikTok
             </p>
           </div>
 
@@ -530,7 +434,7 @@ const TikTokBuilder: React.FC = () => {
               options={mediumOptions}
               value={utmMedium}
               onChange={setUtmMedium}
-              placeholder="e.g., paid_social"
+              placeholder="Select or enter value"
               searchable
               clearable
               allowCustom
@@ -538,7 +442,7 @@ const TikTokBuilder: React.FC = () => {
               className="w-full"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Recommended: paid_social for TikTok ads
+              To identify the advertising medium, for example, paid_social
             </p>
           </div>
 
@@ -550,7 +454,7 @@ const TikTokBuilder: React.FC = () => {
               options={campaignOptions}
               value={utmCampaign}
               onChange={setUtmCampaign}
-              placeholder="e.g., __CAMPAIGN_NAME__"
+              placeholder="Select or enter value"
               searchable
               clearable
               allowCustom
@@ -558,123 +462,66 @@ const TikTokBuilder: React.FC = () => {
               className="w-full"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Uses TikTok's __CAMPAIGN_NAME__ macro
+              To identify a specific campaign
             </p>
           </div>
 
-          {/* UTM ID - ALWAYS INCLUDED - SPECIAL STYLING */}
-          <div className="bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg p-3">
-            <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Campaign ID (utm_id) *
             </label>
-            <Dropdown
-              options={idOptions}
+            <Input
               value={utmId}
-              onChange={setUtmId}
-              placeholder="e.g., __CAMPAIGN_ID__"
+              onChange={(e) => setUtmId(e.target.value)}
+              placeholder="__CAMPAIGN_ID__"
+              helperText="Uses TikTok's __CAMPAIGN_ID__ macro"
+            />
+          </div>
+
+          <div className="relative">
+            <div className="flex items-center gap-2 mb-2">
+              <input
+                type="checkbox"
+                id="include-utm-content"
+                checked={includeUtmContent}
+                onChange={(e) => handleUtmContentToggle(e.target.checked)}
+                className="rounded border-gray-300 text-gray-600 focus:ring-gray-500"
+              />
+              <label htmlFor="include-utm-content" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                Campaign Content (utm_content)
+              </label>
+            </div>
+            <Dropdown
+              options={contentOptions}
+              value={utmContent}
+              onChange={setUtmContent}
+              placeholder="Select or enter value"
               searchable
               clearable
               allowCustom
               groupByCategory
-              className="w-full"
+              disabled={!includeUtmContent}
+              className={`w-full ${!includeUtmContent ? 'opacity-50' : ''}`}
             />
-            <p className="text-xs text-pink-600 dark:text-pink-400 mt-1">
-              Uses TikTok's __CAMPAIGN_ID__ macro
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              To differentiate contents within a campaign that link to the same URL
             </p>
           </div>
         </div>
-
-        {/* OPTIONAL UTM PARAMETERS */}
-        <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-          <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            Optional UTM Parameters (TikTok Official Macros)
-          </h4>
-          
-          <div className="grid grid-cols-1 gap-4">
-            {/* UTM Content */}
-            <div className="relative">
-              <div className="flex items-center gap-2 mb-2">
-                <input
-                  type="checkbox"
-                  id="include-utm-content"
-                  checked={includeUtmContent}
-                  onChange={(e) => handleUtmContentToggle(e.target.checked)}
-                  className="rounded border-gray-300 text-pink-600 focus:ring-pink-500"
-                />
-                <label htmlFor="include-utm-content" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                  Campaign Content (utm_content)
-                </label>
-              </div>
-              <Dropdown
-                options={contentOptions}
-                value={utmContent}
-                onChange={setUtmContent}
-                placeholder="e.g., __CID_NAME__"
-                searchable
-                clearable
-                allowCustom
-                groupByCategory
-                disabled={!includeUtmContent}
-                className={`w-full ${!includeUtmContent ? 'opacity-50' : ''}`}
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Uses TikTok's official macros for content differentiation
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
 
-      {/* Generated Parameter String */}
-      <div className="bg-gradient-to-r from-black to-pink-100 dark:from-gray-900 dark:to-pink-900/20 rounded-xl p-6 border-2 border-gray-800 dark:border-pink-800 shadow-lg">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-white dark:text-pink-100 flex items-center gap-2">
-            <Zap className="w-6 h-6" />
-            Generated TikTok Ads Parameter String
-          </h2>
-          <Button
-            onClick={copyToClipboard}
-            disabled={!generatedString}
-            icon={copiedString ? Check : Copy}
-            variant={copiedString ? 'success' : 'primary'}
-            size="lg"
-          >
-            {copiedString ? 'Copied!' : 'Copy Parameters'}
-          </Button>
-        </div>
-        
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border-2 border-gray-700 dark:border-pink-700 shadow-inner">
-          <code className="text-sm break-all text-gray-800 dark:text-gray-200 font-mono leading-relaxed">
-            {generatedString || 'Configure parameters to generate string...'}
-          </code>
-        </div>
-        
-        <div className="mt-4 p-3 bg-gray-800 dark:bg-pink-900/30 rounded-lg">
-          <div className="flex items-start gap-2">
-            <Settings className="w-5 h-5 text-pink-400 dark:text-pink-400 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-medium text-pink-200 dark:text-pink-200">TikTok Official Macros</p>
-              <p className="text-sm text-gray-300 dark:text-pink-300 mt-1">
-                This string uses TikTok's official macros. Copy and paste into TikTok's URL parameters field 
-                in your ad campaign setup. TikTok will automatically replace the macros with actual values.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* TikTok URL Parameters Format */}
+      {/* TikTok Individual Parameter Fields - COMPACT ALIGNED DESIGN */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center gap-3 mb-6">
-          <Settings className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+          <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             TikTok URL Parameters Format
           </h3>
         </div>
 
-        <div className="mb-4 p-3 bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg">
-          <p className="text-sm text-pink-800 dark:text-pink-200">
-            Copy individual parameter names and values to paste into TikTok's "URL Parameters" interface.
+        <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-800 rounded-lg">
+          <p className="text-sm text-gray-800 dark:text-gray-200">
+            Copy individual parameter names and values to paste into TikTok's "Edit URL Parameters" interface.
           </p>
         </div>
 
@@ -685,7 +532,7 @@ const TikTokBuilder: React.FC = () => {
             <div className="md:col-span-4">
               <div>
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign source (utm_source)</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">To identify the source of traffic</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">To identify the source of traffic, for example, TikTok</p>
               </div>
             </div>
             <div className="flex items-center gap-2 md:col-span-3">
@@ -725,7 +572,7 @@ const TikTokBuilder: React.FC = () => {
             <div className="md:col-span-4">
               <div>
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign medium (utm_medium)</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">To identify the advertising medium</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">To identify the advertising medium, for example, paid_social</p>
               </div>
             </div>
             <div className="flex items-center gap-2 md:col-span-3">
@@ -800,17 +647,17 @@ const TikTokBuilder: React.FC = () => {
             </div>
           </div>
 
-          {/* Campaign ID - ALWAYS INCLUDED - SPECIAL HIGHLIGHTING */}
-          <div className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0 bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg p-3">
+          {/* Campaign ID */}
+          <div className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0">
             <div className="md:col-span-4">
               <div>
-                <p className="text-sm font-medium text-pink-700 dark:text-pink-300">Campaign ID (utm_id) - Always included</p>
-                <p className="text-xs text-pink-600 dark:text-pink-400">TikTok tracks this by default</p>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign ID (utm_id)</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Uses TikTok's __CAMPAIGN_ID__ macro</p>
               </div>
             </div>
             <div className="flex items-center gap-2 md:col-span-3">
-              <span className="text-xs text-pink-500 dark:text-pink-400 md:hidden">Parameter:</span>
-              <code className="flex-1 text-sm bg-pink-100 dark:bg-pink-800/30 px-3 py-2 rounded border border-pink-200 dark:border-pink-700 text-center">
+              <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
+              <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
                 utm_id
               </code>
               <Button
@@ -818,14 +665,14 @@ const TikTokBuilder: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 icon={copiedFields['utm_id_name'] ? Check : Copy}
-                className="text-xs px-2 flex-shrink-0 text-pink-600"
+                className="text-xs px-2 flex-shrink-0"
               >
                 {copiedFields['utm_id_name'] ? '✓' : 'Copy'}
               </Button>
             </div>
             <div className="flex items-center gap-2 md:col-span-5">
-              <span className="text-xs text-pink-500 dark:text-pink-400 md:hidden">Value:</span>
-              <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-pink-300 dark:border-pink-600 text-center">
+              <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
+              <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
                 {utmId}
               </code>
               <Button
@@ -833,7 +680,7 @@ const TikTokBuilder: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 icon={copiedFields['utm_id_value'] ? Check : Copy}
-                className="text-xs px-2 flex-shrink-0 text-pink-600"
+                className="text-xs px-2 flex-shrink-0"
               >
                 {copiedFields['utm_id_value'] ? '✓' : 'Copy'}
               </Button>
@@ -846,7 +693,7 @@ const TikTokBuilder: React.FC = () => {
               <div className="md:col-span-4">
                 <div>
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign content (utm_content)</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">To differentiate contents within a campaign</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">To differentiate contents within a campaign that link to the same URL</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 md:col-span-3">
@@ -884,7 +731,7 @@ const TikTokBuilder: React.FC = () => {
 
           {/* Selected TikTok Parameters */}
           {Object.entries(selectedParams).some(([_, isSelected]) => isSelected) && (
-            <div className="border-t border-gray-200 dark:border-gray-600 pt-4 mt-4">
+            <div className="border-t border-gray-200 dark:border-gray-600 pt-4 mt-4 md:col-span-2">
               <h5 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">
                 Selected TikTok Parameters
               </h5>
@@ -939,61 +786,6 @@ const TikTokBuilder: React.FC = () => {
               </div>
             </div>
           )}
-
-          {/* Custom Parameters */}
-          {customParams.length > 0 && (
-            <div className="border-t border-gray-200 dark:border-gray-600 pt-4 mt-4">
-              <h5 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                Custom Parameters
-              </h5>
-              <div className="space-y-3">
-                {customParams.map((param, index) => {
-                  if (!param.key || !param.value) return null;
-                  
-                  return (
-                    <div key={index} className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0 py-2">
-                      <div className="md:col-span-4">
-                        <div>
-                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Custom: {param.key}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">User-defined parameter</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 md:col-span-3">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
-                        <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
-                          {param.key}
-                        </code>
-                        <Button
-                          onClick={() => copyField('name', param.key, param.value)}
-                          variant="ghost"
-                          size="sm"
-                          icon={copiedFields[`${param.key}_name`] ? Check : Copy}
-                          className="text-xs px-2 flex-shrink-0"
-                        >
-                          {copiedFields[`${param.key}_name`] ? '✓' : 'Copy'}
-                        </Button>
-                      </div>
-                      <div className="flex items-center gap-2 md:col-span-5">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
-                        <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
-                          {param.value}
-                        </code>
-                        <Button
-                          onClick={() => copyField('value', param.key, param.value)}
-                          variant="ghost"
-                          size="sm"
-                          icon={copiedFields[`${param.key}_value`] ? Check : Copy}
-                          className="text-xs px-2 flex-shrink-0"
-                        >
-                          {copiedFields[`${param.key}_value`] ? '✓' : 'Copy'}
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
@@ -1003,213 +795,78 @@ const TikTokBuilder: React.FC = () => {
         icon={<Target className="w-5 h-5" />}
         defaultOpen={false}
       >
-        <div className="space-y-4">
-          <div className="p-4 bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg">
-            <h4 className="text-sm font-semibold text-pink-900 dark:text-pink-100 mb-2">
-              TikTok Official Macros (7 Total)
-            </h4>
-            <p className="text-sm text-pink-800 dark:text-pink-200">
-              These are the only macros officially documented by TikTok for URL parameter tracking.
-            </p>
+        {/* Search and Filter */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="flex-1">
+            <Input
+              placeholder="Search parameters..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              icon={<Search className="w-4 h-4" />}
+            />
           </div>
-
-          {/* UTM Parameter Mapped Macros */}
-          <div>
-            <h5 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-3">
-              UTM Parameter Mapped Macros
-            </h5>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="success" size="sm">UTM Campaign</Badge>
-                  <code className="text-sm font-mono">__CAMPAIGN_NAME__</code>
-                </div>
-                <p className="text-sm text-green-800 dark:text-green-200 mb-1">
-                  <strong>Expands to:</strong> Name of the Campaign
-                </p>
-                <p className="text-xs text-green-700 dark:text-green-300">
-                  Maps to utm_campaign parameter
-                </p>
-              </div>
-
-              <div className="p-4 border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="success" size="sm">UTM ID</Badge>
-                  <code className="text-sm font-mono">__CAMPAIGN_ID__</code>
-                </div>
-                <p className="text-sm text-green-800 dark:text-green-200 mb-1">
-                  <strong>Expands to:</strong> Campaign ID
-                </p>
-                <p className="text-xs text-green-700 dark:text-green-300">
-                  Maps to utm_id parameter
-                </p>
-              </div>
-
-              <div className="p-4 border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="success" size="sm">UTM Content</Badge>
-                  <code className="text-sm font-mono">__CID_NAME__</code>
-                </div>
-                <p className="text-sm text-green-800 dark:text-green-200 mb-1">
-                  <strong>Expands to:</strong> Name of the Creative
-                </p>
-                <p className="text-xs text-green-700 dark:text-green-300">
-                  Maps to utm_content parameter (when enabled)
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Additional Official Macros (Not UTM Mapped) */}
-          <div>
-            <h5 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-3">
-              Additional Official Macros (Not UTM Mapped)
-            </h5>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="info" size="sm">Ad Group Name</Badge>
-                  <code className="text-sm font-mono">__AID_NAME__</code>
-                </div>
-                <p className="text-sm text-gray-800 dark:text-gray-200 mb-1">
-                  <strong>Expands to:</strong> Name of the Ad Group
-                </p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Available for custom parameter tracking
-                </p>
-              </div>
-
-              <div className="p-4 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="info" size="sm">Ad Group ID</Badge>
-                  <code className="text-sm font-mono">__AID__</code>
-                </div>
-                <p className="text-sm text-gray-800 dark:text-gray-200 mb-1">
-                  <strong>Expands to:</strong> Ad Group ID
-                </p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Available for custom parameter tracking
-                </p>
-              </div>
-
-              <div className="p-4 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="info" size="sm">Creative ID</Badge>
-                  <code className="text-sm font-mono">__CID__</code>
-                </div>
-                <p className="text-sm text-gray-800 dark:text-gray-200 mb-1">
-                  <strong>Expands to:</strong> Creative ID
-                </p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Available for custom parameter tracking
-                </p>
-              </div>
-
-              <div className="p-4 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="info" size="sm">Placement</Badge>
-                  <code className="text-sm font-mono">__PLACEMENT__</code>
-                </div>
-                <p className="text-sm text-gray-800 dark:text-gray-200 mb-1">
-                  <strong>Expands to:</strong> Placement type (TikTok, TikTok Pangle)
-                </p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Available for custom parameter tracking
-                </p>
-              </div>
-            </div>
+          <div className="sm:w-64">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
+            >
+              {categories.map(cat => (
+                <option key={cat.value} value={cat.value}>{cat.label}</option>
+              ))}
+            </select>
           </div>
         </div>
-      </Accordion>
 
-      {/* TikTok Parameters Selection */}
-      <Accordion 
-        title="TikTok Parameters Selection" 
-        icon={<Settings className="w-5 h-5" />}
-        defaultOpen={false}
-      >
-        <div className="space-y-4">
-          {/* Search and Filter */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search parameters..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                />
-              </div>
-            </div>
-            <div className="sm:w-48">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              >
-                {categories.map(category => (
-                  <option key={category.value} value={category.value}>
-                    {category.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Parameters Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredParams.map(param => (
-              <div key={param.id} className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/20 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900/30 transition-colors">
-                <input
-                  type="checkbox"
-                  id={param.id}
-                  checked={selectedParams[param.id] || false}
-                  onChange={(e) => {
-                    setSelectedParams(prev => ({
-                      ...prev,
-                      [param.id]: e.target.checked
-                    }));
-                  }}
-                  className="mt-1 rounded border-gray-300 text-gray-600 focus:ring-gray-500"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <label htmlFor={param.id} className="block text-sm font-medium text-gray-900 dark:text-gray-100 cursor-pointer">
-                      {param.label}
-                    </label>
-                    {getCategoryBadge(param.category)}
+        {/* Parameters Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredParams.map(param => (
+            <div key={param.id} className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/20 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900/30 transition-colors">
+              <input
+                type="checkbox"
+                id={param.id}
+                checked={selectedParams[param.id] || false}
+                onChange={(e) => {
+                  setSelectedParams(prev => ({
+                    ...prev,
+                    [param.id]: e.target.checked
+                  }));
+                }}
+                className="mt-1 rounded border-gray-300 text-gray-600 focus:ring-gray-500"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <label htmlFor={param.id} className="block text-sm font-medium text-gray-900 dark:text-gray-100 cursor-pointer">
+                    {param.label}
+                  </label>
+                  {getCategoryBadge(param.category)}
+                  <Badge variant="success" size="sm">Official Macro</Badge>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                  {param.description}
+                </p>
+                <div className="space-y-1">
+                  <code className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded block">
+                    {param.value}
+                  </code>
+                  <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">
+                    {param.availability}
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                    {param.description}
-                  </p>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">Value:</span>
-                      <code className="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded font-mono">
-                        {param.value}
-                      </code>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">Example:</span>
-                      <code className="text-xs text-gray-600 dark:text-gray-400 font-mono">
-                        {param.example}
-                      </code>
-                    </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    Example: {param.example}
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-
-          {filteredParams.length === 0 && (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-              <Search className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No parameters found matching your search criteria.</p>
             </div>
-          )}
+          ))}
         </div>
+
+        {filteredParams.length === 0 && (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            <Search className="w-12 h-12 mx-auto mb-3 opacity-50" />
+            <p>No parameters found matching your search criteria</p>
+          </div>
+        )}
       </Accordion>
 
       {/* Custom Parameters */}
@@ -1388,35 +1045,8 @@ const TikTokBuilder: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* LOADED TEMPLATE PREVIEW */}
-        {loadedTemplateName && generatedString && (
-          <div className="mt-6 p-4 bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-semibold text-pink-900 dark:text-pink-100">
-                📋 Loaded Template: "{loadedTemplateName}"
-              </h4>
-              <Button
-                onClick={copyCurrentTemplate}
-                variant="secondary"
-                size="sm"
-                icon={Copy}
-                className="text-pink-600 hover:text-pink-700"
-              >
-                Copy String
-              </Button>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-pink-200 dark:border-pink-700">
-              <code className="text-sm break-all text-gray-800 dark:text-gray-200 font-mono leading-relaxed">
-                {generatedString}
-              </code>
-            </div>
-            <p className="text-xs text-pink-700 dark:text-pink-300 mt-2">
-              ✅ Template loaded successfully! This shows the current generated parameter string.
-            </p>
-          </div>
-        )}
       </Accordion>
+
     </div>
   );
 };
