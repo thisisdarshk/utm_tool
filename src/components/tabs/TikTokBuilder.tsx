@@ -225,7 +225,7 @@ const TikTokBuilder: React.FC = () => {
 
     const finalString = params.length > 0 ? `?${params.join('&')}` : '';
     setGeneratedString(finalString);
-  }, [utmSource, utmMedium, utmCampaign, utmId, utmTerm, utmContent, includeUtmId, includeUtmTerm, includeUtmContent, selectedParams, customParams, tiktokParams]);
+  }, [utmSource, utmMedium, utmCampaign, utmId, utmContent, includeUtmId, includeUtmContent, selectedParams, customParams, tiktokParams]);
 
   // Auto-generate when parameters change
   React.useEffect(() => {
@@ -289,7 +289,7 @@ const TikTokBuilder: React.FC = () => {
     
     success(`Template "${templateName}" saved successfully!`);
     setTemplateName('');
-  }, [templateName, utmSource, utmMedium, utmCampaign, utmId, utmTerm, utmContent, includeUtmId, includeUtmTerm, includeUtmContent, selectedParams, customParams, savedTemplates, success, error]);
+  }, [templateName, utmSource, utmMedium, utmCampaign, utmId, utmContent, includeUtmId, includeUtmContent, selectedParams, customParams, savedTemplates, success, error]);
 
   const loadTemplate = useCallback(() => {
     if (!selectedTemplate || !savedTemplates[selectedTemplate]) {
