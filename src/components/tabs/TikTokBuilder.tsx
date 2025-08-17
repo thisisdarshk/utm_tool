@@ -12,7 +12,6 @@ const TikTokBuilder: React.FC = () => {
   const [utmMedium, setUtmMedium] = useState('paid');
   const [utmCampaign, setUtmCampaign] = useState('__CAMPAIGN_NAME__');
   const [utmId, setUtmId] = useState('__CAMPAIGN_ID__');
-  const [utmId, setUtmId] = useState('__CAMPAIGN_ID__');
   const [utmContent, setUtmContent] = useState('__CID_NAME__');
   
   // Individual optional parameter toggles - UTM ID is always included
