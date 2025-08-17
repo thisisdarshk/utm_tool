@@ -9,16 +9,15 @@ import { useToast } from '../../hooks/useToast';
 
 const TikTokBuilder: React.FC = () => {
   const [utmSource, setUtmSource] = useState('tiktok');
-  const [utmMedium, setUtmMedium] = useState('paid');
+  const [utmMedium, setUtmMedium] = useState('paid_social');
   const [utmCampaign, setUtmCampaign] = useState('__CAMPAIGN_NAME__');
   const [utmId, setUtmId] = useState('__CAMPAIGN_ID__');
   const [utmContent, setUtmContent] = useState('__CID_NAME__');
   
   // Individual optional parameter toggles - UTM ID is always included
-  const [includeUtmId, setIncludeUtmId] = useState(true);
-  const [includeUtmContent, setIncludeUtmContent] = useState(true);
+  const [includeUtmContent, setIncludeUtmContent] = useState(false);
   
-  // TikTok-specific parameters (using official macros)
+  // TikTok-specific parameters
   const [selectedParams, setSelectedParams] = useState<Record<string, boolean>>({});
   
   const [customParams, setCustomParams] = useState<Array<{key: string, value: string}>>([]);
@@ -34,6 +33,9 @@ const TikTokBuilder: React.FC = () => {
   
   // Copy states for individual fields
   const [copiedFields, setCopiedFields] = useState<Record<string, boolean>>({});
+  
+  const { success, error } = useToast();
+
   // TikTok-specific source options
   const sourceOptions = useMemo(() => [
     { 
@@ -43,10 +45,10 @@ const TikTokBuilder: React.FC = () => {
       description: 'TikTok platform traffic - Use for static source tracking'
     },
     { 
-      value: '__CAMPAIGN_NAME__', 
-      label: '__CAMPAIGN_NAME__', 
+      value: '__SITE_SOURCE_NAME__', 
+      label: '__SITE_SOURCE_NAME__', 
       category: 'Dynamic Sources',
-      description: 'Dynamic campaign name - Automatically populated by TikTok'
+      description: 'Dynamic source name - TikTok macro'
     }
   ], []);
 
@@ -78,93 +80,131 @@ const TikTokBuilder: React.FC = () => {
     }
   ], []);
 
-  // TikTok-specific campaign options (using official macros)
+  // TikTok-specific campaign options
   const campaignOptions = useMemo(() => [
     { 
       value: '__CAMPAIGN_NAME__', 
       label: '__CAMPAIGN_NAME__', 
       category: 'Campaign Info',
-      description: 'Dynamic campaign name from TikTok - Official macro'
+      description: 'Campaign name - TikTok macro'
     },
     { 
       value: '__CAMPAIGN_ID__', 
       label: '__CAMPAIGN_ID__', 
       category: 'Campaign Info',
-      description: 'Dynamic campaign ID from TikTok - Official macro'
+      description: 'Unique identifier for the campaign - TikTok macro'
     }
   ], []);
 
-  // TikTok-specific ID options (using official macros)
+  // TikTok-specific ID options
   const idOptions = useMemo(() => [
     { 
       value: '__CAMPAIGN_ID__', 
       label: '__CAMPAIGN_ID__', 
       category: 'Campaign Level',
-      description: 'Campaign ID - Official TikTok macro'
+      description: 'Campaign ID - TikTok tracks this by default'
+    },
+    { 
+      value: '__ADGROUP_ID__', 
+      label: '__ADGROUP_ID__', 
+      category: 'Ad Group Level',
+      description: 'Ad group ID - TikTok macro'
     }
   ], []);
-
-  // TikTok-specific content options (using official macros)
+    
+  // TikTok-specific content options
   const contentOptions = useMemo(() => [
     { 
       value: '__CID_NAME__', 
       label: '__CID_NAME__', 
       category: 'Creative Level',
-      description: 'Name of the Creative - Official TikTok macro'
+      description: 'Creative name - TikTok macro'
     },
     { 
-      value: '__CID__', 
-      label: '__CID__', 
+      value: '__CID_ID__', 
+      label: '__CID_ID__', 
       category: 'Creative Level',
-      description: 'Creative ID - Official TikTok macro'
+      description: 'Creative ID - TikTok macro'
+    },
+    { 
+      value: '__ADGROUP_NAME__', 
+      label: '__ADGROUP_NAME__', 
+      category: 'Ad Group Level',
+      description: 'Ad group name - TikTok macro'
     }
   ], []);
 
-  // TikTok official macro parameters (the 7 key macros you mentioned)
+  // TikTok official macros
   const tiktokParams = useMemo(() => [
+    // Campaign Level Parameters
     { 
-      id: 'placement', 
-      value: '__PLACEMENT__', 
-      label: 'Placement (__PLACEMENT__)', 
-      category: 'custom',
-      description: 'Placement type (TikTok, TikTok Pangle)',
+      id: 'campaign_id', 
+      value: '__CAMPAIGN_ID__', 
+      label: 'Campaign ID', 
+      category: 'campaign', 
+      description: 'Unique identifier for the campaign',
       availability: 'All TikTok campaigns',
-      example: 'TikTok, TikTok Pangle',
-      isOfficial: true,
-      rationale: 'Official TikTok macro for placement tracking'
+      example: '1234567890123456789'
     },
     { 
-      id: 'creative_id', 
-      value: '__CID__', 
-      label: 'Creative ID (__CID__)', 
-      category: 'custom',
-      description: 'Creative ID',
+      id: 'campaign_name', 
+      value: '__CAMPAIGN_NAME__', 
+      label: 'Campaign Name', 
+      category: 'campaign', 
+      description: 'Campaign name',
       availability: 'All TikTok campaigns',
-      example: '1234567890123456789',
-      isOfficial: true,
-      rationale: 'Official TikTok macro for creative ID tracking'
+      example: 'Summer_Sale_2025'
+    },
+    
+    // Ad Group Level Parameters
+    { 
+      id: 'adgroup_id', 
+      value: '__ADGROUP_ID__', 
+      label: 'Ad Group ID', 
+      category: 'adgroup', 
+      description: 'Unique identifier for the ad group',
+      availability: 'All TikTok campaigns',
+      example: '9876543210987654321'
     },
     { 
-      id: 'ad_group_name', 
-      value: '__AID_NAME__', 
-      label: 'Ad Group Name (__AID_NAME__)', 
-      category: 'custom',
-      description: 'Name of the Ad Group',
+      id: 'adgroup_name', 
+      value: '__ADGROUP_NAME__', 
+      label: 'Ad Group Name', 
+      category: 'adgroup', 
+      description: 'Ad group name',
       availability: 'All TikTok campaigns',
-      example: 'Lookalike_Audience_18-35',
-      isOfficial: true,
-      rationale: 'Official TikTok macro for ad group name tracking'
+      example: 'Interest_Targeting_18-35'
+    },
+    
+    // Creative Level Parameters
+    { 
+      id: 'cid_id', 
+      value: '__CID_ID__', 
+      label: 'Creative ID', 
+      category: 'creative', 
+      description: 'Unique identifier for the creative',
+      availability: 'All TikTok campaigns',
+      example: '5555666677778888'
     },
     { 
-      id: 'ad_group_id', 
-      value: '__AID__', 
-      label: 'Ad Group ID (__AID__)', 
-      category: 'custom',
-      description: 'Ad Group ID',
+      id: 'cid_name', 
+      value: '__CID_NAME__', 
+      label: 'Creative Name', 
+      category: 'creative', 
+      description: 'Creative name',
       availability: 'All TikTok campaigns',
-      example: '9876543210987654321',
-      isOfficial: true,
-      rationale: 'Official TikTok macro for ad group ID tracking'
+      example: 'Video_Creative_A'
+    },
+    
+    // Placement & Source Parameters
+    { 
+      id: 'site_source_name', 
+      value: '__SITE_SOURCE_NAME__', 
+      label: 'Site Source Name', 
+      category: 'placement', 
+      description: 'Source placement name',
+      availability: 'All TikTok campaigns',
+      example: 'tiktok_feed, pangle_network'
     }
   ], []);
 
@@ -180,17 +220,12 @@ const TikTokBuilder: React.FC = () => {
   }, [tiktokParams, searchTerm, selectedCategory]);
 
   // Handle individual optional parameter toggles with default value restoration
-  const handleUtmIdToggle = useCallback((enabled: boolean) => {
-    setIncludeUtmId(enabled);
-    if (enabled && !utmId.trim()) {
-      setUtmId('__CAMPAIGN_ID__');
-    }
-  }, [utmId]);
-
   const handleUtmContentToggle = useCallback((enabled: boolean) => {
     setIncludeUtmContent(enabled);
+    
+    // If enabling and field is empty, restore default
     if (enabled && !utmContent.trim()) {
-      setUtmContent('__AID_NAME__');
+      setUtmContent('__CID_NAME__');
     }
   }, [utmContent]);
 
@@ -198,14 +233,13 @@ const TikTokBuilder: React.FC = () => {
   const generateParameterString = useCallback(() => {
     const params = [];
     
-    // Add UTM parameters - REQUIRED FIELDS ALWAYS INCLUDED
+    // Add UTM parameters - REQUIRED FIELDS ALWAYS INCLUDED (including UTM ID)
     if (utmSource) params.push(`utm_source=${utmSource}`);
     if (utmMedium) params.push(`utm_medium=${utmMedium}`);
     if (utmCampaign) params.push(`utm_campaign=${utmCampaign}`);
     if (utmId) params.push(`utm_id=${utmId}`); // Always included for TikTok
     
     // Add optional UTM parameters only if individually enabled
-    if (includeUtmId && utmId) params.push(`utm_id=${utmId}`);
     if (includeUtmContent && utmContent) params.push(`utm_content=${utmContent}`);
 
     // Add selected TikTok parameters
@@ -225,9 +259,9 @@ const TikTokBuilder: React.FC = () => {
       }
     });
 
-    const finalString = params.length > 0 ? `?${params.join('&')}` : '';
+    const finalString = params.join('&');
     setGeneratedString(finalString);
-  }, [utmSource, utmMedium, utmCampaign, utmId, utmContent, includeUtmId, includeUtmContent, selectedParams, customParams, tiktokParams]);
+  }, [utmSource, utmMedium, utmCampaign, utmId, utmContent, includeUtmContent, selectedParams, customParams, tiktokParams]);
 
   // Auto-generate when parameters change
   React.useEffect(() => {
@@ -257,21 +291,21 @@ const TikTokBuilder: React.FC = () => {
     }
   };
 
-  // Copy field function for individual parameter fields
-  const copyField = async (type: 'name' | 'value', paramName: string, value: string) => {
+  // Copy individual field (parameter name or value)
+  const copyField = async (fieldType: 'name' | 'value', paramName: string, value: string) => {
     try {
-      const textToCopy = type === 'name' ? paramName : value;
+      const textToCopy = fieldType === 'name' ? paramName : value;
       await navigator.clipboard.writeText(textToCopy);
       
-      const fieldKey = `${paramName}_${type}`;
+      const fieldKey = `${paramName}_${fieldType}`;
       setCopiedFields(prev => ({ ...prev, [fieldKey]: true }));
       setTimeout(() => {
         setCopiedFields(prev => ({ ...prev, [fieldKey]: false }));
       }, 2000);
       
-      success(`${type === 'name' ? 'Parameter name' : 'Parameter value'} copied!`);
+      success(`${fieldType === 'name' ? 'Parameter name' : 'Parameter value'} copied!`);
     } catch (err) {
-      error(`Failed to copy ${type === 'name' ? 'parameter name' : 'parameter value'}`);
+      error(`Failed to copy ${fieldType}`);
     }
   };
 
@@ -299,7 +333,7 @@ const TikTokBuilder: React.FC = () => {
     
     const template = {
       utmSource, utmMedium, utmCampaign, utmId, utmContent,
-      includeUtmId, includeUtmContent,
+      includeUtmContent,
       selectedParams, customParams, timestamp: Date.now()
     };
     
@@ -309,7 +343,7 @@ const TikTokBuilder: React.FC = () => {
     
     success(`Template "${templateName}" saved successfully!`);
     setTemplateName('');
-  }, [templateName, utmSource, utmMedium, utmCampaign, utmId, utmContent, includeUtmId, includeUtmContent, selectedParams, customParams, savedTemplates, success, error]);
+  }, [templateName, utmSource, utmMedium, utmCampaign, utmId, utmContent, includeUtmContent, selectedParams, customParams, savedTemplates, success, error]);
 
   const loadTemplate = useCallback(() => {
     if (!selectedTemplate || !savedTemplates[selectedTemplate]) {
@@ -318,16 +352,14 @@ const TikTokBuilder: React.FC = () => {
     }
     
     const template = savedTemplates[selectedTemplate];
-    setUtmSource(template.utmSource);
-    setUtmMedium(template.utmMedium);
-    setUtmCampaign(template.utmCampaign);
-    setUtmId(template.utmId || '__CAMPAIGN_ID__'); // Fallback for old templates
-    setUtmId(template.utmId);
-    setUtmContent(template.utmContent);
+    setUtmSource(template.utmSource || 'tiktok');
+    setUtmMedium(template.utmMedium || 'paid_social');
+    setUtmCampaign(template.utmCampaign || '__CAMPAIGN_NAME__');
+    setUtmId(template.utmId || '__CAMPAIGN_ID__');
+    setUtmContent(template.utmContent || '__CID_NAME__');
     
     // Load individual toggles (with fallback for old templates)
-    setIncludeUtmId(template.includeUtmId ?? true);
-    setIncludeUtmContent(template.includeUtmContent ?? true);
+    setIncludeUtmContent(template.includeUtmContent ?? false);
     
     setSelectedParams(template.selectedParams || {});
     setCustomParams(template.customParams || []);
@@ -364,13 +396,11 @@ const TikTokBuilder: React.FC = () => {
   // Reset all fields
   const resetFields = useCallback(() => {
     setUtmSource('tiktok');
-    setUtmMedium('paid');
+    setUtmMedium('paid_social');
     setUtmCampaign('__CAMPAIGN_NAME__');
     setUtmId('__CAMPAIGN_ID__');
-    setUtmId('__CAMPAIGN_ID__');
     setUtmContent('__CID_NAME__');
-    setIncludeUtmId(true);
-    setIncludeUtmContent(true);
+    setIncludeUtmContent(false);
     setSelectedParams({});
     setCustomParams([]);
     setLoadedTemplateName('');
@@ -392,13 +422,19 @@ const TikTokBuilder: React.FC = () => {
   // Categories for filtering
   const categories = [
     { value: 'all', label: 'All Parameters' },
-    { value: 'custom', label: 'Custom Parameters' }
+    { value: 'campaign', label: 'Campaign Level' },
+    { value: 'adgroup', label: 'Ad Group Level' },
+    { value: 'creative', label: 'Creative Level' },
+    { value: 'placement', label: 'Placement & Source' }
   ];
 
   // Get category badge color
   const getCategoryBadge = (category: string) => {
     const badges = {
-      custom: { variant: 'info' as const, label: 'Custom' }
+      campaign: { variant: 'info' as const, label: 'Campaign' },
+      adgroup: { variant: 'success' as const, label: 'Ad Group' },
+      creative: { variant: 'warning' as const, label: 'Creative' },
+      placement: { variant: 'default' as const, label: 'Placement' }
     };
     
     const badge = badges[category as keyof typeof badges];
@@ -408,15 +444,15 @@ const TikTokBuilder: React.FC = () => {
   return (
     <div className="space-y-8">
       {/* Video Tutorial Section */}
-      <div className="bg-gradient-to-r from-black to-pink-50 dark:from-black dark:to-pink-900/20 rounded-lg p-4 border border-pink-200 dark:border-pink-800">
+      <div className="bg-gradient-to-r from-black to-pink-100 dark:from-gray-900 dark:to-pink-900/20 rounded-lg p-4 border border-gray-800 dark:border-pink-800">
         <div className="flex items-center justify-between gap-4">
           <div>
             <h3 className="text-base font-semibold text-white dark:text-pink-100 mb-1 flex items-center gap-2">
               <Play className="w-4 h-4" />
               TikTok Ads Parameter Builder
             </h3>
-            <p className="text-pink-100 dark:text-pink-300 text-xs">
-              Generate URL parameter strings using TikTok's official 7 key macros
+            <p className="text-gray-300 dark:text-pink-300 text-xs">
+              Generate URL parameter strings using TikTok's official macros
             </p>
           </div>
           <Button
@@ -464,8 +500,21 @@ const TikTokBuilder: React.FC = () => {
           </h3>
         </div>
 
-        {/* REQUIRED UTM PARAMETERS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {/* TikTok Auto-tracking Notice */}
+        <div className="mb-6 p-4 bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg">
+          <div className="flex items-start gap-2">
+            <Settings className="w-5 h-5 text-pink-600 dark:text-pink-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-pink-800 dark:text-pink-200">TikTok Auto-tracking Enabled</p>
+              <p className="text-sm text-pink-700 dark:text-pink-300 mt-1">
+                UTM ID is automatically tracked when "Automatically add URL parameters" is enabled in TikTok Ads Manager.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* REQUIRED UTM PARAMETERS - 4 COLUMNS INCLUDING UTM ID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Campaign Source (utm_source) *
@@ -525,6 +574,28 @@ const TikTokBuilder: React.FC = () => {
               Uses TikTok's __CAMPAIGN_NAME__ macro
             </p>
           </div>
+
+          {/* UTM ID - ALWAYS INCLUDED - SPECIAL STYLING */}
+          <div className="bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg p-3">
+            <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
+              Campaign ID (utm_id) * 
+              <Badge variant="success" size="sm" className="ml-2">Always included</Badge>
+            </label>
+            <Dropdown
+              options={idOptions}
+              value={utmId}
+              onChange={setUtmId}
+              placeholder="e.g., __CAMPAIGN_ID__"
+              searchable
+              clearable
+              allowCustom
+              groupByCategory
+              className="w-full"
+            />
+            <p className="text-xs text-pink-600 dark:text-pink-400 mt-1">
+              TikTok tracks this by default
+            </p>
+          </div>
         </div>
 
         {/* OPTIONAL UTM PARAMETERS */}
@@ -533,38 +604,7 @@ const TikTokBuilder: React.FC = () => {
             Optional UTM Parameters (TikTok Official Macros)
           </h4>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* UTM ID */}
-            <div className="relative">
-              <div className="flex items-center gap-2 mb-2">
-                <input
-                  type="checkbox"
-                  id="include-utm-id"
-                  checked={includeUtmId}
-                  onChange={(e) => handleUtmIdToggle(e.target.checked)}
-                  className="rounded border-gray-300 text-pink-600 focus:ring-pink-500"
-                />
-                <label htmlFor="include-utm-id" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                  Campaign ID (utm_id)
-                </label>
-              </div>
-              <Dropdown
-                options={idOptions}
-                value={utmId}
-                onChange={setUtmId}
-                placeholder="e.g., __CAMPAIGN_ID__"
-                searchable
-                clearable
-                allowCustom
-                groupByCategory
-                disabled={!includeUtmId}
-                className={`w-full ${!includeUtmId ? 'opacity-50' : ''}`}
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Uses TikTok's __CAMPAIGN_ID__ macro
-              </p>
-            </div>
-
+          <div className="grid grid-cols-1 gap-4">
             {/* UTM Content */}
             <div className="relative">
               <div className="flex items-center gap-2 mb-2">
@@ -583,7 +623,7 @@ const TikTokBuilder: React.FC = () => {
                 options={contentOptions}
                 value={utmContent}
                 onChange={setUtmContent}
-                placeholder="e.g., __AID_NAME__"
+                placeholder="e.g., __CID_NAME__"
                 searchable
                 clearable
                 allowCustom
@@ -592,7 +632,7 @@ const TikTokBuilder: React.FC = () => {
                 className={`w-full ${!includeUtmContent ? 'opacity-50' : ''}`}
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Uses TikTok's __CID_NAME__ (Creative Name) or __CID__ (Creative ID) macro
+                Uses TikTok's official macros for content differentiation
               </p>
             </div>
           </div>
@@ -600,7 +640,7 @@ const TikTokBuilder: React.FC = () => {
       </div>
 
       {/* Generated Parameter String */}
-      <div className="bg-gradient-to-r from-black to-pink-50 dark:from-black dark:to-pink-900/20 rounded-xl p-6 border-2 border-pink-200 dark:border-pink-800 shadow-lg">
+      <div className="bg-gradient-to-r from-black to-pink-100 dark:from-gray-900 dark:to-pink-900/20 rounded-xl p-6 border-2 border-gray-800 dark:border-pink-800 shadow-lg">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-white dark:text-pink-100 flex items-center gap-2">
             <Zap className="w-6 h-6" />
@@ -617,27 +657,27 @@ const TikTokBuilder: React.FC = () => {
           </Button>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border-2 border-pink-200 dark:border-pink-700 shadow-inner">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border-2 border-gray-700 dark:border-pink-700 shadow-inner">
           <code className="text-sm break-all text-gray-800 dark:text-gray-200 font-mono leading-relaxed">
             {generatedString || 'Configure parameters to generate string...'}
           </code>
         </div>
         
-        <div className="mt-4 p-3 bg-pink-100 dark:bg-pink-900/30 rounded-lg">
+        <div className="mt-4 p-3 bg-gray-800 dark:bg-pink-900/30 rounded-lg">
           <div className="flex items-start gap-2">
-            <Settings className="w-5 h-5 text-pink-600 dark:text-pink-400 mt-0.5 flex-shrink-0" />
+            <Settings className="w-5 h-5 text-pink-400 dark:text-pink-400 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-pink-800 dark:text-pink-200">TikTok Official Parameter Mapping</p>
-              <p className="text-sm text-pink-700 dark:text-pink-300 mt-1">
-                This configuration follows TikTok's official parameter mapping with proper UTM structure and essential tracking parameters. 
-                Copy and paste into TikTok's URL parameters field for optimal tracking.
+              <p className="text-sm font-medium text-pink-200 dark:text-pink-200">TikTok Official Macros</p>
+              <p className="text-sm text-gray-300 dark:text-pink-300 mt-1">
+                This string uses TikTok's official macros. Copy and paste into TikTok's URL parameters field 
+                in your ad campaign setup. TikTok will automatically replace the macros with actual values.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* TikTok Individual Parameter Fields - Similar to Pinterest */}
+      {/* TikTok URL Parameters Format */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center gap-3 mb-6">
           <Settings className="w-5 h-5 text-pink-600 dark:text-pink-400" />
@@ -659,7 +699,7 @@ const TikTokBuilder: React.FC = () => {
             <div className="md:col-span-4">
               <div>
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign source (utm_source)</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">TikTok traffic source identifier</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">To identify the source of traffic</p>
               </div>
             </div>
             <div className="flex items-center gap-2 md:col-span-3">
@@ -699,7 +739,7 @@ const TikTokBuilder: React.FC = () => {
             <div className="md:col-span-4">
               <div>
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign medium (utm_medium)</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Recommended: paid for TikTok ads</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">To identify the advertising medium</p>
               </div>
             </div>
             <div className="flex items-center gap-2 md:col-span-3">
@@ -739,7 +779,7 @@ const TikTokBuilder: React.FC = () => {
             <div className="md:col-span-4">
               <div>
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign name (utm_campaign)</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Uses TikTok's __CAMPAIGN_NAME__ macro</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">To identify a specific campaign</p>
               </div>
             </div>
             <div className="flex items-center gap-2 md:col-span-3">
@@ -774,47 +814,45 @@ const TikTokBuilder: React.FC = () => {
             </div>
           </div>
 
-          {/* Campaign ID - Only show if enabled */}
-          {includeUtmId && (
-            <div className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0">
-              <div className="md:col-span-4">
-                <div>
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign ID (utm_id)</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Uses TikTok's __CAMPAIGN_ID__ macro</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 md:col-span-3">
-                <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Parameter:</span>
-                <code className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded border text-center">
-                  utm_id
-                </code>
-                <Button
-                  onClick={() => copyField('name', 'utm_id', utmId)}
-                  variant="ghost"
-                  size="sm"
-                  icon={copiedFields['utm_id_name'] ? Check : Copy}
-                  className="text-xs px-2 flex-shrink-0"
-                >
-                  {copiedFields['utm_id_name'] ? '✓' : 'Copy'}
-                </Button>
-              </div>
-              <div className="flex items-center gap-2 md:col-span-5">
-                <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">Value:</span>
-                <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-center">
-                  {utmId}
-                </code>
-                <Button
-                  onClick={() => copyField('value', 'utm_id', utmId)}
-                  variant="ghost"
-                  size="sm"
-                  icon={copiedFields['utm_id_value'] ? Check : Copy}
-                  className="text-xs px-2 flex-shrink-0"
-                >
-                  {copiedFields['utm_id_value'] ? '✓' : 'Copy'}
-                </Button>
+          {/* Campaign ID - ALWAYS INCLUDED - SPECIAL HIGHLIGHTING */}
+          <div className="space-y-3 md:grid md:grid-cols-12 md:gap-3 md:items-center md:space-y-0 bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg p-3">
+            <div className="md:col-span-4">
+              <div>
+                <p className="text-sm font-medium text-pink-700 dark:text-pink-300">Campaign ID (utm_id) - Always included</p>
+                <p className="text-xs text-pink-600 dark:text-pink-400">TikTok tracks this by default</p>
               </div>
             </div>
-          )}
+            <div className="flex items-center gap-2 md:col-span-3">
+              <span className="text-xs text-pink-500 dark:text-pink-400 md:hidden">Parameter:</span>
+              <code className="flex-1 text-sm bg-pink-100 dark:bg-pink-800/30 px-3 py-2 rounded border border-pink-200 dark:border-pink-700 text-center">
+                utm_id
+              </code>
+              <Button
+                onClick={() => copyField('name', 'utm_id', utmId)}
+                variant="ghost"
+                size="sm"
+                icon={copiedFields['utm_id_name'] ? Check : Copy}
+                className="text-xs px-2 flex-shrink-0 text-pink-600"
+              >
+                {copiedFields['utm_id_name'] ? '✓' : 'Copy'}
+              </Button>
+            </div>
+            <div className="flex items-center gap-2 md:col-span-5">
+              <span className="text-xs text-pink-500 dark:text-pink-400 md:hidden">Value:</span>
+              <code className="flex-1 text-sm bg-white dark:bg-gray-800 px-3 py-2 rounded border border-pink-300 dark:border-pink-600 text-center">
+                {utmId}
+              </code>
+              <Button
+                onClick={() => copyField('value', 'utm_id', utmId)}
+                variant="ghost"
+                size="sm"
+                icon={copiedFields['utm_id_value'] ? Check : Copy}
+                className="text-xs px-2 flex-shrink-0 text-pink-600"
+              >
+                {copiedFields['utm_id_value'] ? '✓' : 'Copy'}
+              </Button>
+            </div>
+          </div>
 
           {/* Campaign content - Only show if enabled */}
           {includeUtmContent && (
@@ -822,7 +860,7 @@ const TikTokBuilder: React.FC = () => {
               <div className="md:col-span-4">
                 <div>
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Campaign content (utm_content)</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Uses TikTok's __CID_NAME__ (Creative Name) macro</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">To differentiate contents within a campaign</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 md:col-span-3">
@@ -918,9 +956,9 @@ const TikTokBuilder: React.FC = () => {
         </div>
       </div>
 
-      {/* TikTok Custom Parameters */}
+      {/* TikTok Official Macros */}
       <Accordion 
-        title="TikTok Custom Parameters" 
+        title="TikTok Official Macros" 
         icon={<Target className="w-5 h-5" />}
         defaultOpen={false}
       >
@@ -950,7 +988,7 @@ const TikTokBuilder: React.FC = () => {
         {/* Parameters Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredParams.map(param => (
-            <div key={param.id} className={`flex items-start space-x-3 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${param.isOfficial ? 'border-pink-200 dark:border-pink-800 bg-pink-50 dark:bg-pink-900/20' : 'border-gray-200 dark:border-gray-600'}`}>
+            <div key={param.id} className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
               <input
                 type="checkbox"
                 id={param.id}
@@ -969,18 +1007,10 @@ const TikTokBuilder: React.FC = () => {
                     {param.label}
                   </label>
                   {getCategoryBadge(param.category)}
-                  {param.isOfficial && (
-                    <Badge variant="success" size="sm">Official</Badge>
-                  )}
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                   {param.description}
                 </p>
-                {param.rationale && (
-                  <p className="text-xs text-pink-600 dark:text-pink-400 mb-2 font-medium">
-                    {param.rationale}
-                  </p>
-                )}
                 <div className="space-y-1">
                   <code className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded block">
                     {param.value}
@@ -1210,7 +1240,6 @@ const TikTokBuilder: React.FC = () => {
           </div>
         )}
       </Accordion>
-
     </div>
   );
 };
