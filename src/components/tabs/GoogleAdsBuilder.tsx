@@ -9,7 +9,7 @@ import { useToast } from '../../hooks/useToast';
 const GoogleAdsBuilder: React.FC = () => {
   const [utmSource, setUtmSource] = useState('google');
   const [utmMedium, setUtmMedium] = useState('cpc');
-  const [utmCampaign, setUtmCampaign] = useState('{campaignname}');
+  const [utmCampaign, setUtmCampaign] = useState('{campaignid}');
   const [utmTerm, setUtmTerm] = useState('{keyword}');
   const [utmContent, setUtmContent] = useState('{creative}');
   
@@ -33,8 +33,10 @@ const GoogleAdsBuilder: React.FC = () => {
   // Enhanced ValueTrack parameters with complete Google Ads data - SORTED A-Z
   // REMOVED Param1 & Param2 from Universal category
   const valueTrackParams = useMemo(() => [
-    // Universal Parameters (Available across most campaign types) - SORTED A-Z - PARAM1 & PARAM2 REMOVED
+    // Universal Parameters (Available across most campaign types) - SORTED A-Z
     { id: 'adgroupid', value: '{adgroupid}', label: 'Ad Group ID', category: 'universal', description: 'Ad group ID - Works best if tracking at campaign/account level', availability: 'Final URL, Tracking Template' },
+    { id: 'param1', value: '{param1}', label: 'Ad Parameter 1', category: 'universal', description: 'Creative parameter #1', availability: 'Final URL, Tracking Template' },
+    { id: 'param2', value: '{param2}', label: 'Ad Parameter 2', category: 'universal', description: 'Creative parameter #2', availability: 'Final URL, Tracking Template' },
     { id: 'campaignid', value: '{campaignid}', label: 'Campaign ID', category: 'universal', description: 'Campaign ID - Helpful for account-level tracking', availability: 'Final URL, Tracking Template' },
     { id: 'creative', value: '{creative}', label: 'Creative ID', category: 'universal', description: 'Unique ID for the ad', availability: 'Final URL, Tracking Template' },
     { id: 'device', value: '{device}', label: 'Device Type', category: 'universal', description: 'Device type: m=Mobile, t=Tablet, c=Computer', availability: 'Final URL, Tracking Template' },
@@ -42,6 +44,7 @@ const GoogleAdsBuilder: React.FC = () => {
     { id: 'feeditemid', value: '{feeditemid}', label: 'Feed Item ID (Legacy)', category: 'universal', description: 'ID of clicked legacy asset - Not available on Display', availability: 'Final URL, Tracking Template' },
     { id: 'gclid', value: '{gclid}', label: 'Google Click ID', category: 'universal', description: 'Google Click ID - Not available in all PMAX ads', availability: 'Final URL, Tracking Template' },
     { id: 'keyword', value: '{keyword}', label: 'Keyword', category: 'universal', description: 'Matched keyword - Blank for PMAX/DSA', availability: 'Final URL, Tracking Template' },
+    { id: 'devicemodel', value: '{devicemodel}', label: 'Mobile Device Model', category: 'universal', description: 'The model of the phone or tablet', availability: 'Final URL, Tracking Template' },
     { id: 'loc_interest_ms', value: '{loc_interest_ms}', label: 'Location Interest ID', category: 'universal', description: 'Location of interest ID - Geo intent', availability: 'Final URL, Tracking Template' },
     { id: 'loc_physical_ms', value: '{loc_physical_ms}', label: 'Location Physical ID', category: 'universal', description: 'Location ID (user\'s physical location) - Geo reporting', availability: 'Final URL, Tracking Template' },
     { id: 'matchtype', value: '{matchtype}', label: 'Match Type', category: 'universal', description: 'Keyword match type: e=Exact, p=Phrase, b=Broad', availability: 'Final URL, Tracking Template' },
@@ -58,9 +61,9 @@ const GoogleAdsBuilder: React.FC = () => {
     { id: 'ifsearch', value: '{ifsearch:[value]}', label: 'If Search', category: 'conditional', description: 'Value if click was on Search - Not for Demand Gen', availability: 'Final URL, Tracking Template' },
     
     // Hotel Campaign Parameters - SORTED A-Z
+    { id: 'adtype', value: '{adtype}', label: 'Hotel Ad Type', category: 'hotel', description: 'Hotel ad type: Hotel or Room', availability: 'Hotel Campaigns' },
     { id: 'advanced_booking_window', value: '{advanced_booking_window}', label: 'Advanced Booking Window', category: 'hotel', description: 'Days before check-in', availability: 'Hotel Campaigns' },
     { id: 'date_type', value: '{date_type}', label: 'Date Type', category: 'hotel', description: 'Date type: default or selected', availability: 'Hotel Campaigns' },
-    { id: 'hotel_adtype', value: '{hotel_adtype}', label: 'Hotel Ad Type', category: 'hotel', description: 'Hotel ad type: Hotel or Room', availability: 'Hotel Campaigns' },
     { id: 'hotel_id', value: '{hotel_id}', label: 'Hotel ID', category: 'hotel', description: 'Hotel ID', availability: 'Hotel Campaigns' },
     { id: 'hotel_partition_id', value: '{hotel_partition_id}', label: 'Hotel Partition ID', category: 'hotel', description: 'Hotel group ID', availability: 'Hotel Campaigns' },
     { id: 'hotelcenter_id', value: '{hotelcenter_id}', label: 'Hotel Center ID', category: 'hotel', description: 'Hotel Center account ID', availability: 'Hotel Campaigns' },
@@ -68,25 +71,32 @@ const GoogleAdsBuilder: React.FC = () => {
     { id: 'price_displayed_tax', value: '{price_displayed_tax}', label: 'Price Displayed Tax', category: 'hotel', description: 'Displayed tax amount', availability: 'Hotel Campaigns' },
     { id: 'price_displayed_total', value: '{price_displayed_total}', label: 'Price Displayed Total', category: 'hotel', description: 'Total displayed price', availability: 'Hotel Campaigns' },
     { id: 'rate_rule_id', value: '{rate_rule_id}', label: 'Rate Rule ID', category: 'hotel', description: 'Special pricing rule ID', availability: 'Hotel Campaigns' },
-    { id: 'travel_adtype', value: '{adtype}', label: 'Travel Ad Type', category: 'hotel', description: 'Travel ad type: travel_booking, travel_promoted', availability: 'Hotel Campaigns' },
+    { id: 'travel_end_day', value: '{travel_end_day}', label: 'Travel End Day', category: 'hotel', description: 'The check-out day', availability: 'Hotel campaigns only' },
+    { id: 'travel_end_month', value: '{travel_end_month}', label: 'Travel End Month', category: 'hotel', description: 'The check-out month', availability: 'Hotel campaigns only' },
+    { id: 'travel_end_year', value: '{travel_end_year}', label: 'Travel End Year', category: 'hotel', description: 'The check-out year', availability: 'Hotel campaigns only' },
     { id: 'travel_start_day', value: '{travel_start_day}', label: 'Travel Start Day', category: 'hotel', description: 'Check-in date', availability: 'Hotel Campaigns' },
+    { id: 'travel_start_month', value: '{travel_start_month}', label: 'Travel Start Month', category: 'hotel', description: 'The check-in date\'s month', availability: 'Hotel campaigns only' },
+    { id: 'travel_start_year', value: '{travel_start_year}', label: 'Travel Start Year', category: 'hotel', description: 'The check-in date\'s year', availability: 'Hotel campaigns only' },
     { id: 'user_currency', value: '{user_currency}', label: 'User Currency', category: 'hotel', description: '3-letter currency code', availability: 'Hotel Campaigns' },
     { id: 'user_language', value: '{user_language}', label: 'User Language', category: 'hotel', description: '2-letter language code', availability: 'Hotel Campaigns' },
     
     // Performance Max Parameters - COMBINED WITH SUPPORT LEVELS - SORTED A-Z
-    { id: 'pmax_adtype', value: '{adtype}', label: 'Ad Type', category: 'pmax', supportLevel: 'limited', description: 'Ad type - Limited Support (only on shopping formats or some assets)', availability: 'Performance Max (Limited Support)' },
-    { id: 'pmax_campaignid', value: '{campaignid}', label: 'Campaign ID', category: 'pmax', supportLevel: 'full', description: 'Campaign ID - Full Support in PMAX', availability: 'Performance Max (Full Support)' },
-    { id: 'pmax_device', value: '{device}', label: 'Device Type', category: 'pmax', supportLevel: 'full', description: 'Device type - Full Support in PMAX', availability: 'Performance Max (Full Support)' },
-    { id: 'pmax_gclid', value: '{gclid}', label: 'Google Click ID', category: 'pmax', supportLevel: 'limited', description: 'Google Click ID - Limited Support (only on shopping formats or some assets)', availability: 'Performance Max (Limited Support)' },
-    { id: 'pmax_ifmobile', value: '{ifmobile:[value]}', label: 'If Mobile', category: 'pmax', supportLevel: 'full', description: 'Mobile conditional - Full Support in PMAX', availability: 'Performance Max (Full Support)', isConditional: true },
-    { id: 'pmax_ifnotmobile', value: '{ifnotmobile:[value]}', label: 'If Not Mobile', category: 'pmax', supportLevel: 'full', description: 'Non-mobile conditional - Full Support in PMAX', availability: 'Performance Max (Full Support)', isConditional: true },
-    { id: 'pmax_loc_interest_ms', value: '{loc_interest_ms}', label: 'Location Interest ID', category: 'pmax', supportLevel: 'full', description: 'Interest location - Full Support in PMAX', availability: 'Performance Max (Full Support)' },
-    { id: 'pmax_loc_physical_ms', value: '{loc_physical_ms}', label: 'Location Physical ID', category: 'pmax', supportLevel: 'full', description: 'Physical location - Full Support in PMAX', availability: 'Performance Max (Full Support)' },
-    { id: 'pmax_lpurl', value: '{lpurl}', label: 'Landing Page URL', category: 'pmax', supportLevel: 'full', description: 'Landing page URL - Full Support in PMAX', availability: 'Performance Max (Full Support)' },
-    { id: 'pmax_merchant_id', value: '{merchant_id}', label: 'Merchant ID', category: 'pmax', supportLevel: 'limited', description: 'Merchant ID - Limited Support (only on shopping formats or some assets)', availability: 'Performance Max (Limited Support)' },
-    { id: 'pmax_product_channel', value: '{product_channel}', label: 'Product Channel', category: 'pmax', supportLevel: 'limited', description: 'Product channel - Limited Support (only on shopping formats or some assets)', availability: 'Performance Max (Limited Support)' },
-    { id: 'pmax_product_id', value: '{product_id}', label: 'Product ID', category: 'pmax', supportLevel: 'limited', description: 'Product ID - Limited Support (only on shopping formats or some assets)', availability: 'Performance Max (Limited Support)' },
-    { id: 'pmax_random', value: '{random}', label: 'Random Number', category: 'pmax', supportLevel: 'full', description: 'Random number - Full Support in PMAX', availability: 'Performance Max (Full Support)' },
+    { id: 'adtype', value: '{adtype}', label: 'Ad Type', category: 'pmax', supportLevel: 'limited', description: 'Ad type - Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
+    { id: 'assetgroupid', value: '{assetgroupid}', label: 'Asset Group ID', category: 'pmax', supportLevel: 'full', description: 'The asset group ID', availability: 'Performance Max (Full Support)' },
+    { id: 'campaignid', value: '{campaignid}', label: 'Campaign ID', category: 'pmax', supportLevel: 'full', description: 'Campaign ID - Full Support in PMAX', availability: 'Performance Max (Full Support)' },
+    { id: 'device', value: '{device}', label: 'Device Type', category: 'pmax', supportLevel: 'full', description: 'Device type - Full Support in PMAX', availability: 'Performance Max (Full Support)' },
+    { id: 'gclid', value: '{gclid}', label: 'Google Click ID', category: 'pmax', supportLevel: 'limited', description: 'Google Click ID - Has limited support', availability: 'Performance Max (Limited Support)' },
+    { id: 'ifmobile', value: '{ifmobile:[value]}', label: 'If Mobile', category: 'pmax', supportLevel: 'full', description: 'Mobile conditional - Full Support in PMAX', availability: 'Performance Max (Full Support)', isConditional: true },
+    { id: 'ifnotmobile', value: '{ifnotmobile:[value]}', label: 'If Not Mobile', category: 'pmax', supportLevel: 'full', description: 'Non-mobile conditional - Full Support in PMAX', availability: 'Performance Max (Full Support)', isConditional: true },
+    { id: 'loc_interest_ms', value: '{loc_interest_ms}', label: 'Location Interest ID', category: 'pmax', supportLevel: 'full', description: 'Interest location - Full Support in PMAX', availability: 'Performance Max (Full Support)' },
+    { id: 'loc_physical_ms', value: '{loc_physical_ms}', label: 'Location Physical ID', category: 'pmax', supportLevel: 'full', description: 'Physical location - Full Support in PMAX', availability: 'Performance Max (Full Support)' },
+    { id: 'lpurl', value: '{lpurl}', label: 'Landing Page URL', category: 'pmax', supportLevel: 'full', description: 'Landing page URL - Full Support in PMAX', availability: 'Performance Max (Full Support)' },
+    { id: 'merchant_id', value: '{merchant_id}', label: 'Merchant ID', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
+    { id: 'product_channel', value: '{product_channel}', label: 'Product Channel', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
+    { id: 'product_country', value: '{product_country}', label: 'Product Country', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
+    { id: 'product_id', value: '{product_id}', label: 'Product ID', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
+    { id: 'product_language', value: '{product_language}', label: 'Product Language', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
+    { id: 'random', value: '{random}', label: 'Random Number', category: 'pmax', supportLevel: 'full', description: 'Random number - Full Support in PMAX', availability: 'Performance Max (Full Support)' },
     
     // Shopping Campaign Parameters - SORTED A-Z
     { id: 'adtype', value: '{adtype}', label: 'Ad Type', category: 'shopping', description: 'Shopping ad type: pla, pla_multichannel, pla_with_promotion, pla_with_pog', availability: 'Shopping Campaigns' },
@@ -99,15 +109,15 @@ const GoogleAdsBuilder: React.FC = () => {
     { id: 'store_code', value: '{store_code}', label: 'Store Code', category: 'shopping', description: 'Local store ID (60 char limit)', availability: 'Shopping Campaigns' },
     
     // Video Campaign Parameters - SORTED A-Z
-    { id: 'sourceid', value: '{sourceid}', label: 'Source ID', category: 'video', description: 'Source ID for video campaigns', availability: 'Video Campaigns' },
-    { id: 'video_adgroupid', value: '{adgroupid}', label: 'Video Ad Group ID', category: 'video', description: 'Ad group ID for video campaigns', availability: 'Video Campaigns' },
-    { id: 'video_campaignid', value: '{campaignid}', label: 'Video Campaign ID', category: 'video', description: 'Campaign ID for video campaigns', availability: 'Video Campaigns' },
-    { id: 'video_creative', value: '{creative}', label: 'Video Creative ID', category: 'video', description: 'Ad creative ID for video campaigns', availability: 'Video Campaigns' },
-    { id: 'video_device', value: '{device}', label: 'Video Device', category: 'video', description: 'Device type for video campaigns', availability: 'Video Campaigns' },
-    { id: 'video_loc_interest_ms', value: '{loc_interest_ms}', label: 'Video Interest Location', category: 'video', description: 'Location IDs for video campaigns', availability: 'Video Campaigns' },
-    { id: 'video_loc_physical_ms', value: '{loc_physical_ms}', label: 'Video Physical Location', category: 'video', description: 'Physical location IDs for video campaigns', availability: 'Video Campaigns' },
-    { id: 'video_network', value: '{network}', label: 'Video Network', category: 'video', description: 'Network type for video campaigns', availability: 'Video Campaigns' },
-    { id: 'video_placement', value: '{placement}', label: 'Video Placement', category: 'video', description: 'Placement site for video campaigns', availability: 'Video Campaigns' }
+    { id: 'adgroupid', value: '{adgroupid}', label: 'Video Ad Group ID', category: 'video', description: 'Ad group ID for video campaigns', availability: 'Video Campaigns' },
+    { id: 'campaignid', value: '{campaignid}', label: 'Video Campaign ID', category: 'video', description: 'Campaign ID for video campaigns', availability: 'Video Campaigns' },
+    { id: 'creative', value: '{creative}', label: 'Video Creative ID', category: 'video', description: 'Ad creative ID for video campaigns', availability: 'Video Campaigns' },
+    { id: 'device', value: '{device}', label: 'Video Device', category: 'video', description: 'Device type for video campaigns', availability: 'Video Campaigns' },
+    { id: 'loc_interest_ms', value: '{loc_interest_ms}', label: 'Video Interest Location', category: 'video', description: 'Location IDs for video campaigns', availability: 'Video Campaigns' },
+    { id: 'loc_physical_ms', value: '{loc_physical_ms}', label: 'Video Physical Location', category: 'video', description: 'Physical location IDs for video campaigns', availability: 'Video Campaigns' },
+    { id: 'network', value: '{network}', label: 'Video Network', category: 'video', description: 'Network type for video campaigns', availability: 'Video Campaigns' },
+    { id: 'placement', value: '{placement}', label: 'Video Placement', category: 'video', description: 'Placement site for video campaigns', availability: 'Video Campaigns' },
+    { id: 'sourceid', value: '{sourceid}', label: 'Source ID', category: 'video', description: 'Source ID for video campaigns', availability: 'Video Campaigns' }
   ], []);
 
   // Filter parameters based on search and category
@@ -126,16 +136,9 @@ const GoogleAdsBuilder: React.FC = () => {
     const pmaxParameters = valueTrackParams.filter(param => param.category === 'pmax');
     
     // Separate full support parameters into regular and conditional
-    const fullSupportRegular = pmaxParameters
-      .filter(param => param.supportLevel === 'full' && !param.isConditional)
+    const fullSupport = pmaxParameters
+      .filter(param => param.supportLevel === 'full')
       .sort((a, b) => a.label.localeCompare(b.label));
-    
-    const fullSupportConditional = pmaxParameters
-      .filter(param => param.supportLevel === 'full' && param.isConditional)
-      .sort((a, b) => a.label.localeCompare(b.label));
-    
-    // Combine: regular parameters first, then conditional parameters
-    const fullSupport = [...fullSupportRegular, ...fullSupportConditional];
     
     const limitedSupport = pmaxParameters
       .filter(param => param.supportLevel === 'limited')
@@ -143,6 +146,11 @@ const GoogleAdsBuilder: React.FC = () => {
     
     return { fullSupport, limitedSupport };
   }, [valueTrackParams]);
+
+  // Sort categories alphabetically by label
+  const sortedCategories = useMemo(() => {
+    return [...categories].sort((a, b) => a.label.localeCompare(b.label));
+  }, [categories]);
 
   // UPDATED: Handle individual optional parameter toggles with default value restoration
   const handleUtmTermToggle = useCallback((enabled: boolean) => {
@@ -691,7 +699,7 @@ const GoogleAdsBuilder: React.FC = () => {
               ))}
             </select>
           </div>
-        </div>
+        </div> {/* End of Search and Filter */}
 
         {/* Performance Max Special Rendering */}
         {selectedCategory === 'pmax' ? renderPmaxParameters() : (
