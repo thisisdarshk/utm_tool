@@ -136,6 +136,7 @@ const GoogleAdsBuilder: React.FC = () => {
     setIncludeUtmTerm(enabled);
     
     // If enabling and field is empty, restore default
+    if (enabled && !utmTerm.trim()) {
       setUtmCampaign('{campaignid}');
       setUtmTerm('{keyword:none}');
     }
