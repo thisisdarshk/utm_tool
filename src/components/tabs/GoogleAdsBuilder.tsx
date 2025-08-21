@@ -213,11 +213,6 @@ const GoogleAdsBuilder: React.FC = () => {
     return [...categories].sort((a, b) => a.label.localeCompare(b.label));
   }, [categories]);
 
-  // Sort categories alphabetically by label
-  const sortedCategories = useMemo(() => {
-    return [...categories].sort((a, b) => a.label.localeCompare(b.label));
-  }, [categories]);
-
   // UPDATED: Handle individual optional parameter toggles with default value restoration
   const handleUtmTermToggle = useCallback((enabled: boolean) => {
     setIncludeUtmTerm(enabled);
