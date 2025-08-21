@@ -11,7 +11,7 @@ const GoogleAdsBuilder: React.FC = () => {
   const [baseUrl, setBaseUrl] = useState('{lpurl}');
   const [utmSource, setUtmSource] = useState('google');
   const [utmMedium, setUtmMedium] = useState('cpc');
-  const [utmCampaign, setUtmCampaign] = useState('{campaignname}');
+  const [utmCampaign, setUtmCampaign] = useState('{campaignid}');
   const [utmTerm, setUtmTerm] = useState('{keyword:none}');
   const [utmContent, setUtmContent] = useState('{creative}');
   
@@ -136,7 +136,7 @@ const GoogleAdsBuilder: React.FC = () => {
     setIncludeUtmTerm(enabled);
     
     // If enabling and field is empty, restore default
-    if (enabled && !utmTerm.trim()) {
+      setUtmCampaign('{campaignid}');
       setUtmTerm('{keyword:none}');
     }
   }, [utmTerm]);
@@ -231,7 +231,7 @@ const GoogleAdsBuilder: React.FC = () => {
     }
     
     const template = {
-      baseUrl, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, 
+      baseUrl, utmSource, utmMedium, utmCampaign, utmTerm, utmContent,
       includeUtmTerm, includeUtmContent, // Save individual toggles
       selectedParams, conditionalParams,
       timestamp: Date.now()
@@ -450,7 +450,7 @@ const GoogleAdsBuilder: React.FC = () => {
             label="Campaign Name"
             value={utmCampaign}
             onChange={(e) => setUtmCampaign(e.target.value)}
-            placeholder="{campaignname}"
+            placeholder="{campaignid}"
             required
             helperText="Campaign identifier"
           />
