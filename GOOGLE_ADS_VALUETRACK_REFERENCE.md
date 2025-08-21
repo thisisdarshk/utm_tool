@@ -243,8 +243,6 @@ These parameters use conditional logic to insert different values based on speci
 | **{param2}** | ❌ Deprecated | Use custom parameters `{_custom}` | Removed January 2024 |
 
 ### Removed in 2023
-| Parameter | Status | Replacement | Notes |
-|-----------|--------|-------------|-------|
 | **{random}** | ❌ Deprecated | Use `{gclid}` for unique tracking | Removed March 2023 |
 | **{copy}** | ❌ Deprecated | Use `{creative}` | Removed June 2023 |
 
