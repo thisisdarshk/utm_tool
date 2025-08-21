@@ -150,10 +150,23 @@ const GoogleAdsBuilder: React.FC = () => {
       .filter(param => param.supportLevel === 'full')
       .sort((a, b) => a.label.localeCompare(b.label));
 
-  // Sort categories alphabetically by label
-  const sortedCategories = useMemo(() => {
-    return [...categories].sort((a, b) => a.label.localeCompare(b.label));
-  }, [categories]);
+    const limitedSupport = pmaxParameters
+      .filter(param => param.supportLevel === 'limited')
+      .sort((a, b) => a.label.localeCompare(b.label));
+
+    return { fullSupport, limitedSupport };
+  }, [valueTrackParams]);
+
+  // UPDATED CATEGORIES - A-Z ORDER WITH SINGLE PMAX OPTION
+  const categories = [
+    { value: 'all', label: 'All Parameters' },
+    { value: 'conditional', label: 'Conditional Logic' },
+    { value: 'hotel', label: 'Hotel Campaigns' },
+    { value: 'pmax', label: 'Performance Max' },
+    { value: 'shopping', label: 'Shopping Campaigns' },
+    { value: 'universal', label: 'Universal (Most Campaigns)' },
+    { value: 'video', label: 'Video Campaigns' }
+  ];
 
   // Sort categories alphabetically by label
   const sortedCategories = useMemo(() => {
@@ -344,17 +357,6 @@ const GoogleAdsBuilder: React.FC = () => {
       }
     }
   }, []);
-
-  // UPDATED CATEGORIES - A-Z ORDER WITH SINGLE PMAX OPTION
-  const categories = [
-    { value: 'all', label: 'All Parameters' },
-    { value: 'conditional', label: 'Conditional Logic' },
-    { value: 'hotel', label: 'Hotel Campaigns' },
-    { value: 'pmax', label: 'Performance Max' },
-    { value: 'shopping', label: 'Shopping Campaigns' },
-    { value: 'universal', label: 'Universal (Most Campaigns)' },
-    { value: 'video', label: 'Video Campaigns' }
-  ];
 
   // Get support badge for PMAX parameters
   const getPmaxSupportBadge = (param: any) => {
@@ -707,7 +709,7 @@ const GoogleAdsBuilder: React.FC = () => {
               ))}
             </select>
           </div>
-        </div> {/* End of Search and Filter */}
+        </div>
 
         {/* Performance Max Special Rendering */}
         {selectedCategory === 'pmax' ? renderPmaxParameters() : (
