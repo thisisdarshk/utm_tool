@@ -110,13 +110,14 @@ const GoogleAdsBuilder: React.FC = () => {
     { id: 'lpurl2', value: '{lpurl+2}', label: 'Landing Page URL (Escaped 2x)', category: 'pmax', description: 'The final URL escaped twice', availability: 'Performance Max Campaigns (Fully Supported)', example: 'https%253A//example.com/product' },
     { id: 'lpurl3', value: '{lpurl+3}', label: 'Landing Page URL (Escaped 3x)', category: 'pmax', description: 'The final URL escaped three times', availability: 'Performance Max Campaigns (Fully Supported)', example: 'https%25253A//example.com/product' },
     { id: 'random', value: '{random}', label: 'Random Number', category: 'pmax', description: 'A random Google-generated number', availability: 'Performance Max Campaigns (Fully Supported)', example: '1234567890' },
-    { id: 'adtype_pmax', value: '{adtype}', label: 'Ad Type (Performance Max)', category: 'pmax', description: 'The type of ad that was clicked on', availability: 'Performance Max Campaigns (Limited Support)', example: 'text, image, video' },
-    { id: 'gclid_pmax', value: '{gclid}', label: 'Google Click ID (Performance Max)', category: 'pmax', description: 'The Google click identifier', availability: 'Performance Max Campaigns (Limited Support)', example: 'CjwKCAiA...' },
-    { id: 'merchant_id_pmax', value: '{merchant_id}', label: 'Merchant ID (Performance Max)', category: 'pmax', description: 'The ID of the Merchant Center account', availability: 'Performance Max Campaigns (Limited Support)', example: '123456789' },
-    { id: 'product_channel_pmax', value: '{product_channel}', label: 'Product Channel (Performance Max)', category: 'pmax', description: 'The type of shopping channel', availability: 'Performance Max Campaigns (Limited Support)', example: 'online, local' },
-    { id: 'product_country_pmax', value: '{product_country}', label: 'Product Country (Performance Max)', category: 'pmax', description: 'The country of sale', availability: 'Performance Max Campaigns (Limited Support)', example: 'US, CA, GB' },
-    { id: 'product_id_pmax', value: '{product_id}', label: 'Product ID (Performance Max)', category: 'pmax', description: 'The ID of the product', availability: 'Performance Max Campaigns (Limited Support)', example: 'SKU123456' },
-    { id: 'product_language_pmax', value: '{product_language}', label: 'Product Language (Performance Max)', category: 'pmax', description: 'The language of your product information', availability: 'Performance Max Campaigns (Limited Support)', example: 'en, es, fr' }
+    // Performance Max Campaign Parameters - Limited Support
+    { id: 'adtype_pmax', value: '{adtype}', label: 'Ad Type (Performance Max)', category: 'pmax_limited', description: 'The type of ad that was clicked on', availability: 'Performance Max Campaigns (Limited Support)', example: 'text, image, video' },
+    { id: 'gclid_pmax', value: '{gclid}', label: 'Google Click ID (Performance Max)', category: 'pmax_limited', description: 'The Google click identifier', availability: 'Performance Max Campaigns (Limited Support)', example: 'CjwKCAiA...' },
+    { id: 'merchant_id_pmax', value: '{merchant_id}', label: 'Merchant ID (Performance Max)', category: 'pmax_limited', description: 'The ID of the Merchant Center account', availability: 'Performance Max Campaigns (Limited Support)', example: '123456789' },
+    { id: 'product_channel_pmax', value: '{product_channel}', label: 'Product Channel (Performance Max)', category: 'pmax_limited', description: 'The type of shopping channel', availability: 'Performance Max Campaigns (Limited Support)', example: 'online, local' },
+    { id: 'product_country_pmax', value: '{product_country}', label: 'Product Country (Performance Max)', category: 'pmax_limited', description: 'The country of sale', availability: 'Performance Max Campaigns (Limited Support)', example: 'US, CA, GB' },
+    { id: 'product_id_pmax', value: '{product_id}', label: 'Product ID (Performance Max)', category: 'pmax_limited', description: 'The ID of the product', availability: 'Performance Max Campaigns (Limited Support)', example: 'SKU123456' },
+    { id: 'product_language_pmax', value: '{product_language}', label: 'Product Language (Performance Max)', category: 'pmax_limited', description: 'The language of your product information', availability: 'Performance Max Campaigns (Limited Support)', example: 'en, es, fr' }
   ], []);
 
   // Filter parameters based on search and category
@@ -331,7 +332,8 @@ const GoogleAdsBuilder: React.FC = () => {
     { value: 'shopping', label: 'Shopping campaigns only' },
     { value: 'video', label: 'Video campaigns only' },
     { value: 'hotel', label: 'Hotel campaigns only' },
-    { value: 'pmax', label: 'Performance Max campaigns' }
+    { value: 'pmax', label: 'Performance Max campaigns' },
+    { value: 'pmax_limited', label: 'Performance Max campaigns (Limited Support)' }
   ];
 
   // Get category badge color
@@ -341,7 +343,8 @@ const GoogleAdsBuilder: React.FC = () => {
       shopping: { variant: 'success' as const, label: 'Shopping' },
       video: { variant: 'warning' as const, label: 'Video' },
       hotel: { variant: 'success' as const, label: 'Hotel' },
-      pmax: { variant: 'info' as const, label: 'Performance Max' }
+      pmax: { variant: 'info' as const, label: 'Performance Max' },
+      pmax_limited: { variant: 'warning' as const, label: 'Performance Max (Limited)' }
     };
     
     const badge = badges[category as keyof typeof badges];
