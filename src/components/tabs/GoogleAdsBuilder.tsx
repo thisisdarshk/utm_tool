@@ -160,6 +160,17 @@ const GoogleAdsBuilder: React.FC = () => {
     { id: 'sourceid', value: '{sourceid}', label: 'Source ID', category: 'video', description: 'Source ID for video campaigns', availability: 'Video Campaigns' }
   ], []);
 
+  // Categories for filtering
+  const categories = useMemo(() => [
+    { value: 'all', label: 'All Parameters' },
+    { value: 'universal', label: 'Universal' },
+    { value: 'conditional', label: 'Conditional Logic' },
+    { value: 'pmax', label: 'Performance Max' },
+    { value: 'shopping', label: 'Shopping' },
+    { value: 'hotel', label: 'Hotel' },
+    { value: 'video', label: 'Video' }
+  ], []);
+
   // Filter parameters based on search and category
   const filteredParams = useMemo(() => {
     return valueTrackParams.filter(param => {
@@ -179,18 +190,13 @@ const GoogleAdsBuilder: React.FC = () => {
     const fullSupport = pmaxParameters
       .filter(param => param.supportLevel === 'full')
       .sort((a, b) => a.label.localeCompare(b.label));
-    return [...categories].sort((a, b) => a.label.localeCompare(b.label));
-  }, [categories]);
-
-  // Sort categories alphabetically by label
-  const sortedCategories = useMemo(() => {
-    return [...categories].sort((a, b) => a.label.localeCompare(b.label));
-  }, [categories]);
-
-  // Sort categories alphabetically by label
-  const sortedCategories = useMemo(() => {
-    return [...categories].sort((a, b) => a.label.localeCompare(b.label));
-  }, [categories]);
+    
+    const limitedSupport = pmaxParameters
+      .filter(param => param.supportLevel === 'limited')
+      .sort((a, b) => a.label.localeCompare(b.label));
+    
+    return { fullSupport, limitedSupport };
+  }, [valueTrackParams]);
 
   // Sort categories alphabetically by label
   const sortedCategories = useMemo(() => {
@@ -280,7 +286,6 @@ const GoogleAdsBuilder: React.FC = () => {
     } catch (err) {
       error('Failed to copy template URL');
     }
-    { value: 'landing', label: 'Landing Page & URL' },
   };
 
   // Template management with toast notifications
@@ -291,7 +296,6 @@ const GoogleAdsBuilder: React.FC = () => {
     }
     
     const template = {
-      landing: { variant: 'default' as const, label: 'Landing Page' },
       utmSource, utmMedium, utmCampaign, utmTerm, utmContent, 
       includeUtmTerm, includeUtmContent, // Save individual toggles
       selectedParams, conditionalParams,
@@ -735,23 +739,23 @@ const GoogleAdsBuilder: React.FC = () => {
               ))}
             </select>
           </div>
-        </div> {/* End of Search and Filter */}
+        </div>
 
         {/* Performance Max Special Rendering */}
-    { id: 'pmax_adtype', value: '{adtype}', label: 'Ad Type', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
-    { id: 'pmax_campaignid', value: '{campaignid}', label: 'Campaign ID', category: 'pmax', supportLevel: 'full', description: 'The campaign ID', availability: 'Performance Max (Full Support)' },
-    { id: 'pmax_device', value: '{device}', label: 'Device Type', category: 'pmax', supportLevel: 'full', description: 'The device type', availability: 'Performance Max (Full Support)' },
-    { id: 'pmax_gclid', value: '{gclid}', label: 'Google Click ID', category: 'pmax', supportLevel: 'limited', description: 'Has limited support', availability: 'Performance Max (Limited Support)' },
-    { id: 'pmax_ifmobile', value: '{ifmobile:[value]}', label: 'If Mobile', category: 'pmax', supportLevel: 'full', description: 'Returns a value for mobile clicks', availability: 'Performance Max (Full Support)', isConditional: true },
-    { id: 'pmax_ifnotmobile', value: '{ifnotmobile:[value]}', label: 'If Not Mobile', category: 'pmax', supportLevel: 'full', description: 'Returns a value for non-mobile clicks', availability: 'Performance Max (Full Support)', isConditional: true },
-    { id: 'pmax_loc_interest_ms', value: '{loc_interest_ms}', label: 'Location Interest ID', category: 'pmax', supportLevel: 'full', description: 'The location of interest ID', availability: 'Performance Max (Full Support)' },
-    { id: 'pmax_loc_physical_ms', value: '{loc_physical_ms}', label: 'Location Physical ID', category: 'pmax', supportLevel: 'full', description: 'The geographical location ID', availability: 'Performance Max (Full Support)' },
-    { id: 'pmax_lpurl', value: '{lpurl}', label: 'Landing Page URL', category: 'pmax', supportLevel: 'full', description: 'The final URL', availability: 'Performance Max (Full Support)' },
-    { id: 'pmax_merchant_id', value: '{merchant_id}', label: 'Merchant ID', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
-    { id: 'pmax_product_channel', value: '{product_channel}', label: 'Product Channel', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
-    { id: 'pmax_product_country', value: '{product_country}', label: 'Product Country', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
-    { id: 'pmax_product_id', value: '{product_id}', label: 'Product ID', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
-    { id: 'pmax_product_language', value: '{product_language}', label: 'Product Language', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' }
+        {renderPmaxParameters()}
+
+        {/* Regular Parameters Grid */}
+        {selectedCategory !== 'pmax' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredParams.map(param => (
+              <div key={param.id} className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <input
+                  type="checkbox"
+                  id={param.id}
+                  checked={selectedParams[param.id] || false}
+                  onChange={(e) => {
+                    setSelectedParams(prev => ({
+                      ...prev,
                       [param.id]: e.target.checked
                     }));
                     
