@@ -34,98 +34,89 @@ const GoogleAdsBuilder: React.FC = () => {
 
   // Google Ads ValueTrack parameters (REMOVED param1 and param2 as they are deprecated)
   const googleAdsParams = useMemo(() => [
-    // Campaign & Ad Group Information
-    { id: 'campaignid', value: '{campaignid}', label: 'Campaign ID', category: 'standard', description: 'Unique numeric identifier for the campaign', availability: 'All campaign types', example: '1234567890' },
-    { id: 'campaignname', value: '{campaignname}', label: 'Campaign Name', category: 'standard', description: 'Name of the campaign as set in Google Ads', availability: 'All campaign types', example: 'Summer_Sale_2025' },
-    { id: 'adgroupid', value: '{adgroupid}', label: 'Ad Group ID', category: 'standard', description: 'Unique numeric identifier for the ad group', availability: 'Search, Display, Shopping, Video, Performance Max', example: '9876543210' },
-    { id: 'adgroupname', value: '{adgroupname}', label: 'Ad Group Name', category: 'standard', description: 'Name of the ad group as set in Google Ads', availability: 'Search, Display, Shopping, Video, Performance Max', example: 'Running_Shoes_Keywords' },
-
-    // Creative & Ad Information
-    { id: 'creative', value: '{creative}', label: 'Creative ID', category: 'standard', description: 'Unique identifier for the creative/ad', availability: 'All campaign types', example: '567890123456' },
-    { id: 'finalurlsuffix', value: '{finalurlsuffix}', label: 'Final URL Suffix', category: 'standard', description: 'The final URL suffix for the keyword, ad, or extension', availability: 'All campaign types', example: 'utm_content=ad_variant_a' },
-
-    // Keyword & Targeting
-    { id: 'keyword', value: '{keyword:none}', label: 'Keyword (Default Required)', category: 'standard', description: 'The keyword that triggered the ad (requires default value)', availability: 'Search campaigns', example: '{keyword:none} → running shoes', requiresDefault: true, defaultPlaceholder: 'none' },
-    { id: 'matchtype', value: '{matchtype}', label: 'Match Type', category: 'standard', description: 'The match type of the keyword that triggered the ad', availability: 'Search campaigns', example: 'e (exact), p (phrase), b (broad)' },
-    { id: 'targetid', value: '{targetid}', label: 'Target ID', category: 'standard', description: 'ID of the targeting criteria that triggered the ad', availability: 'All campaign types', example: 'kwd-123456789, aud-123456789' },
-
-    // Device & Location
-    { id: 'device', value: '{device}', label: 'Device Type', category: 'standard', description: 'Type of device where the ad was clicked', availability: 'All campaign types', example: 'm (mobile), t (tablet), c (computer)' },
-    { id: 'devicemodel', value: '{devicemodel}', label: 'Device Model', category: 'standard', description: 'Specific device model', availability: 'All campaign types', example: 'iPhone, Samsung Galaxy S21' },
-    { id: 'loc_interest_ms', value: '{loc_interest_ms}', label: 'Location Interest ID', category: 'standard', description: 'Geographic location ID of interest', availability: 'All campaign types', example: '1023191 (New York)' },
-    { id: 'loc_physical_ms', value: '{loc_physical_ms}', label: 'Physical Location ID', category: 'standard', description: 'Geographic location ID where user was located', availability: 'All campaign types', example: '1023191 (New York)' },
-
-    // Network & Placement
-    { id: 'network', value: '{network}', label: 'Network', category: 'standard', description: 'Where the ad was shown', availability: 'All campaign types', example: 'g (Google), s (Search partners), d (Display), y (YouTube)' },
-    { id: 'placement', value: '{placement}', label: 'Placement', category: 'standard', description: 'Website or app where the ad appeared', availability: 'Display, Video, Discovery, Performance Max', example: 'youtube.com, example.com' },
-
-    // Essential Tracking
-    { id: 'gclid', value: '{gclid}', label: 'Google Click ID', category: 'standard', description: 'Google Click Identifier for conversion tracking', availability: 'All campaign types', example: 'CjwKCAiA...' },
-    { id: 'feeditemid', value: '{feeditemid}', label: 'Feed Item ID', category: 'standard', description: 'ID of the specific ad extension that was clicked', availability: 'All campaign types with extensions', example: '987654321' },
-
-    // Search Campaign Specific
-    { id: 'querystring', value: '{querystring}', label: 'Query String', category: 'standard', description: 'Actual search query entered by user', availability: 'Search campaigns', example: 'best running shoes 2025' },
-    { id: 'adposition', value: '{adposition}', label: 'Ad Position', category: 'standard', description: 'Position of the ad on the search results page', availability: 'Search campaigns', example: '1t2 (top position 2)' },
+    // Standard Parameters - Available across most campaign types
+    { id: 'campaignid', value: '{campaignid}', label: 'Campaign ID', category: 'standard', description: 'The campaign ID', availability: 'Available', example: '1234567890' },
+    { id: 'adgroupid', value: '{adgroupid}', label: 'Ad Group ID', category: 'standard', description: 'The ad group ID', availability: 'Available', example: '9876543210' },
+    { id: 'feeditemid', value: '{feeditemid}', label: 'Feed Item ID', category: 'standard', description: 'The ID of the feed-based or legacy asset that was clicked. (Not for Display ads)', availability: 'Available', example: '987654321' },
+    { id: 'extensionid', value: '{extensionid}', label: 'Extension ID', category: 'standard', description: 'The ID of the asset-based or upgraded asset that was clicked. (Not for Display ads)', availability: 'Available', example: '123456789' },
+    { id: 'targetid', value: '{targetid}', label: 'Target ID', category: 'standard', description: 'The ID of the keyword, dynamic search ad target, remarketing list target, product partition, or hotel group partition that triggered an ad', availability: 'Available', example: 'kwd-123456789, aud-123456789' },
+    { id: 'loc_interest_ms', value: '{loc_interest_ms}', label: 'Location Interest ID', category: 'standard', description: 'The ID of the location of interest that helped trigger the ad', availability: 'Available', example: '1023191 (New York)' },
+    { id: 'loc_physical_ms', value: '{loc_physical_ms}', label: 'Physical Location ID', category: 'standard', description: 'The ID of the geographical location of the click', availability: 'Available', example: '1023191 (New York)' },
+    { id: 'matchtype', value: '{matchtype}', label: 'Match Type', category: 'standard', description: 'The match type of the keyword: "e" for exact, "p" for phrase, or "b" for broad', availability: 'Available', example: 'e (exact), p (phrase), b (broad)' },
+    { id: 'network', value: '{network}', label: 'Network', category: 'standard', description: 'Where the click came from: "g" (Google search), "s" (search partners), "d" (Display Network), "ytv" (YouTube), "vp" (Google video partners), "gtv" (Google TV), "x" (Performance Max), "e" (App campaigns for engagement)', availability: 'Available', example: 'g, s, d, ytv, vp, gtv, x, e' },
+    { id: 'device', value: '{device}', label: 'Device Type', category: 'standard', description: 'The device the click came from: "m" for mobile, "t" for tablet, and "c" for computer', availability: 'Available', example: 'm (mobile), t (tablet), c (computer)' },
+    { id: 'devicemodel', value: '{devicemodel}', label: 'Device Model', category: 'standard', description: 'The model of phone or tablet. (Display Network only)', availability: 'Available', example: 'iPhone, Samsung Galaxy S21' },
+    { id: 'gclid', value: '{gclid}', label: 'Google Click ID', category: 'standard', description: 'The Google click identifier', availability: 'Available', example: 'CjwKCAiA...' },
+    { id: 'ifmobile', value: '{ifmobile:[value]}', label: 'If Mobile (Conditional)', category: 'standard', description: 'Returns [value] if the ad is clicked from a mobile phone', availability: 'Available', example: '{ifmobile:mobile_user}', isConditional: true, defaultPlaceholder: 'mobile_user' },
+    { id: 'ifnotmobile', value: '{ifnotmobile:[value]}', label: 'If Not Mobile (Conditional)', category: 'standard', description: 'Returns [value] if the ad is clicked from a computer or tablet', availability: 'Available', example: '{ifnotmobile:desktop_user}', isConditional: true, defaultPlaceholder: 'desktop_user' },
+    { id: 'ifsearch', value: '{ifsearch:[value]}', label: 'If Search (Conditional)', category: 'standard', description: 'Returns [value] if the ad is clicked from the Google Search Network', availability: 'Available', example: '{ifsearch:search_traffic}', isConditional: true, defaultPlaceholder: 'search_traffic' },
+    { id: 'ifcontent', value: '{ifcontent:[value]}', label: 'If Content (Conditional)', category: 'standard', description: 'Returns [value] if the ad is clicked from the Google Display Network', availability: 'Available', example: '{ifcontent:display_traffic}', isConditional: true, defaultPlaceholder: 'display_traffic' },
+    { id: 'creative', value: '{creative}', label: 'Creative ID', category: 'standard', description: 'A unique ID for your ad', availability: 'Available', example: '567890123456' },
+    { id: 'keyword', value: '{keyword:none}', label: 'Keyword', category: 'standard', description: 'The keyword that matched the search query or content', availability: 'Available', example: '{keyword:none} → running shoes', requiresDefault: true, defaultPlaceholder: 'none' },
+    { id: 'placement', value: '{placement}', label: 'Placement', category: 'standard', description: 'The content site where the ad was clicked', availability: 'Available', example: 'youtube.com, example.com' },
+    { id: 'target', value: '{target}', label: 'Target', category: 'standard', description: 'A placement category. (Placement-targeted campaigns only)', availability: 'Available', example: 'category_123' },
 
     // Shopping Campaign Parameters
-    { id: 'productid', value: '{productid}', label: 'Product ID', category: 'shopping', description: 'Product ID from your Merchant Center feed', availability: 'Shopping campaigns only', example: 'SKU123456' },
-    { id: 'productcountry', value: '{productcountry}', label: 'Product Country', category: 'shopping', description: 'Country of sale for the product', availability: 'Shopping campaigns only', example: 'US, CA, GB' },
-    { id: 'productlanguage', value: '{productlanguage}', label: 'Product Language', category: 'shopping', description: 'Language of the product information', availability: 'Shopping campaigns only', example: 'en, es, fr' },
-    { id: 'productchannel', value: '{productchannel}', label: 'Product Channel', category: 'shopping', description: 'Sales channel (online or local)', availability: 'Shopping campaigns only', example: 'online, local' },
-    { id: 'merchantid', value: '{merchantid}', label: 'Merchant ID', category: 'shopping', description: 'Your Google Merchant Center ID', availability: 'Shopping campaigns only', example: '123456789' },
-    { id: 'storecode', value: '{storecode}', label: 'Store Code', category: 'shopping', description: 'Store identifier for local inventory ads', availability: 'Shopping campaigns only', example: 'STORE_NYC_001' },
-    { id: 'productpartitionid', value: '{productpartitionid}', label: 'Product Partition ID', category: 'shopping', description: 'ID of the product group', availability: 'Shopping campaigns only', example: '123456789' },
+    { id: 'adtype', value: '{adtype}', label: 'Ad Type', category: 'shopping', description: 'The type of Shopping ad', availability: 'Shopping Campaigns Only', example: 'pla, showcase' },
+    { id: 'merchant_id', value: '{merchant_id}', label: 'Merchant ID', category: 'shopping', description: 'The ID of the Merchant Center account', availability: 'Shopping Campaigns Only', example: '123456789' },
+    { id: 'product_channel', value: '{product_channel}', label: 'Product Channel', category: 'shopping', description: 'The type of shopping channel', availability: 'Shopping Campaigns Only', example: 'online, local' },
+    { id: 'product_id', value: '{product_id}', label: 'Product ID', category: 'shopping', description: 'The ID of the product', availability: 'Shopping Campaigns Only', example: 'SKU123456' },
+    { id: 'product_country', value: '{product_country}', label: 'Product Country', category: 'shopping', description: 'The country of sale', availability: 'Shopping Campaigns Only', example: 'US, CA, GB' },
+    { id: 'product_language', value: '{product_language}', label: 'Product Language', category: 'shopping', description: 'The language of your product information', availability: 'Shopping Campaigns Only', example: 'en, es, fr' },
+    { id: 'product_partition_id', value: '{product_partition_id}', label: 'Product Partition ID', category: 'shopping', description: 'The unique ID for the product group', availability: 'Shopping Campaigns Only', example: '123456789' },
+    { id: 'store_code', value: '{store_code}', label: 'Store Code', category: 'shopping', description: 'The unique ID of the local store', availability: 'Shopping Campaigns Only', example: 'STORE_NYC_001' },
 
     // Video Campaign Parameters
-    { id: 'videoid', value: '{videoid}', label: 'Video ID', category: 'video', description: 'YouTube video ID where the ad appeared', availability: 'Video campaigns only', example: 'dQw4w9WgXcQ' },
-    { id: 'videotitle', value: '{videotitle}', label: 'Video Title', category: 'video', description: 'Title of the YouTube video', availability: 'Video campaigns only', example: 'How to Run Faster' },
-    { id: 'channelid', value: '{channelid}', label: 'Channel ID', category: 'video', description: 'YouTube channel ID where ad appeared', availability: 'Video campaigns only', example: 'UCxxxxxxxxxxxxxx' },
-
-    // Performance Max Campaign Parameters
-    { id: 'assetgroupid', value: '{assetgroupid}', label: 'Asset Group ID', category: 'pmax', description: 'Unique identifier for the asset group', availability: 'Performance Max campaigns only', example: '456789123' },
-    { id: 'assetgroupname', value: '{assetgroupname}', label: 'Asset Group Name', category: 'pmax', description: 'Name of the asset group', availability: 'Performance Max campaigns only', example: 'Summer_Assets_Group' },
+    { id: 'adgroupid_video', value: '{adgroupid}', label: 'Ad Group ID (Video)', category: 'video', description: 'The ad group ID', availability: 'Video Campaigns Only', example: '9876543210' },
+    { id: 'campaignid_video', value: '{campaignid}', label: 'Campaign ID (Video)', category: 'video', description: 'The campaign ID', availability: 'Video Campaigns Only', example: '1234567890' },
+    { id: 'creative_video', value: '{creative}', label: 'Creative ID (Video)', category: 'video', description: 'A unique ID for your ad', availability: 'Video Campaigns Only', example: '567890123456' },
+    { id: 'device_video', value: '{device}', label: 'Device Type (Video)', category: 'video', description: 'The device the click came from', availability: 'Video Campaigns Only', example: 'm (mobile), t (tablet), c (computer)' },
+    { id: 'loc_interest_ms_video', value: '{loc_interest_ms}', label: 'Location Interest ID (Video)', category: 'video', description: 'The ID of the location of interest', availability: 'Video Campaigns Only', example: '1023191 (New York)' },
+    { id: 'loc_physical_ms_video', value: '{loc_physical_ms}', label: 'Physical Location ID (Video)', category: 'video', description: 'The ID of the geographical location of the click', availability: 'Video Campaigns Only', example: '1023191 (New York)' },
+    { id: 'network_video', value: '{network}', label: 'Network (Video)', category: 'video', description: 'Where the click came from', availability: 'Video Campaigns Only', example: 'ytv (YouTube), vp (video partners)' },
+    { id: 'placement_video', value: '{placement}', label: 'Placement (Video)', category: 'video', description: 'The content site where the ad was clicked', availability: 'Video Campaigns Only', example: 'youtube.com' },
+    { id: 'sourceid', value: '{sourceid}', label: 'Source ID', category: 'video', description: 'Video campaign source identifier', availability: 'Video Campaigns Only', example: 'source_123' },
 
     // Hotel Campaign Parameters
-    { id: 'hotelid', value: '{hotelid}', label: 'Hotel ID', category: 'hotel', description: 'Unique identifier for the hotel', availability: 'Hotel campaigns only', example: '12345' },
-    { id: 'hotelname', value: '{hotelname}', label: 'Hotel Name', category: 'hotel', description: 'Name of the hotel', availability: 'Hotel campaigns only', example: 'Grand_Plaza_Hotel' },
-    { id: 'hotelcountry', value: '{hotelcountry}', label: 'Hotel Country', category: 'hotel', description: 'Country where the hotel is located', availability: 'Hotel campaigns only', example: 'US, FR, JP' },
-    { id: 'hotelstate', value: '{hotelstate}', label: 'Hotel State', category: 'hotel', description: 'State/region where hotel is located', availability: 'Hotel campaigns only', example: 'CA, NY, FL' },
-    { id: 'hotelcity', value: '{hotelcity}', label: 'Hotel City', category: 'hotel', description: 'City where the hotel is located', availability: 'Hotel campaigns only', example: 'San_Francisco' },
-    { id: 'checkindate', value: '{checkindate}', label: 'Check-in Date', category: 'hotel', description: 'Check-in date for the booking', availability: 'Hotel campaigns only', example: '2025-07-15' },
-    { id: 'checkoutdate', value: '{checkoutdate}', label: 'Check-out Date', category: 'hotel', description: 'Check-out date for the booking', availability: 'Hotel campaigns only', example: '2025-07-18' },
-    { id: 'lengthofstay', value: '{lengthofstay}', label: 'Length of Stay', category: 'hotel', description: 'Number of nights', availability: 'Hotel campaigns only', example: '3' },
-    { id: 'numberofadults', value: '{numberofadults}', label: 'Number of Adults', category: 'hotel', description: 'Number of adult guests', availability: 'Hotel campaigns only', example: '2' },
-    { id: 'partnerid', value: '{partnerid}', label: 'Partner ID', category: 'hotel', description: 'Hotel partner identifier', availability: 'Hotel campaigns only', example: 'partner123' },
+    { id: 'hotelcenter_id', value: '{hotelcenter_id}', label: 'Hotel Center ID', category: 'hotel', description: 'The ID of the Hotel Center account', availability: 'Hotel Campaigns Only', example: 'hc_123456789' },
+    { id: 'hotel_id', value: '{hotel_id}', label: 'Hotel ID', category: 'hotel', description: 'The hotel ID', availability: 'Hotel Campaigns Only', example: '12345' },
+    { id: 'hotel_partition_id', value: '{hotel_partition_id}', label: 'Hotel Partition ID', category: 'hotel', description: 'The unique ID of the hotel group', availability: 'Hotel Campaigns Only', example: 'hp_123456789' },
+    { id: 'hotel_adtype', value: '{hotel_adtype}', label: 'Hotel Ad Type', category: 'hotel', description: '"Hotel" or "Room."', availability: 'Hotel Campaigns Only', example: 'Hotel, Room' },
+    { id: 'travel_start_day', value: '{travel_start_day}', label: 'Travel Start Day', category: 'hotel', description: 'The check-in date\'s day', availability: 'Hotel Campaigns Only', example: '15' },
+    { id: 'travel_start_month', value: '{travel_start_month}', label: 'Travel Start Month', category: 'hotel', description: 'The check-in date\'s month', availability: 'Hotel Campaigns Only', example: '07' },
+    { id: 'travel_start_year', value: '{travel_start_year}', label: 'Travel Start Year', category: 'hotel', description: 'The check-in date\'s year', availability: 'Hotel Campaigns Only', example: '2025' },
+    { id: 'travel_end_day', value: '{travel_end_day}', label: 'Travel End Day', category: 'hotel', description: 'The check-out day', availability: 'Hotel Campaigns Only', example: '18' },
+    { id: 'travel_end_month', value: '{travel_end_month}', label: 'Travel End Month', category: 'hotel', description: 'The check-out month', availability: 'Hotel Campaigns Only', example: '07' },
+    { id: 'travel_end_year', value: '{travel_end_year}', label: 'Travel End Year', category: 'hotel', description: 'The check-out year', availability: 'Hotel Campaigns Only', example: '2025' },
+    { id: 'advanced_booking_window', value: '{advanced_booking_window}', label: 'Advanced Booking Window', category: 'hotel', description: 'The number of days between the ad click and the check-in date', availability: 'Hotel Campaigns Only', example: '30' },
+    { id: 'date_type', value: '{date_type}', label: 'Date Type', category: 'hotel', description: '"default" or "selected."', availability: 'Hotel Campaigns Only', example: 'default, selected' },
+    { id: 'number_of_adults', value: '{number_of_adults}', label: 'Number of Adults', category: 'hotel', description: 'The number of adults', availability: 'Hotel Campaigns Only', example: '2' },
+    { id: 'price_displayed_total', value: '{price_displayed_total}', label: 'Price Displayed Total', category: 'hotel', description: 'The total cost of the room', availability: 'Hotel Campaigns Only', example: '299.99' },
+    { id: 'price_displayed_tax', value: '{price_displayed_tax}', label: 'Price Displayed Tax', category: 'hotel', description: 'The amount of taxes and fees', availability: 'Hotel Campaigns Only', example: '45.50' },
+    { id: 'user_currency', value: '{user_currency}', label: 'User Currency', category: 'hotel', description: 'The three-letter currency code', availability: 'Hotel Campaigns Only', example: 'USD, EUR, GBP' },
+    { id: 'user_language', value: '{user_language}', label: 'User Language', category: 'hotel', description: 'The two-letter language code', availability: 'Hotel Campaigns Only', example: 'en, es, fr' },
+    { id: 'adtype_hotel', value: '{adtype}', label: 'Ad Type (Hotel)', category: 'hotel', description: '"travel_booking" or "travel_promoted."', availability: 'Hotel Campaigns Only', example: 'travel_booking, travel_promoted' },
+    { id: 'rate_rule_id', value: '{rate_rule_id}', label: 'Rate Rule ID', category: 'hotel', description: 'The identifier of any special price', availability: 'Hotel Campaigns Only', example: 'rate_123456' },
 
-    // App Campaign Parameters
-    { id: 'appid', value: '{appid}', label: 'App ID', category: 'standard', description: 'Unique identifier for the mobile app', availability: 'App campaigns only', example: 'com.example.app' },
-    { id: 'appstore', value: '{appstore}', label: 'App Store', category: 'standard', description: 'App store where the app is available', availability: 'App campaigns only', example: 'googleplay, itunes' },
-    { id: 'campaignsubtype', value: '{campaignsubtype}', label: 'Campaign Sub Type', category: 'standard', description: 'Type of app campaign', availability: 'App campaigns only', example: 'APP_INSTALLS, APP_ENGAGEMENT' },
-    { id: 'osversion', value: '{osversion}', label: 'OS Version', category: 'standard', description: 'Operating system version', availability: 'App campaigns only', example: 'iOS_15, Android_12' },
-    { id: 'appversion', value: '{appversion}', label: 'App Version', category: 'standard', description: 'Version of the app being promoted', availability: 'App campaigns only', example: '2.1.0' },
-
-    // Local Campaign Parameters
-    { id: 'storecode', value: '{storecode}', label: 'Store Code', category: 'standard', description: 'Unique identifier for the business location', availability: 'Local campaigns only', example: 'STORE_SF_001' },
-    { id: 'locationid', value: '{locationid}', label: 'Location ID', category: 'standard', description: 'Google My Business location ID', availability: 'Local campaigns only', example: '12345678901234567890' },
-
-    // Conditional Parameters
-    { id: 'ifmobile', value: '{ifmobile:[value]}', label: 'If Mobile (Conditional)', category: 'standard', description: 'Inserts value if clicked on mobile device', availability: 'All campaign types', example: '{ifmobile:mobile_user}', isConditional: true, defaultPlaceholder: 'mobile_user' },
-    { id: 'ifnotmobile', value: '{ifnotmobile:[value]}', label: 'If Not Mobile (Conditional)', category: 'standard', description: 'Inserts value if NOT clicked on mobile device', availability: 'All campaign types', example: '{ifnotmobile:desktop_user}', isConditional: true, defaultPlaceholder: 'desktop_user' },
-    { id: 'ifsearch', value: '{ifsearch:[value]}', label: 'If Search (Conditional)', category: 'standard', description: 'Inserts value if ad shown on Google Search', availability: 'Search campaigns', example: '{ifsearch:search_traffic}', isConditional: true, defaultPlaceholder: 'search_traffic' },
-    { id: 'ifcontent', value: '{ifcontent:[value]}', label: 'If Content (Conditional)', category: 'standard', description: 'Inserts value if ad shown on Display Network', availability: 'Display campaigns', example: '{ifcontent:display_traffic}', isConditional: true, defaultPlaceholder: 'display_traffic' },
-    { id: 'ifshopping', value: '{ifshopping:[value]}', label: 'If Shopping (Conditional)', category: 'shopping', description: 'Inserts value if Shopping campaign', availability: 'Shopping campaigns', example: '{ifshopping:product_ad}', isConditional: true, defaultPlaceholder: 'product_ad' },
-
-    // Advanced Targeting Parameters
-    { id: 'interestcategory', value: '{interestcategory}', label: 'Interest Category', category: 'standard', description: 'Interest category that triggered the ad', availability: 'Display, Video, Discovery', example: 'Sports/Fitness, Technology' },
-    { id: 'age', value: '{age}', label: 'Age Range', category: 'standard', description: 'Age range of the user', availability: 'Display, Video', example: '25-34, 35-44, 45-54' },
-    { id: 'gender', value: '{gender}', label: 'Gender', category: 'standard', description: 'Gender targeting', availability: 'Display, Video', example: 'm (male), f (female), u (unknown)' },
-
-    // Time & Date Parameters
-    { id: 'hour', value: '{hour}', label: 'Hour', category: 'standard', description: 'Hour when the ad was clicked (24-hour format)', availability: 'All campaign types', example: '14 (2 PM), 09 (9 AM)' },
-    { id: 'dayofweek', value: '{dayofweek}', label: 'Day of Week', category: 'standard', description: 'Day of the week when ad was clicked', availability: 'All campaign types', example: 'monday, tuesday, wednesday' },
-
-    // Custom Parameters
-    { id: 'experimentid', value: '{experimentid}', label: 'Experiment ID', category: 'standard', description: 'A/B test experiment identifier', availability: 'All campaign types', example: 'exp_123456' }
+    // Performance Max Campaign Parameters
+    { id: 'assetgroupid', value: '{assetgroupid}', label: 'Asset Group ID', category: 'pmax', description: 'The asset group ID', availability: 'Performance Max Campaigns (Fully Supported)', example: '456789123' },
+    { id: 'campaignid_pmax', value: '{campaignid}', label: 'Campaign ID (Performance Max)', category: 'pmax', description: 'The campaign ID', availability: 'Performance Max Campaigns (Fully Supported)', example: '1234567890' },
+    { id: 'device_pmax', value: '{device}', label: 'Device Type (Performance Max)', category: 'pmax', description: 'The device the click came from', availability: 'Performance Max Campaigns (Fully Supported)', example: 'm (mobile), t (tablet), c (computer)' },
+    { id: 'ifmobile_pmax', value: '{ifmobile:[value]}', label: 'If Mobile (Performance Max)', category: 'pmax', description: 'Returns [value] if the ad is clicked from a mobile phone', availability: 'Performance Max Campaigns (Fully Supported)', example: '{ifmobile:mobile_user}', isConditional: true, defaultPlaceholder: 'mobile_user' },
+    { id: 'ifnotmobile_pmax', value: '{ifnotmobile:[value]}', label: 'If Not Mobile (Performance Max)', category: 'pmax', description: 'Returns [value] if the ad is clicked from a computer or tablet', availability: 'Performance Max Campaigns (Fully Supported)', example: '{ifnotmobile:desktop_user}', isConditional: true, defaultPlaceholder: 'desktop_user' },
+    { id: 'loc_interest_ms_pmax', value: '{loc_interest_ms}', label: 'Location Interest ID (Performance Max)', category: 'pmax', description: 'The ID of the location of interest', availability: 'Performance Max Campaigns (Fully Supported)', example: '1023191 (New York)' },
+    { id: 'loc_physical_ms_pmax', value: '{loc_physical_ms}', label: 'Physical Location ID (Performance Max)', category: 'pmax', description: 'The ID of the geographical location of the click', availability: 'Performance Max Campaigns (Fully Supported)', example: '1023191 (New York)' },
+    { id: 'lpurl', value: '{lpurl}', label: 'Landing Page URL', category: 'pmax', description: 'The final URL', availability: 'Performance Max Campaigns (Fully Supported)', example: 'https://example.com/product' },
+    { id: 'lpurl2', value: '{lpurl+2}', label: 'Landing Page URL (Escaped 2x)', category: 'pmax', description: 'The final URL escaped twice', availability: 'Performance Max Campaigns (Fully Supported)', example: 'https%253A//example.com/product' },
+    { id: 'lpurl3', value: '{lpurl+3}', label: 'Landing Page URL (Escaped 3x)', category: 'pmax', description: 'The final URL escaped three times', availability: 'Performance Max Campaigns (Fully Supported)', example: 'https%25253A//example.com/product' },
+    { id: 'random', value: '{random}', label: 'Random Number', category: 'pmax', description: 'A random Google-generated number', availability: 'Performance Max Campaigns (Fully Supported)', example: '1234567890' },
+    { id: 'adtype_pmax', value: '{adtype}', label: 'Ad Type (Performance Max)', category: 'pmax', description: 'The type of ad that was clicked on', availability: 'Performance Max Campaigns (Limited Support)', example: 'text, image, video' },
+    { id: 'gclid_pmax', value: '{gclid}', label: 'Google Click ID (Performance Max)', category: 'pmax', description: 'The Google click identifier', availability: 'Performance Max Campaigns (Limited Support)', example: 'CjwKCAiA...' },
+    { id: 'merchant_id_pmax', value: '{merchant_id}', label: 'Merchant ID (Performance Max)', category: 'pmax', description: 'The ID of the Merchant Center account', availability: 'Performance Max Campaigns (Limited Support)', example: '123456789' },
+    { id: 'product_channel_pmax', value: '{product_channel}', label: 'Product Channel (Performance Max)', category: 'pmax', description: 'The type of shopping channel', availability: 'Performance Max Campaigns (Limited Support)', example: 'online, local' },
+    { id: 'product_country_pmax', value: '{product_country}', label: 'Product Country (Performance Max)', category: 'pmax', description: 'The country of sale', availability: 'Performance Max Campaigns (Limited Support)', example: 'US, CA, GB' },
+    { id: 'product_id_pmax', value: '{product_id}', label: 'Product ID (Performance Max)', category: 'pmax', description: 'The ID of the product', availability: 'Performance Max Campaigns (Limited Support)', example: 'SKU123456' },
+    { id: 'product_language_pmax', value: '{product_language}', label: 'Product Language (Performance Max)', category: 'pmax', description: 'The language of your product information', availability: 'Performance Max Campaigns (Limited Support)', example: 'en, es, fr' }
   ], []);
 
   // Filter parameters based on search and category
@@ -349,8 +340,8 @@ const GoogleAdsBuilder: React.FC = () => {
       standard: { variant: 'info' as const, label: 'Standard' },
       shopping: { variant: 'success' as const, label: 'Shopping' },
       video: { variant: 'warning' as const, label: 'Video' },
-      pmax: { variant: 'info' as const, label: 'Performance Max' },
-      hotel: { variant: 'success' as const, label: 'Hotel' }
+      hotel: { variant: 'success' as const, label: 'Hotel' },
+      pmax: { variant: 'info' as const, label: 'Performance Max' }
     };
     
     const badge = badges[category as keyof typeof badges];
