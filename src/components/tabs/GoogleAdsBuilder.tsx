@@ -201,6 +201,13 @@ const GoogleAdsBuilder: React.FC = () => {
       .filter(param => param.supportLevel === 'full')
       .sort((a, b) => a.label.localeCompare(b.label));
 
+    const limitedSupport = pmaxParameters
+      .filter(param => param.supportLevel === 'limited')
+      .sort((a, b) => a.label.localeCompare(b.label));
+
+    return { fullSupport, limitedSupport };
+  }, [valueTrackParams]);
+
   // Sort categories alphabetically by label
   const sortedCategories = useMemo(() => {
     return [...categories].sort((a, b) => a.label.localeCompare(b.label));
@@ -747,7 +754,7 @@ const GoogleAdsBuilder: React.FC = () => {
               ))}
             </select>
           </div>
-        </div> {/* End of Search and Filter */}
+        </div>
 
         {/* Performance Max Special Rendering */}
         {renderPmaxParameters()}
