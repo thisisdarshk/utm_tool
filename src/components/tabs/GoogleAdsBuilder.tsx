@@ -49,6 +49,8 @@ const GoogleAdsBuilder: React.FC = () => {
     { id: 'param2', value: '{param2}', label: 'Ad Parameter 2', category: 'universal', description: 'Creative parameter #2', availability: 'Final URL, Tracking Template' },
     { id: 'param1', value: '{param1}', label: 'Ad Parameter 1', category: 'universal', description: 'Creative parameter #1', availability: 'Final URL, Tracking Template' },
     { id: 'param2', value: '{param2}', label: 'Ad Parameter 2', category: 'universal', description: 'Creative parameter #2', availability: 'Final URL, Tracking Template' },
+    { id: 'param1', value: '{param1}', label: 'Ad Parameter 1', category: 'universal', description: 'Creative parameter #1', availability: 'Final URL, Tracking Template' },
+    { id: 'param2', value: '{param2}', label: 'Ad Parameter 2', category: 'universal', description: 'Creative parameter #2', availability: 'Final URL, Tracking Template' },
     { id: 'campaignid', value: '{campaignid}', label: 'Campaign ID', category: 'universal', description: 'Campaign ID - Helpful for account-level tracking', availability: 'Final URL, Tracking Template' },
     { id: 'creative', value: '{creative}', label: 'Creative ID', category: 'universal', description: 'Unique ID for the ad', availability: 'Final URL, Tracking Template' },
     { id: 'device', value: '{device}', label: 'Device Type', category: 'universal', description: 'Device type: m=Mobile, t=Tablet, c=Computer', availability: 'Final URL, Tracking Template' },
@@ -56,6 +58,7 @@ const GoogleAdsBuilder: React.FC = () => {
     { id: 'feeditemid', value: '{feeditemid}', label: 'Feed Item ID (Legacy)', category: 'universal', description: 'ID of clicked legacy asset - Not available on Display', availability: 'Final URL, Tracking Template' },
     { id: 'gclid', value: '{gclid}', label: 'Google Click ID', category: 'universal', description: 'Google Click ID - Not available in all PMAX ads', availability: 'Final URL, Tracking Template' },
     { id: 'keyword', value: '{keyword}', label: 'Keyword', category: 'universal', description: 'Matched keyword - Blank for PMAX/DSA', availability: 'Final URL, Tracking Template' },
+    { id: 'devicemodel', value: '{devicemodel}', label: 'Mobile Device Model', category: 'universal', description: 'The model of the phone or tablet', availability: 'Final URL, Tracking Template' },
     { id: 'devicemodel', value: '{devicemodel}', label: 'Mobile Device Model', category: 'universal', description: 'The model of the phone or tablet', availability: 'Final URL, Tracking Template' },
     { id: 'devicemodel', value: '{devicemodel}', label: 'Mobile Device Model', category: 'universal', description: 'The model of the phone or tablet', availability: 'Final URL, Tracking Template' },
     { id: 'devicemodel', value: '{devicemodel}', label: 'Mobile Device Model', category: 'universal', description: 'The model of the phone or tablet', availability: 'Final URL, Tracking Template' },
@@ -86,9 +89,10 @@ const GoogleAdsBuilder: React.FC = () => {
     { id: 'adtype', value: '{adtype}', label: 'Hotel Ad Type', category: 'hotel', description: 'Hotel ad type: Hotel or Room', availability: 'Hotel Campaigns' },
     { id: 'adtype', value: '{adtype}', label: 'Hotel Ad Type', category: 'hotel', description: 'Hotel ad type: Hotel or Room', availability: 'Hotel Campaigns' },
     { id: 'adtype', value: '{adtype}', label: 'Hotel Ad Type', category: 'hotel', description: 'Hotel ad type: Hotel or Room', availability: 'Hotel Campaigns' },
+    { id: 'adtype', value: '{adtype}', label: 'Hotel Ad Type', category: 'hotel', description: 'Hotel ad type: Hotel or Room', availability: 'Hotel Campaigns' },
     { id: 'advanced_booking_window', value: '{advanced_booking_window}', label: 'Advanced Booking Window', category: 'hotel', description: 'Days before check-in', availability: 'Hotel Campaigns' },
     { id: 'date_type', value: '{date_type}', label: 'Date Type', category: 'hotel', description: 'Date type: default or selected', availability: 'Hotel Campaigns' },
-    { id: 'rate_rule_id', value: '{rate_rule_id}', label: 'Rate Rule ID', category: 'hotel', description: 'Special pricing rule ID', availability: 'Hotel Campaigns' },
+    { id: 'travel_end_day', value: '{travel_end_day}', label: 'Travel End Day', category: 'hotel', description: 'The check-out day', availability: 'Hotel campaigns only' },
     { id: 'travel_end_day', value: '{travel_end_day}', label: 'Travel End Day', category: 'hotel', description: 'The check-out day', availability: 'Hotel campaigns only' },
     { id: 'travel_end_day', value: '{travel_end_day}', label: 'Travel End Day', category: 'hotel', description: 'The check-out day', availability: 'Hotel campaigns only' },
     { id: 'travel_end_day', value: '{travel_end_day}', label: 'Travel End Day', category: 'hotel', description: 'The check-out day', availability: 'Hotel campaigns only' },
@@ -104,7 +108,10 @@ const GoogleAdsBuilder: React.FC = () => {
     { id: 'travel_end_year', value: '{travel_end_year}', label: 'Travel End Year', category: 'hotel', description: 'The check-out year', availability: 'Hotel campaigns only' },
     { id: 'travel_end_year', value: '{travel_end_year}', label: 'Travel End Year', category: 'hotel', description: 'The check-out year', availability: 'Hotel campaigns only' },
     { id: 'travel_end_year', value: '{travel_end_year}', label: 'Travel End Year', category: 'hotel', description: 'The check-out year', availability: 'Hotel campaigns only' },
+    { id: 'travel_end_year', value: '{travel_end_year}', label: 'Travel End Year', category: 'hotel', description: 'The check-out year', availability: 'Hotel campaigns only' },
     { id: 'travel_start_day', value: '{travel_start_day}', label: 'Travel Start Day', category: 'hotel', description: 'Check-in date', availability: 'Hotel Campaigns' },
+    { id: 'travel_start_month', value: '{travel_start_month}', label: 'Travel Start Month', category: 'hotel', description: 'The check-in date\'s month', availability: 'Hotel campaigns only' },
+    { id: 'travel_start_year', value: '{travel_start_year}', label: 'Travel Start Year', category: 'hotel', description: 'The check-in date\'s year', availability: 'Hotel campaigns only' },
     { id: 'travel_start_month', value: '{travel_start_month}', label: 'Travel Start Month', category: 'hotel', description: 'The check-in date\'s month', availability: 'Hotel campaigns only' },
     { id: 'travel_start_year', value: '{travel_start_year}', label: 'Travel Start Year', category: 'hotel', description: 'The check-in date\'s year', availability: 'Hotel campaigns only' },
     { id: 'travel_start_month', value: '{travel_start_month}', label: 'Travel Start Month', category: 'hotel', description: 'The check-in date\'s month', availability: 'Hotel campaigns only' },
@@ -136,6 +143,9 @@ const GoogleAdsBuilder: React.FC = () => {
     { id: 'merchant_id', value: '{merchant_id}', label: 'Merchant ID', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
     { id: 'product_channel', value: '{product_channel}', label: 'Product Channel', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
     { id: 'product_country', value: '{product_country}', label: 'Product Country', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
+    { id: 'product_id', value: '{product_id}', label: 'Product ID', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
+    { id: 'product_language', value: '{product_language}', label: 'Product Language', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
+    { id: 'random', value: '{random}', label: 'Random Number', category: 'pmax', supportLevel: 'full', description: 'Random number - Full Support in PMAX', availability: 'Performance Max (Full Support)' },
     { id: 'product_id', value: '{product_id}', label: 'Product ID', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
     { id: 'product_language', value: '{product_language}', label: 'Product Language', category: 'pmax', supportLevel: 'limited', description: 'Limited to Shopping ad types only', availability: 'Performance Max (Limited Support)' },
     { id: 'random', value: '{random}', label: 'Random Number', category: 'pmax', supportLevel: 'full', description: 'Random number - Full Support in PMAX', availability: 'Performance Max (Full Support)' },
@@ -210,8 +220,6 @@ const GoogleAdsBuilder: React.FC = () => {
     const fullSupport = pmaxParameters
       .filter(param => param.supportLevel === 'full')
       .sort((a, b) => a.label.localeCompare(b.label));
-  const sortedCategories = useMemo(() => {
-    return [...categories].sort((a, b) => a.label.localeCompare(b.label));
   }, [categories]);
 
   // Sort categories alphabetically by label
